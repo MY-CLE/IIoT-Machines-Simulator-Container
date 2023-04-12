@@ -1,0 +1,28 @@
+#!/bin/sh
+# Drag the file into your .git/hooks folder
+# Inspiration of https://www.freecodecamp.org/news/how-to-write-better-git-commit-messages/
+
+cmsg=$(cat $1)
+
+# Maximum 50 characters
+if [[ ${#cmsg} -gt 50 ]]; then
+	echo "Error: Commit message exceeds maximum limit of 50 characters."
+	exit 1
+fi
+
+# feat(frontend): User can press Button OR docs: Updated README.md'^(feat|fix|docs|style|refactor|test)(\([a-z]+\))?: .{1,50}$'  | ? zero or one occurrence () | . any char 1-50
+commit_regex='^(feat|fix|docs|style|refactor|test)(\([a-z]+\))?: .{1,50}$'
+
+if [[ ! $cmsg =~ $commit_regex ]]; then
+  echo "Error: Commit message does not follow the standard format."
+  echo "Valid formats are: "
+  echo "  feat: Add new feature"
+  echo "  fix: Fix a bug"
+  echo "  docs: Update documentation"
+  echo "  style: Update code style"
+  echo "  refactor: Refactor code"
+  echo "  test: Update tests"
+  exit 1
+fi
+
+exit 0
