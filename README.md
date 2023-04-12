@@ -2,7 +2,7 @@
 
 # Getting started
 
-1. create a virtual enviornment in /backend
+1. Create a virtual enviornment in /backend
    using
 
 ```
