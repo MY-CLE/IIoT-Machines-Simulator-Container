@@ -1,7 +1,6 @@
-FROM python:3.9
-WORKDIR /app
+FROM python:3.11-slim-bullseye
 
-COPY requirements.txt app.py .flaskenv ./
+COPY backend/requirements.txt backend/app.py backend/.flaskenv ./
 RUN pip install -r ./requirements.txt
 ENV FLASK_ENV production
 

@@ -30,39 +30,12 @@ npm install
 npm run build
 ```
 
-## Docker Compose
+## Start the Application
 
-the following commands have to be executed in the right folder
-
-1. flask image
+To start the updated docker images please use the start.sh script found in the root of the project.
 
 ```
-cd backend
-docker build -f Dockerfile.backend -t flask-api .
-
-```
-
-2. react app
-
-```
-cd frontend
-docker build -f Dockerfile.frontend -t react-app .
-```
-
-3. nginx image
-
-root folder
-
-```
-cd ..
-sudo docker build -f nginx/Dockerfile.nginx -t nginx-service .
-```
-
-4. docker compose
-   root folder
-
-```
-docker-compose up
+bash start.sh
 ```
 
 Now you should be able to access localhost and see a almost default react app, the time displayed is provided by the flask backend

@@ -19,7 +19,7 @@
   "scripts": {
     "start": "tsc && react-scripts start",
     "backend-start": "cd ../backend && venv/bin/flask run --no-debugger",
-    "build": "react-scripts build",
+    "build": "tsc && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
