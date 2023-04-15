@@ -1,0 +1,8 @@
+.header {
+  width: 100%;
+  background-color: #be4030;
+  color: white;
+}
+.header > h1 {
+  margin-left: 5%;
+}
