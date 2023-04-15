@@ -2,7 +2,22 @@
   width: 100%;
   background-color: #be4030;
   color: white;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 .header > h1 {
-  margin-left: 5%;
+  position: relative;
+  width: 90%;
+  margin-left: 3%;
+}
+
+.headerIcons {
+  width: 10%;
+  display: flex;
+  justify-content: space-around;
+}
+.icon {
+  padding: 10px;
 }
