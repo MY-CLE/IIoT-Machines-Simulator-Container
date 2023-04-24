@@ -1,4 +1,4 @@
-FROM python:3.11-slim-bullseye
+FROM python:3.10-alpine
 
 COPY backend/requirements.txt backend/app.py backend/.flaskenv ./
 RUN pip install -r ./requirements.txt
