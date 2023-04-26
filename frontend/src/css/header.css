@@ -1,6 +1,7 @@
 .header {
+  position: relative;
   width: 100%;
-  background-color: #be4030;
+  background-color: #9C162B;
   color: white;
   display: flex;
   flex-direction: row;
@@ -8,16 +9,5 @@
   justify-content: space-between;
 }
 .header > h1 {
-  position: relative;
-  width: 90%;
   margin-left: 3%;
-}
-
-.headerIcons {
-  width: 10%;
-  display: flex;
-  justify-content: space-around;
-}
-.icon {
-  padding: 10px;
 }

@@ -7,12 +7,11 @@ export function Header() {
   return (
     <header className="header">
       <h1>Lasercutter HMI</h1>
-      <div className="headerIcons">
-        <IconSettings />
-        <IconLogin />
-      </div>
+      <div className="save"></div>
+      <div className="config"></div>
+      <div className="login"></div>
     </header>
   );
-}
+} 
 
 export default Header;
