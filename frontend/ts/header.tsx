@@ -1,17 +1,14 @@
 import React from "react";
-import "../src/css/header.css";
-import IconLogin from "./icons/iconLogin";
-import IconSettings from "./icons/iconSettings";
 
 export function Header() {
   return (
-    <header className="header">
-      <h1>Lasercutter HMI</h1>
+    <header className="flex flex-row justify-between w-screen text-white h-20Lasercutter HMI align-center bg-header-red">
+      <h1 className="pl-8 ">Lasercutter HMI</h1>
       <div className="save"></div>
       <div className="config"></div>
-      <div className="login"></div>
+      <div className="login "></div>
     </header>
   );
-} 
+}
 
 export default Header;
