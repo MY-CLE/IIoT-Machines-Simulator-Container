@@ -7,24 +7,27 @@ class Simulator:
         self.startTime = None
         self.stopTime = None
         self.runTime = 0
+        self.isRunning = False
 
     def simulateSafetyDoorError(self):
-        timeInterval = random.randint(0, 20)
+        timeInterval = random.randint(0, 15)
         time.sleep(timeInterval)
-        raise Exception("Safety door open. Machine stopping!")
+        raise Exception("Safety door open!")
     
     def exceptionHandler(self, exc_type, exc_value, traceback):
         if exc_type is not KeyboardInterrupt:
             try:
                 self.simulateSafetyDoorError()
             except Exception as e:
-                print("Error occurred while simulating error:", e)
-                self.stopMachine()
-                print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
+                print("Error occurred while simulating. Error:", e)
+                if self.isRunning:
+                    self.stopMachine()
+                    print("Machine runtime: " + str(self.getRuntime()) + " seconds.")
 
     def startMachine(self):
         sys.excepthook = self.exceptionHandler
         print("Starting the Machine...")
+        self.isRunning = True
         self.startTime = time.time()
         #
         #
@@ -37,6 +40,7 @@ class Simulator:
         #
         #
         self.calculateRuntime()
+        self.isRunning = False
         print("Machine stopped.")
 
     def calculateRuntime(self):
@@ -51,6 +55,6 @@ class Simulator:
 machineSimu = Simulator()
 machineSimu.startMachine()
 machineSimu.simulateSafetyDoorError()
-time.sleep(30)
+time.sleep(20)
 machineSimu.stopMachine()
 print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
