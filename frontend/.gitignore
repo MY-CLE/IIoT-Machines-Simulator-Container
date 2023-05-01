@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 
+#tailwind outputcss
+/src/css/output.css
 # generated javascriptfiles 
 *.js
 
