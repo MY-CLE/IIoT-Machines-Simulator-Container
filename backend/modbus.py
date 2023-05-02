@@ -14,7 +14,7 @@ class Modbus:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self):
-        self.client = ModbusClient(host=os.getenv('host'), port=502, unit_id=1, auto_open=True, debug=False) # Master (Client) sendet an Slave (Server)
+        self.client = ModbusClient(host=os.getenv('host'), port=502, unit_id=2, auto_open=True, debug=False) # Master (Client) sendet an Slave (Server)
         self.connEstablished = self.client.open()
         if self.connEstablished:
             logging.info(f'Connection established: {self.connEstablished}')
@@ -63,28 +63,15 @@ class Modbus:
 
 if __name__ == '__main__':
     c = Modbus()
-    #c.writeSingleCoil(1, True)
+    c.writeSingleCoil(1, True)
     i = 0
     while i < 48:
         c.writeSingleRegister(i, random.randint(0, 1500))
-        """ c.writeSingleRegister(21, random.randint(0, 1500))
-        c.writeSingleRegister(22, random.randint(0, 1500))
-        c.writeSingleRegister(25, random.randint(0, 1500)) """
-        #readInputRegisters = client.read_input_registers(0, 48) # Max reg_nb: 48
-        #readHoldingRegisters  = client.read_holding_registers(0, 48) # Max reg_nb: 48
-        #if readInputRegisters:
-            #print(f'Read Input Registers: {readInputRegisters}')
-            #print(f'Read Holding Registers: {readHoldingRegisters}')
-        #else:
-           #print('Read error occured')
+
         c.readInputRegisters(i, 1)
-        """ c.readInputRegisters(21, 1)
-        c.readInputRegisters(22, 1)
-        c.readInputRegisters(25, 1) """
+
         c.readHoldingRegisters(i, 1)
-        """ c.readHoldingRegisters(21, 1)
-        c.readHoldingRegisters(22, 1)
-        c.readHoldingRegisters(25, 1) """
+
         time.sleep(5)
         i = i + 1
     c.client.close()
