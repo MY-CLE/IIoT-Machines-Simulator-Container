@@ -5,8 +5,14 @@
 /.pnp
 .pnp.js
 
+#tailwind outputcss
+/src/css/output.css
+# generated javascriptfiles 
+*.js
+
 # testing
 /coverage
+*.js
 
 # production
 /build

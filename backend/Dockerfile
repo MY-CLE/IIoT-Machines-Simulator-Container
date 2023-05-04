@@ -15,6 +15,7 @@ RUN sqlite3 machine-sim.db
 RUN sqlite3 machine-sim.db < create_tables.sql
 
 # Enter Container with SQLite3 CLI
+FROM python:3.10-alpine
 
 COPY backend/requirements.txt backend/app.py backend/.flaskenv ./
 RUN pip install -r ./requirements.txt
