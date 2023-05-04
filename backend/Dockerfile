@@ -6,7 +6,7 @@ RUN apk add --no-cache sqlite
 WORKDIR /home/sqlite
 
 # Copy create_tables.sql to container
-COPY database/create_tables.sql .
+COPY backend/database/create_tables.sql .
 
 # Create database
 RUN sqlite3 machine-sim.db

@@ -1,9 +1,0 @@
-1. Install Sqlite
-sudo apt update
-sudo apt install sqlite3
-
-2. Create Database
-sqlite3 test.db
-
-3. Run Table Script
-cat create_tables.sql | sqlite3 test.db
