@@ -15,7 +15,7 @@ In a second termial we need to activate tailwind watch to update the input.css w
 ```
 npx tailwindcss -i ./input.css -o ./src/css/output.css --watch
 ```
+3.
 
 In VSCode you can activate the watch to automatically recompile all .tsx files after saving.
-
 You can do this by pressing Strg + Shift + B and select to watch the tsconfig
