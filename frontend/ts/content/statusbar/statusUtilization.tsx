@@ -1,13 +1,13 @@
 import React from "react";
 
-export function StatusPower() {
+export function StatusUtil() {
   return (
     <>
       <div className="flex-grow w-auto justify-center h-32 border flex items-center border-black border-1 border-l-0">
-        <div>Power</div>
+        <div>Auslastung</div>
       </div>
     </>
   );
 }
 
-export default StatusPower;
+export default StatusUtil;
