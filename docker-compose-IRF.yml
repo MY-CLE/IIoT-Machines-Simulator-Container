@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    image: flask-api
+    container_name: flask-api
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    image: nginx-service
+    container_name: nginx-service
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+volumes:
+  db-volume:
