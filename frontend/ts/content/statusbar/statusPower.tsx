@@ -1,7 +1,7 @@
 import React from "react";
 export function StatusPower() {
   return (
-    <div className="statusPower statusElement">
+    <div className="justify-end">
       <p>Status</p>
     </div>
   );
