@@ -10,7 +10,7 @@ def get_current_time():
 
 @app.route('/api/db')
 def getLine():
-    conn = sqlite3.connect("machine-sim.db")
+    conn = sqlite3.connect("database/machine-sim.db")
     cursor = conn.cursor()
     cursor.execute("INSERT INTO error (error_type) VALUES ('error1'), ('error');")
     return {'error': cursor.execute("SELECT error_type FROM error").fetchall()}
