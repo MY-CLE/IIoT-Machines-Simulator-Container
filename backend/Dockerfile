@@ -21,6 +21,7 @@ RUN sqlite3 machine-sim.db
 # Execute create_tables.sql on the machine-sim.db database
 RUN sqlite3 machine-sim.db < create_tables.sql
 
+
 WORKDIR /home/iiot-machine-sim/
 
 COPY backend/requirements.txt backend/app.py ./
