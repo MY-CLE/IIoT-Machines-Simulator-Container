@@ -11,8 +11,6 @@ services:
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
-    volumes:
-      - ./backend/database/machine-sim.db:/home/iiot-machine-sim/database/machine-sim.db
 
   nginx:
     build:
