@@ -25,5 +25,5 @@ class MachineProgram(object):
         return self.timePerItem
     
     def __str__(self) -> str:
-        return "{" + str(self.ID) + "; " + self.description + "; " + str(self.laserPowerConsumptionWatt) + "; " + str(self.coolantConsumptionMl) + "; " + str(self.timePerItem) + "}"
+        return f"stateID: {self.ID}, ID: {self.description}, targetAmount: {self.laserPowerConsumptionWatt}, currentAmount: {self.coolantConsumptionMl}, runtime: {self.timePerItem }"
         

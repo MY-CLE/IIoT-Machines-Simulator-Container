@@ -43,3 +43,4 @@ CREATE TABLE warning (
 	warning_id integer PRIMARY KEY AUTOINCREMENT,
 	warning_type text
 );
+
