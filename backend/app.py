@@ -14,3 +14,5 @@ def getLine():
     cursor = conn.cursor()
     cursor.execute("INSERT INTO error (error_type) VALUES ('error1'), ('error');")
     return {'error': cursor.execute("SELECT error_type FROM error").fetchall()}
+
+
