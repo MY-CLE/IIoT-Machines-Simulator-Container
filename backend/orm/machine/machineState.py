@@ -11,7 +11,7 @@ class MachineState(object):
         self.programState: int = databaseObject.getResultRow()[4]
         self.machineStartTime: int = databaseObject.getResultRow()[5]
         self.machineStopTime: int = databaseObject.getResultRow()[6]
-        self.machineDownTime: datetime = datetime.strptime(databaseObject.getResultRow()[7], "%Y-%m-%d %H:%M:%S")
+        self.machineDownTime: int = databaseObject.getResultRow()[7]
         self.allItems: int = databaseObject.getResultRow()[8]
         self.energyConsumptionWatt: int = databaseObject.getResultRow()[9]
         self.capacityLaserModule: float = databaseObject.getResultRow()[10]
@@ -38,7 +38,7 @@ class MachineState(object):
     def getMachineStopTime(self) -> int:
         return self.machineStopTime
     
-    def getMachineDownTime(self) -> datetime:
+    def getMachineDownTime(self) -> int:
         return self.machineDownTime
     
     def getAllItems(self) -> int:

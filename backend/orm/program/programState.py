@@ -7,7 +7,7 @@ class ProgramState(object):
         self.ID: int  = databaseObject.getResultRow()[1]
         self.targetAmount: int = databaseObject.getResultRow()[2]
         self.currentAmount: int = databaseObject.getResultRow()[3]
-        self.runtime:datetime = datetime.strptime(databaseObject.getResultRow()[4], "%Y-%m-%d %H:%M:%S")
+        self.runtime:int = databaseObject.getResultRow()[4]
 
     def getStateID(self) -> int:
         return self.stateID
@@ -21,7 +21,7 @@ class ProgramState(object):
     def getCurrentAmount(self) -> int:
         return self.currentAmount
     
-    def getRuntime(self) -> datetime:
+    def getRuntime(self) -> int:
         return self.runtime
     
     def __str__(self):
