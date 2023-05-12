@@ -3,7 +3,7 @@ from orm.databaseObject import DatabaseObject
 
 class DatabaseHandler:
 
-    _CONNECTION = sqlite3.connect("backend/database/machine-sim.db")
+    _CONNECTION = sqlite3.connect("database/machine-sim.db")
     _CURSOR = _CONNECTION.cursor()
 
 
@@ -14,5 +14,5 @@ class DatabaseHandler:
         resultSet: list[DatabaseObject] = DatabaseHandler._CURSOR.fetchall()
         DatabaseHandler._CURSOR.close()
         return resultSet
-    
+
 

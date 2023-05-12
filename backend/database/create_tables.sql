@@ -11,7 +11,7 @@ CREATE TABLE machine_state (
 	program_state integer,
 	machine_start_time timestamp,
 	machine_stop_time timestamp,
-	machine_down_time time,
+	machine_down_time timestamp,
 	all_items integer,
 	energy_consumption_watt integer,
 	capacity_lasermodule float,
@@ -36,7 +36,7 @@ CREATE TABLE program_state (
 	program_id integer,
 	program_target_amount integer,
 	program_current_amount integer,
-	program_runtime time
+	program_runtime timestamp
 );
 
 CREATE TABLE warning (
