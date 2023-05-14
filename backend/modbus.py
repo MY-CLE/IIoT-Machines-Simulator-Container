@@ -14,7 +14,7 @@ class Modbus:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self):
-        self.client = ModbusClient(host=os.getenv('host'), port=502, unit_id=2, auto_open=True, debug=False) # Master (Client) sendet an Slave (Server)
+        self.client = ModbusClient(host='192.168.178.20', port=503, unit_id=2, auto_open=True, debug=False) # Master (Client) sendet an Slave (Server)
         self.connEstablished = self.client.open()
         if self.connEstablished:
             logging.info(f'Connection established: {self.connEstablished}')
@@ -63,16 +63,18 @@ class Modbus:
 
 if __name__ == '__main__':
     c = Modbus()
-    c.writeSingleCoil(1, True)
+    c.writeSingleCoil(2, True)
     i = 0
-    while i < 48:
+    while i < 10:
         c.writeSingleRegister(i, random.randint(0, 1500))
 
-        c.readInputRegisters(i, 1)
+        c.readHoldingRegisters(0, 10)
 
-        c.readHoldingRegisters(i, 1)
+        #c.readHoldingRegisters(i, 10)
 
-        time.sleep(5)
+        time.sleep(0.5)
         i = i + 1
+        if i == 9:
+            i = 0
     c.client.close()
     
