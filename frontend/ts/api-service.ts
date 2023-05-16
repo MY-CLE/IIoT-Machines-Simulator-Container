@@ -35,8 +35,7 @@ export async function deleteSimulationById(simulation_id: number) {
     method: "DELETE",
     redirect: "follow",
   })
-    .then((response) => response.text())
-    .then((result) => console.log(result))
+    .then((response) => response.status)
     .catch((error) => console.log("error", error));
 }
 
@@ -68,7 +67,7 @@ export async function patchMachineParameter(
 ) {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
-  return await fetch(`/simulations/${simulation_id}/machines`, {
+  return await fetch(`/simulations/${simulation_id}/machine`, {
     method: "PUT",
     body: JSON.stringify(parameter),
     redirect: "follow",
@@ -87,13 +86,13 @@ export async function getErrors(simulation_id: number): Promise<Error> {
 }
 
 export async function sendError(simulation_id: number, error_id: number) {
-  return await fetch(
-    `/simulations/${simulation_id}/machine/errors?error_id=${error_id}`,
-    {
-      method: "POST",
-      redirect: "follow",
-    }
-  )
+  const formdata = new FormData();
+  formdata.append("error_id", error_id.toString());
+  return await fetch(`/simulations/${simulation_id}/machine/errors`, {
+    method: "POST",
+    redirect: "follow",
+    body: formdata,
+  })
     .then((response) => response.status)
     .catch((error) => console.log("error", error));
 }
@@ -111,11 +110,14 @@ export async function postCurrentProgram(
   simulation_id: number,
   program_id: number
 ) {
+  const formdata = new FormData();
+  formdata.append("program_id", program_id.toString());
   return await fetch(
     `/simulations/${simulation_id}/machine/programs/current?program_id=${program_id}`,
     {
       method: "POST",
       redirect: "follow",
+      body: formdata,
     }
   )
     .then((response) => response.status)

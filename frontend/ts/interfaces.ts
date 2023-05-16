@@ -2,8 +2,8 @@ export interface Simulation {
   id: number;
   description: string;
   last_edited: Date;
-  machine: Machine;
-  program: Program;
+  machine?: Machine;
+  program?: Program;
 }
 
 export interface Machine {
@@ -17,7 +17,7 @@ export interface Machine {
 }
 
 export interface Program {
-  description: string;
+  description?: string;
   parameter: [
     {
       id: number;
