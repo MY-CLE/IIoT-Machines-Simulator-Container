@@ -63,10 +63,9 @@ class Modbus:
 
 if __name__ == '__main__':
     c = Modbus()
-    #c.writeSingleCoil(2, True)
     i = 0
     while i < 10:
-        #c.writeMultipleRegisters([1,2],[2222,3222])
+        #c.writeMultipleRegisters(0,[2222,3222])
         c.writeSingleRegister(i, random.randint(0, 65535))
         c.readHoldingRegisters(0, 10)
 
