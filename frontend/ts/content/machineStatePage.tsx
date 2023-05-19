@@ -40,7 +40,7 @@ function MachineStatePage() {
         <div className="w-full h-auto text-4xl text-left">Maschinenzustand</div>
         <div className="flex flex-row w-full flex-grow">
           <div className="text-center w-2/5 flex flex-col h-full justify-center">
-            <div className=" text-lg flex-grow ml-10 mr-10 justify-center flex flex-col space-y-10">
+            <div className="text-lg flex-grow ml-10 mr-10 justify-center flex flex-col space-y-10">
               <div className="w-full h-3/4 flex flex-col justify-between">
                 {paramterNames.map((item, index) => {
                   return <Parameter key={index} name={item} />;
@@ -50,14 +50,14 @@ function MachineStatePage() {
           </div>
           <div className=" w-2/5 flex flex-col justify-center text-center text-2xl">
             <div className="w-full h-3/4 flex flex-col justify-between">
-              <div className="w-full text-2xl">
+              <div className="w-full text-2xl flex flex-grow mb-5">
                 <SendError
                   name={"Error"}
                   messages={errorMessages}
                   color={"bg-red-500"}
                 />
               </div>
-              <div className="w-full text-2xl">
+              <div className="w-full text-2xl flex flex-grow mt-5">
                 <SendError
                   name={"Warning"}
                   messages={warningMessages}

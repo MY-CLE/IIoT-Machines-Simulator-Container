@@ -7,7 +7,7 @@ interface ParameterProps{
 
 function Parameter(props: ParameterProps){
     return(
-        <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl">
+        <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl flex-grow mt-3 mb-3">
             <div className="justify-center items-center flex flex-grow w-1/4 flex-wrap mr-20 font-medium">
                 {props.name}
             </div>
