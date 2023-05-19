@@ -7,27 +7,21 @@ export interface Simulation {
 }
 
 export interface Machine {
-  parameter: [
-    {
-      id: number;
-      discription: string;
-      value: number;
-    }
-  ];
+  parameter: [Parameter];
 }
 
 export interface Program {
   description?: string;
-  parameter: [
-    {
-      id: number;
-      discription: string;
-      value: number;
-    }
-  ];
+  parameter: [Parameter];
 }
 
 export interface Error {
   id: number;
   name: string;
+}
+
+export interface Parameter {
+  id: number;
+  description: string;
+  value: number;
 }
