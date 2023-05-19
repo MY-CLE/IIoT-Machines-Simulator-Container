@@ -9,7 +9,7 @@ interface sendErrorProps {
 
 function SendError(props: sendErrorProps) {
   return (
-    <div className="flex flex-col bg-white h-full w-full border justify-start items-center border-black rounded-lg drop-shadow-sm space-y-7">
+    <div className="flex flex-col bg-white h-full w-full border justify-start items-center border-black rounded-lg drop-shadow-sm space-y-7 pb-5">
       <div className="mt-5 font-medium">{props.name}</div>
       <select
         className="w-3/4 h-1/5 border border-black rounded-lg bg-gray-400 text-center text-xl"
@@ -20,7 +20,7 @@ function SendError(props: sendErrorProps) {
           return <option value={item}>{item}</option>;
         })}
       </select>
-      <button className= {`${props.color} flex justify-center items-center w-1/5 h-1/4 border border-black rounded-lg`}>
+      <button className= {`${props.color} flex justify-center items-center w-1/5 h-1/4 border border-black rounded-lg pt-2 pb-2`}>
         <IconSendError/>
       </button>
     </div>

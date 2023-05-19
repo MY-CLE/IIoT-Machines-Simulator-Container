@@ -11,7 +11,8 @@ function IconSendError(props: React.SVGProps<SVGSVGElement>) {
       viewBox="0 0 48 48"
     >
       <title>send-message</title>
-      <g stroke-width="3" fill="#212121" stroke="#212121">
+      <g stroke-width="3
+      " fill="#212121" stroke="#212121">
         <line
           fill="none"
           stroke-miterlimit="10"
