@@ -25,7 +25,7 @@ def getLine():
 # Simulations
 
 @app.route('/api/simulations', methods=['GET', 'POST', 'DELETE'])
-def api():
+def simulations():
     if request.method == 'GET':
         return #list of all sims
     elif request.method == 'POST':
@@ -35,7 +35,7 @@ def api():
 
 
 @app.route('/api/simulations/<int:simulations_id>', methods=['GET', 'DELETE'])
-def api(simulation_id):
+def simulationsId(simulation_id):
     if request.method == 'GET':
         return #data of a selected sim
     elif request.method == 'DELETE':
@@ -44,19 +44,19 @@ def api(simulation_id):
     
 #Machines
 
-@app.route('/api/simulations/<int:simulations_id>/machines', methods=['GET', 'PATCH'])
-def api(simulation_id):
+@app.route('/api/simulations/<int:simulations_id>/machine', methods=['GET', 'PATCH'])
+def machines(simulation_id):
     if request.method == 'GET':
         return #current state of the machine
     elif request.method == 'PATCH':
         return #change parameter(s) in the machine state
 
-@app.route('/api/simulations/<int:simulations_id>/machines/auth')
-def api(simulation_id):
+@app.route('/api/simulations/<int:simulations_id>/machine/auth')
+def auth(simulation_id):
     return #pw in http body sets auth in machine
 
-@app.route('/api/simulations/<int:simulations_id>/machines/errors', methods=['GET', 'POST'])
-def api(simulation_id):
+@app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
+def errors(simulation_id):
     if request.method == 'GET':
         return #list of all errors and warnings
     elif request.method == 'POST':
@@ -66,12 +66,12 @@ def api(simulation_id):
 
 #Programs
 
-@app.route('/api/simulations/<int:simulations_id>/machines/programs')
-def api(simulations_id):
+@app.route('/api/simulations/<int:simulations_id>/machine/programs')
+def programs(simulations_id):
     return #list of all programs
 
-@app.route('/api/simulations/<int:simulations_id>/machines/programs/current', methods=['GET', 'POST', 'PATCH'])
-def api(simulations_id):
+@app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
+def current(simulations_id):
     if request.method == 'GET':
         return #current program state
     elif request.method == 'POST':
