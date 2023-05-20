@@ -1,24 +1,25 @@
-import time
+from datetime import datetime 
 import random
+import time
 import sys
 
 class Simulator: 
-    def __init__(self) -> None:
-        self.startzeit = 0
-        self.stopzeit = 0
-        self.laufzeit = 0
+    def __init__(self):
+        self.startzeit = datetime
+        self.stopzeit = datetime
+        self.laufzeit = datetime
         self.stillstandzeit = 0
 
-        self.kühlwasserstand
-        self.stückzahl
-        self.stromverbrauch
-        self.laserLeistung
-        self.luftdruck
-        self.temperatur
+        self.kühlwasserstand = 100 #100%
+        self.stückzahl = 0
+        self.stromverbrauch = 0
+        self.laserLeistung = 100
+        self.luftdruck = 5
+        self.temperatur = 80
         
         self.fehler = []
-        self.sicherheitswarnungen
-        self.status
+        self.sicherheitswarnungen = []
+        self.status = True
         self.log = []
 
     def getStartzeit(self):
@@ -26,9 +27,6 @@ class Simulator:
     
     def getStopzeit(self):
         return self.stopzeit
-    
-    def getLaufzeit(self):
-        return self.laufzeit
     
     def getStillstandszeit(self):
         return self.stillstandzeit
@@ -79,36 +77,86 @@ class Simulator:
                     print("Machine runtime: " + str(self.getRuntime()) + " seconds.")
 
     def startMachine(self):
-        sys.excepthook = self.exceptionHandler
+        #sys.excepthook = self.exceptionHandler
         print("Starting the Machine...")
         self.status = True
-        self.startzeit = time.time()
+        self.startzeit = datetime.now()
         #
         #
         print("Machine is running.")
     
     def stopMachine(self):
         print("Stopping the Machine...")
-        self.stopzeit = time.time()
+        self.stopzeit = datetime.now()
         #
         #
         #
-        self.calculateRuntime()
+        self.berechneLaufzeit()
         self.status = False
         print("Machine stopped.")
 
-    def calculateRuntime(self):
-        self.laufzeit = round(self.stopzeit - self.startzeit, 2)
+    def berechneLaufzeit(self):
+        self.laufzeit = self.stopzeit - self.startzeit
 
-    def getRuntime(self):
-        self.calculateRuntime()
+    def getLaufzeit(self):
         return self.laufzeit
 
+    def calculateSimDauer(self, stückzahl: int, sleepTime: int) -> int:
+        simDauer = 0
+        for i in range(sleepTime):
+            simDauer += sleepTime
+        
+        simDauer = round(simDauer * 1.1)
+        return simDauer
+    
+    def kühlwasserWarnung(self):
+        fehlermeldung = "Kühlwasser ist unter 20%. Bitte nachfüllen."
+        fehlerZeit = datetime.now()
+        self.log.append((fehlerZeit, fehlermeldung))
+        print(f"Fehlerzeit: {fehlerZeit}, Fehlermeldung: {fehlermeldung}")
 
+    def programCircle(self, currentTime: datetime, sollStückzahl: int, produktionsstück: str):
+        sleepTime = 5 #benutzt um produktionszeit von einem Stück zu berechnen
+        if produktionsstück == "kreis":
+            sleepTime = 5
+        elif produktionsstück == "dreieck":
+            sleepTime = 3
+        elif produktionsstück == "viereck":
+            sleepTime = 6
+
+        simDauer = self.calculateSimDauer(sollStückzahl, sleepTime) #simDauer für Berechnung von Verbrauchen
+        #Schleife um Produktion von gegebener Stückzahl zu simulieren
+        for i in range(sollStückzahl):
+            time.sleep(sleepTime)
+            self.stückzahl += 1
+
+            verbrauch = simDauer / 60 #Verbrauch pro Sekunde
+            self.kühlwasserstand = self.kühlwasserstand - verbrauch #Verbrauch von aktuellem Stand abziehen
+            print("Kühlwasserstand: ", self.kühlwasserstand)
+            print("Stückzahl: ", self.stückzahl)
+
+            #falls Kühlwasser leer wird, error message -> log und maschine stoppt aufgerufen
+            if self.kühlwasserstand < 20:
+                self.kühlwasserWarnung()
+                self.stopMachine()
+                break
+            
+            if i == sollStückzahl - 1:
+                print("Programm erfolgreich abgeschlossen")
+                self.stopMachine() 
+        
+       
 if __name__ == "__main__":
     machineSimu = Simulator()
     machineSimu.startMachine()
-    machineSimu.simulateSafetyDoorError()
-    time.sleep(20)
-    machineSimu.stopMachine()
-    print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
+    time.sleep(3)
+    now = time.time()
+    machineSimu.programCircle(now, 5, "dreieck")
+    print("Laufzeit der Maschine: ", machineSimu.getLaufzeit())
+    print(machineSimu.getLog())
+    
+    
+    #machineSimu.simulateSafetyDoorError()
+    #time.sleep(20)
+    #machineSimu.stopMachine()
+    #print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
