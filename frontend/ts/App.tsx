@@ -1,16 +1,10 @@
 import React from "react";
 import Header from "./header";
-import ProgramStatePage from "./content/programStatepage";
-
-function App() {
-  return (
-    <div className="flex flex-col flex-grow w-screen h-screen">
-      <Header />
-      <ProgramStatePage program={program} />
-    </div>
-  );
-}
-export default App;
+import ProgramStatePage from "./content/programStatePage";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import LandingPage from "./content/landingpage";
+import MachineStatePage from "./content/machineStatePage";
+import ChooseProgramPage from "./content/chooseProgramPage";
 
 const program = {
   description: "Zahnrad",
@@ -77,3 +71,31 @@ const program = {
     },
   ],
 };
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/machine",
+    element: <MachineStatePage />,
+  },
+  {
+    path: "/programs",
+    element: <ChooseProgramPage />,
+  },
+  {
+    path: "/program/current",
+    element: <ProgramStatePage program={program} />,
+  },
+]);
+function App() {
+  return (
+    <div className="flex flex-col flex-grow w-screen h-screen">
+      <Header />
+      <RouterProvider router={router}></RouterProvider>
+    </div>
+  );
+}
+export default App;

@@ -36,37 +36,31 @@ function MachineStatePage() {
       <div>
         <SelectionBar />
       </div>
-      <div className="flex flex-col justify-start h-full w-full text-2xl border border-black border-1 border-t-0 bg-gray-200">
+      <div className="flex flex-col justify-start h-full w-full text-2xl border border-black border-1 border-t-0 bg-gray-200 p-2">
         <div className="w-full h-auto text-4xl text-left">Maschinenzustand</div>
-        <div className="flex flex-row w-full flex-grow">
-          <div className="text-center w-2/5 flex flex-col h-full justify-center">
-            <div className="text-lg flex-grow ml-10 mr-10 justify-center flex flex-col space-y-10">
-              <div className="w-full h-3/4 flex flex-col justify-between">
-                {paramterNames.map((item, index) => {
-                  return <Parameter key={index} name={item} />;
-                })}
-              </div>
+        <div className="flex flex-row w-full h-full flex-grow">
+          <div className="text-center w-2/5 flex flex-col flex-grow h-full justify-center items-center p-2">
+            {paramterNames.map((item, index) => {
+              return <Parameter key={index} name={item} />;
+            })}
+          </div>
+          <div className=" w-2/5 flex flex-col justify-evenly text-center text-2xl p-2">
+            <div className="w-full text-2xl flex flex-grow mb-5">
+              <SendError
+                name={"Error"}
+                messages={errorMessages}
+                color={"bg-red-500"}
+              />
+            </div>
+            <div className="w-full text-2xl flex flex-grow mt-5">
+              <SendError
+                name={"Warning"}
+                messages={warningMessages}
+                color={"bg-orange-500"}
+              />
             </div>
           </div>
-          <div className=" w-2/5 flex flex-col justify-center text-center text-2xl">
-            <div className="w-full h-3/4 flex flex-col justify-between">
-              <div className="w-full text-2xl flex flex-grow mb-5">
-                <SendError
-                  name={"Error"}
-                  messages={errorMessages}
-                  color={"bg-red-500"}
-                />
-              </div>
-              <div className="w-full text-2xl flex flex-grow mt-5">
-                <SendError
-                  name={"Warning"}
-                  messages={warningMessages}
-                  color={"bg-orange-500"}
-                />
-              </div>
-            </div>
-          </div>
-          <div className="w-1/5 flex flex-grow">
+          <div className="w-1/5 flex flex-grow p-2">
             <div className="ml-10 mr-10 h-full w-full flex justify-center items-center">
               <div className="bg-white w-full h-3/4 border border-black rounded-lg flex flex-col justify-between items-center align-middle">
                 <div className="mt-5">

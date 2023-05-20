@@ -1,7 +1,7 @@
 import React from "react";
 import StatusBar from "./statusbar/statusBar";
 import SelectionBar from "./machineOrProgramBar/selectionBar";
-import Parameter from "./parameters/paramter";
+import Parameter from "./parameters/parameter";
 import IconArrowBack from "../icons/iconBackArrow";
 
 function ProgramStatePage(props: any) {
@@ -28,11 +28,13 @@ function ProgramStatePage(props: any) {
           {props.program.parameters.map(
             (item: { id: number; description: string; value: number }) => {
               return (
-                <Parameter
-                  key={item.id}
-                  name={item.description}
-                  value={item.value}
-                />
+                <div className="w-1/3 m-2">
+                  <Parameter
+                    key={item.id}
+                    name={item.description}
+                    value={item.value}
+                  />
+                </div>
               );
             }
           )}
