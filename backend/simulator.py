@@ -12,10 +12,10 @@ class Simulator:
 
         self.kühlwasserstand = 100 #100%
         self.stückzahl = 0
-        self.stromverbrauch = 0
-        self.laserLeistung = 100
-        self.luftdruck = 5
-        self.temperatur = 80
+        self.stromverbrauch = 0.0 #in kH/h?
+        self.laserLeistung = 100 #100%
+        self.luftdruck = 5 #bar
+        self.temperatur = 80 #Grad Celcius
         
         self.fehler = []
         self.sicherheitswarnungen = []
@@ -61,7 +61,7 @@ class Simulator:
     def getLog(self):
         return self.log
 
-    def simulateSafetyDoorError(self):
+    def simulierSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
         time.sleep(timeInterval)
         raise Exception("Safety door open!")
@@ -69,7 +69,7 @@ class Simulator:
     def exceptionHandler(self, exc_type, exc_value, traceback):
         if exc_type is not KeyboardInterrupt:
             try:
-                self.simulateSafetyDoorError()
+                self.simulierSafetyDoorError()
             except Exception as e:
                 print("Error occurred while simulating. Error:", e)
                 if self.status:
@@ -101,10 +101,10 @@ class Simulator:
     def getLaufzeit(self):
         return self.laufzeit
 
-    def calculateSimDauer(self, stückzahl: int, sleepTime: int) -> int:
+    def berechneSimDauer(self, stückzahl: int, produktionsZeit: int) -> int:
         simDauer = 0
-        for i in range(sleepTime):
-            simDauer += sleepTime
+        for i in range(produktionsZeit):
+            simDauer += produktionsZeit
         
         simDauer = round(simDauer * 1.1)
         return simDauer
@@ -115,48 +115,72 @@ class Simulator:
         self.log.append((fehlerZeit, fehlermeldung))
         print(f"Fehlerzeit: {fehlerZeit}, Fehlermeldung: {fehlermeldung}")
 
-    def programCircle(self, currentTime: datetime, sollStückzahl: int, produktionsstück: str):
-        sleepTime = 5 #benutzt um produktionszeit von einem Stück zu berechnen
-        if produktionsstück == "kreis":
-            sleepTime = 5
-        elif produktionsstück == "dreieck":
-            sleepTime = 3
+    def programSimulation(self, currentTime: datetime, sollStückzahl: int, produktionsstück: str):
+        produktionsZeit = 5 #benutzt um produktionszeit von einem Stück zu berechnen, unterschiedliche Produktionszeit für unterschiedliche Endprodukte
+        if produktionsstück == "dreieck":
+            produktionsZeit = 3
+        elif produktionsstück == "kreis":
+            produktionsZeit = 5
         elif produktionsstück == "viereck":
-            sleepTime = 6
+            produktionsZeit = 6
 
-        simDauer = self.calculateSimDauer(sollStückzahl, sleepTime) #simDauer für Berechnung von Verbrauchen
-        #Schleife um Produktion von gegebener Stückzahl zu simulieren
-        for i in range(sollStückzahl):
-            time.sleep(sleepTime)
-            self.stückzahl += 1
+        simDauer = self.berechneSimDauer(sollStückzahl, produktionsZeit) #simDauer für Berechnung von Verbrauchen
+        dummy, stromverbrauchProStück = self.berechneStromverbauch(sollStückzahl, produktionsZeit)
+        programmStromverbrauch = 0.0
 
-            verbrauch = simDauer / 60 #Verbrauch pro Sekunde
-            self.kühlwasserstand = self.kühlwasserstand - verbrauch #Verbrauch von aktuellem Stand abziehen
-            print("Kühlwasserstand: ", self.kühlwasserstand)
-            print("Stückzahl: ", self.stückzahl)
+        try:
+            #Schleife um Produktion von gegebener Stückzahl zu simulieren
+            for i in range(sollStückzahl):
+                time.sleep(produktionsZeit)
+                self.stückzahl += 1
 
-            #falls Kühlwasser leer wird, error message -> log und maschine stoppt aufgerufen
-            if self.kühlwasserstand < 20:
-                self.kühlwasserWarnung()
-                self.stopMachine()
-                break
-            
-            if i == sollStückzahl - 1:
-                print("Programm erfolgreich abgeschlossen")
-                self.stopMachine() 
+                programmStromverbrauch += stromverbrauchProStück
+
+                wasserVerbrauch = simDauer / 60 #Verbrauch pro Sekunde
+                self.kühlwasserstand = self.kühlwasserstand - wasserVerbrauch #Verbrauch von aktuellem Stand abziehen
+                print("Kühlwasserstand: ", self.kühlwasserstand)
+                print("Stückzahl: ", self.stückzahl)
+
+                #falls Kühlwasser leer wird, error message -> log und maschine stoppt aufgerufen
+                if self.kühlwasserstand < 20:
+                    self.kühlwasserWarnung()
+                    self.stopMachine()
+                    break
+                
+                #Prüfung ob Programm abgeschlossen ist
+                if i == sollStückzahl - 1:
+                    self.stromverbrauch, dummy = self.berechneStromverbauch(sollStückzahl, produktionsZeit) #Stromverbrauch erst berechnen wenn Programm abgeschlossen ist
+                    print("Programm erfolgreich abgeschlossen")
+                    print("\nStromverbrauch von Programm in kW: ", programmStromverbrauch)
+                    self.stopMachine() 
+        except Exception as e:
+            print("Fehler bei der Programmsimulation: ", str(e))
+
+
+    def berechneStromverbauch(self, sollStückzahl: int, produktionsZeit: int):
+        #je nachdem wie lange produktion von einem Stück braucht, desto höher der Verbrauch
+        if produktionsZeit == 3:
+            stromverbrauchProStück = 0.5 #0.5 kW pro Minute
+        elif produktionsZeit == 5:
+            stromverbrauchProStück = 0.7
+        elif produktionsZeit == 6:
+            stromverbrauchProStück = 0.8
+
+        stromverbrauchProStunde = stromverbrauchProStück * 3600 #umrechnung auf kW/h
         
-       
+        return stromverbrauchProStunde, stromverbrauchProStück
+
+
 if __name__ == "__main__":
     machineSimu = Simulator()
     machineSimu.startMachine()
     time.sleep(3)
     now = time.time()
-    machineSimu.programCircle(now, 5, "dreieck")
+    machineSimu.programSimulation(now, 5, "dreieck")
     print("Laufzeit der Maschine: ", machineSimu.getLaufzeit())
-    print(machineSimu.getLog())
+    print("Stromverbrauch in kW/h: ", machineSimu.getStromverbrauch())    
     
-    
-    #machineSimu.simulateSafetyDoorError()
+    #machineSimu.simulierSafetyDoorError()
     #time.sleep(20)
     #machineSimu.stopMachine()
     #print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
