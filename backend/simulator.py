@@ -133,13 +133,16 @@ class Simulator:
             productionTime = 6
 
         simLength = self.calculateSimLength(targetAmount, productionTime) #simLength von Pogramm für Berechnung von Verbrauchen
-        powerConsumptionApiece = self.calculatePowerConsumption(targetAmount, productionTime)
+        powerConsumptionApiece = self.calculatePowerConsumption(productionTime)
+        powerConsumptionProgram = 0
 
         try:
             #Schleife um Produktion von gegebener quantity zu simulieren
             for i in range(targetAmount):
                 time.sleep(productionTime) #Zeit für die Produktion
                 self.quantity += 1 
+
+                powerConsumptionProgram += powerConsumptionApiece #Berechnung Stromverbrauch von Programm
 
                 self.laserModuleWearDown(simLength, 30) #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
                 self.reduceCoolantConsumption(simLength, 60) #coolantConsumption, teiler flexibel(evtl variabel?)
@@ -156,13 +159,14 @@ class Simulator:
                 
                 #Prüfung ob Programm abgeschlossen ist
                 if i == targetAmount - 1:
-                    self.powerConsumption = self.calculatePowerConsumption(targetAmount, productionTime) #Stromverbrauch auf die Stunde erst berechnen wenn Programm abgeschlossen ist
+                    #self.powerConsumption = self.calculatePowerConsumption(productionTime) #Stromverbrauch Berechnung 
+                    self.powerConsumption = powerConsumptionProgram
                     print("Programm erfolgreich abgeschlossen")
                     self.stopMachine() 
         except Exception as e:
             print("Fehler bei der Programmsimulation: ", str(e))
 
-    def calculatePowerConsumption(self, targetAmount: int, productionTime: int):
+    def calculatePowerConsumption(self, productionTime: int):
         #je nachdem wie lange produktion von einem Stück braucht, desto höher der Verbrauch
         if productionTime == 3:
             powerConsumptionApiece = 0.5 #0.5 kW pro Minute
@@ -183,8 +187,8 @@ if __name__ == "__main__":
     now = time.time()
     machineSimu.programSimulation(now, 6, "dreieck")
     print("Laufzeit des Programmes: ", machineSimu.getRunTime())
-    print("Theoretischer Stromverbrauch bei 1 Stunde Laufzeit in kW/h: ", machineSimu.getPowerConsumption())    
-    
+    print("Power Consumption of Program in kW: ", machineSimu.getPowerConsumption())
+
     #machineSimu.simulateSafetyDoorError()
     #time.sleep(20)
     #machineSimu.stopMachine()
