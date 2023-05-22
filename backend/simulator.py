@@ -5,55 +5,57 @@ import sys
 
 class Simulator: 
     def __init__(self):
-        self.startzeit = datetime
-        self.stopzeit = datetime
-        self.laufzeit = datetime
-        self.stillstandzeit = 0
+        self.startTime = datetime
+        self.stopTime = datetime
+        self.runTime = datetime
+        self.standstillTime = datetime
 
-        self.kühlwasserstand = 100 #100%
-        self.stückzahl = 0
-        self.stromverbrauch = 0.0 #in kH/h?
-        self.laserLeistung = 100 #100%
-        self.luftdruck = 5 #bar
-        self.temperatur = 80 #Grad Celcius
+        self.coolantLevel = 100 #100%
+        self.quantity = 0
+        self.powerConsumption = 0.0 #in kH/h?
+        self.laserModulePower = 100 #100%
+        self.temperature = 0 #Grad Celcius
         
-        self.fehler = []
-        self.sicherheitswarnungen = []
-        self.status = True
+        self.errors = []
+        self.securityWarnings = []
+        self.status = False
         self.log = []
 
     def getStartzeit(self):
-        return self.startzeit
+        return self.startTime
     
-    def getStopzeit(self):
-        return self.stopzeit
+    def getStopTime(self):
+        return self.stopTime
     
-    def getStillstandszeit(self):
-        return self.stillstandzeit
+    def getStandstillTime(self):
+        return self.standstillTime
     
-    def getKühlwasserstand(self):
-        return self.kühlwasserstand
+    def getRunTime(self):
+        return self.runTime
     
-    def getStückzahl(self):
-        return self.stückzahl
+    def getTotalRunTime(self):
+        return self.totalRunTime
 
-    def getStromverbrauch(self):
-        return self.stromverbrauch
+    def getCoolantLevel(self):
+        return self.coolantLevel
+    
+    def getQuantity(self):
+        return self.quantity
 
-    def getLaserLeistung(self):
-        return self.laserLeistung
+    def getPowerConsumption(self):
+        return self.powerConsumption
 
-    def getLuftdruck(self):
-        return self.luftdruck
+    def getLaserModulePower(self):
+        return self.laserModulePower
 
-    def getTemperatur(self):
-        return self.temperatur
+    def getTemperature(self):
+        return self.temperature
 
     def getFehler(self):
-        return self.fehler
+        return self.errors
     
     def getSicherheitswarungen(self):
-        return self.sicherheitswarnungen
+        return self.securityWarnings
     
     def getStatus(self):
         return self.status
@@ -61,7 +63,7 @@ class Simulator:
     def getLog(self):
         return self.log
 
-    def simulierSafetyDoorError(self):
+    def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
         time.sleep(timeInterval)
         raise Exception("Safety door open!")
@@ -69,106 +71,109 @@ class Simulator:
     def exceptionHandler(self, exc_type, exc_value, traceback):
         if exc_type is not KeyboardInterrupt:
             try:
-                self.simulierSafetyDoorError()
+                self.simulateSafetyDoorError()
             except Exception as e:
                 print("Error occurred while simulating. Error:", e)
                 if self.status:
                     self.stopMachine()
-                    print("Machine runtime: " + str(self.getRuntime()) + " seconds.")
+                    print("Machine runTime: " + str(self.getRuntime()) + " seconds.")
 
     def startMachine(self):
         #sys.excepthook = self.exceptionHandler
         print("Starting the Machine...")
         self.status = True
-        self.startzeit = datetime.now()
+        self.startTime = datetime.now()
         #
         #
         print("Machine is running.")
     
     def stopMachine(self):
         print("Stopping the Machine...")
-        self.stopzeit = datetime.now()
+        self.stopTime = datetime.now()
         #
         #
         #
-        self.berechneLaufzeit()
+        self.calculateRunTime()
         self.status = False
         print("Machine stopped.")
 
-    def berechneLaufzeit(self):
-        self.laufzeit = self.stopzeit - self.startzeit
+    def calculateRunTime(self):
+        self.runTime = self.stopTime - self.startTime
 
-    def getLaufzeit(self):
-        return self.laufzeit
-
-    def berechneSimDauer(self, stückzahl: int, produktionsZeit: int) -> int:
-        simDauer = 0
-        for i in range(produktionsZeit):
-            simDauer += produktionsZeit
+    def calculateSimLength(self, quantity: int, productionTime: int) -> int:
+        simLength = 0
+        resetTimeLaser = 0.1 #Annahme Lasermodul braucht kurz um wieder zu resetten
+        for i in range(quantity):
+            simLength += productionTime + resetTimeLaser
         
-        simDauer = round(simDauer * 1.1)
-        return simDauer
+        simLength = round(simLength * 1.1) #*1.1 um Puffer einzubauen/einzurechnen
+        return simLength
     
-    def kühlwasserWarnung(self):
-        fehlermeldung = "Kühlwasser ist unter 20%. Bitte nachfüllen."
-        fehlerZeit = datetime.now()
-        self.log.append((fehlerZeit, fehlermeldung))
-        print(f"Fehlerzeit: {fehlerZeit}, Fehlermeldung: {fehlermeldung}")
+    def coolantWarning(self):
+        errorMessage = "Kühlwasser ist unter 20%. Bitte nachfüllen."
+        errorTime = datetime.now()
+        self.log.append((errorTime, errorMessage))
+        print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
 
-    def programSimulation(self, currentTime: datetime, sollStückzahl: int, produktionsstück: str):
-        produktionsZeit = 5 #benutzt um produktionszeit von einem Stück zu berechnen, unterschiedliche Produktionszeit für unterschiedliche Endprodukte
-        if produktionsstück == "dreieck":
-            produktionsZeit = 3
-        elif produktionsstück == "kreis":
-            produktionsZeit = 5
-        elif produktionsstück == "viereck":
-            produktionsZeit = 6
+    def laserModuleWearDown(self, simLength: float, divider: int):
+        laserWeardown = simLength / divider #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
+        self.laserModulePower -= laserWeardown #Verbrauch von aktuellem Stand abziehen
 
-        simDauer = self.berechneSimDauer(sollStückzahl, produktionsZeit) #simDauer für Berechnung von Verbrauchen
-        dummy, stromverbrauchProStück = self.berechneStromverbauch(sollStückzahl, produktionsZeit)
-        programmStromverbrauch = 0.0
+    def reduceCoolantConsumption(self, simLength: float, divider: int):
+        coolantConsumption = simLength / divider #coolantConsumption, teiler flexibel(evtl variabel?)
+        self.coolantLevel -= coolantConsumption #Verbrauch von aktuellem Stand abziehen
+
+    def programSimulation(self, currentTime: datetime, targetAmount: int, endProduct: str):
+        productionTime = 5 #benutzt um productionTime von einem Stück zu berechnen, unterschiedliche productionTime für unterschiedliche Endprodukte
+        if endProduct == "dreieck":
+            productionTime = 3
+        elif endProduct == "kreis":
+            productionTime = 5
+        elif endProduct == "viereck":
+            productionTime = 6
+
+        simLength = self.calculateSimLength(targetAmount, productionTime) #simLength von Pogramm für Berechnung von Verbrauchen
+        powerConsumptionApiece = self.calculatePowerConsumption(targetAmount, productionTime)
 
         try:
-            #Schleife um Produktion von gegebener Stückzahl zu simulieren
-            for i in range(sollStückzahl):
-                time.sleep(produktionsZeit)
-                self.stückzahl += 1
+            #Schleife um Produktion von gegebener quantity zu simulieren
+            for i in range(targetAmount):
+                time.sleep(productionTime) #Zeit für die Produktion
+                self.quantity += 1 
 
-                programmStromverbrauch += stromverbrauchProStück
+                self.laserModuleWearDown(simLength, 30) #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
+                self.reduceCoolantConsumption(simLength, 60) #coolantConsumption, teiler flexibel(evtl variabel?)
+                
+                print("LaserModulePower: ", round(self.laserModulePower, 2))
+                print("CoolantLevel: ", round(self.coolantLevel, 2))
+                print("Quantity: ", self.quantity)
 
-                wasserVerbrauch = simDauer / 60 #Verbrauch pro Sekunde
-                self.kühlwasserstand = self.kühlwasserstand - wasserVerbrauch #Verbrauch von aktuellem Stand abziehen
-                print("Kühlwasserstand: ", self.kühlwasserstand)
-                print("Stückzahl: ", self.stückzahl)
-
-                #falls Kühlwasser leer wird, error message -> log und maschine stoppt aufgerufen
-                if self.kühlwasserstand < 20:
-                    self.kühlwasserWarnung()
+                #falls Kühlwasser leer wird, errors message -> log und maschine stoppt aufgerufen
+                if self.coolantLevel < 20:
+                    self.coolantWarning()
                     self.stopMachine()
                     break
                 
                 #Prüfung ob Programm abgeschlossen ist
-                if i == sollStückzahl - 1:
-                    self.stromverbrauch, dummy = self.berechneStromverbauch(sollStückzahl, produktionsZeit) #Stromverbrauch erst berechnen wenn Programm abgeschlossen ist
+                if i == targetAmount - 1:
+                    self.powerConsumption = self.calculatePowerConsumption(targetAmount, productionTime) #Stromverbrauch auf die Stunde erst berechnen wenn Programm abgeschlossen ist
                     print("Programm erfolgreich abgeschlossen")
-                    print("\nStromverbrauch von Programm in kW: ", programmStromverbrauch)
                     self.stopMachine() 
         except Exception as e:
             print("Fehler bei der Programmsimulation: ", str(e))
 
-
-    def berechneStromverbauch(self, sollStückzahl: int, produktionsZeit: int):
+    def calculatePowerConsumption(self, targetAmount: int, productionTime: int):
         #je nachdem wie lange produktion von einem Stück braucht, desto höher der Verbrauch
-        if produktionsZeit == 3:
-            stromverbrauchProStück = 0.5 #0.5 kW pro Minute
-        elif produktionsZeit == 5:
-            stromverbrauchProStück = 0.7
-        elif produktionsZeit == 6:
-            stromverbrauchProStück = 0.8
+        if productionTime == 3:
+            powerConsumptionApiece = 0.5 #0.5 kW pro Minute
+        elif productionTime == 5:
+            powerConsumptionApiece = 0.7
+        elif productionTime == 6:
+            powerConsumptionApiece = 0.8
 
-        stromverbrauchProStunde = stromverbrauchProStück * 3600 #umrechnung auf kW/h
+        #powerConsumptionPerHour = powerConsumptionApiece * 3600 #umrechnung auf kW/h
         
-        return stromverbrauchProStunde, stromverbrauchProStück
+        return powerConsumptionApiece
 
 
 if __name__ == "__main__":
@@ -176,11 +181,11 @@ if __name__ == "__main__":
     machineSimu.startMachine()
     time.sleep(3)
     now = time.time()
-    machineSimu.programSimulation(now, 5, "dreieck")
-    print("Laufzeit der Maschine: ", machineSimu.getLaufzeit())
-    print("Stromverbrauch in kW/h: ", machineSimu.getStromverbrauch())    
+    machineSimu.programSimulation(now, 6, "dreieck")
+    print("Laufzeit des Programmes: ", machineSimu.getRunTime())
+    print("Theoretischer Stromverbrauch bei 1 Stunde Laufzeit in kW/h: ", machineSimu.getPowerConsumption())    
     
-    #machineSimu.simulierSafetyDoorError()
+    #machineSimu.simulateSafetyDoorError()
     #time.sleep(20)
     #machineSimu.stopMachine()
-    #print("Machine runtime: " + str(machineSimu.getRuntime()) + " seconds.")
+    #print("Machine runTime: " + str(machineSimu.getRuntime()) + " seconds.")
