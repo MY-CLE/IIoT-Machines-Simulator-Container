@@ -1,19 +1,22 @@
 from pyModbusTCP.client import ModbusClient
-from dotenv import load_dotenv
 
 import time
+import socket
 import random
 import logging
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.DEBUG, encoding='utf-8')
 
-load_dotenv()
+def getIPAddress():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
 class Modbus:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self):
-        self.client = ModbusClient(host='192.168.178.20', port=504, unit_id=3, auto_open=True, debug=False) # Master (Client) sends data to Slave (Server)
+        self.client = ModbusClient(host=getIPAddress(), port=504, unit_id=3, auto_open=True, debug=False) # Master (Client) sends data to Slave (Server)
         self.connEstablished = self.client.open()
         if self.connEstablished:
             logging.info(f'Connection established: {self.connEstablished}')

@@ -1,14 +1,20 @@
 from pyModbusTCP.server import ModbusServer
-import logging
+
 import time
+import socket
+import logging
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.DEBUG, encoding='utf-8')
 
+def getIPAddress():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
 class ModbusTCPServer:
 
     def __init__(self):
-        self.mbS = ModbusServer(host='192.168.178.20', port=504, no_block=True) # Initialize Modbus Server with IP and Port
+        self.mbS = ModbusServer(host=getIPAddress(), port=504, no_block=True) # Initialize Modbus Server with IP and Port
         self.mbS.data_bank.set_holding_registers(address=0, word_list=[], srv_info=None) # Set Holding Register can be changed by the client
         """ self.mbS.data_bank.set_coils(address=0, bit_list=[], srv_info=None) # Set Coils can be changed by the client """
 
