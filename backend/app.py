@@ -4,8 +4,11 @@
 from datetime import datetime
 from flask import Flask, jsonify, request
 import sqlite3
+from simulator import Simulator
 
 app = Flask(__name__)
+
+simulator = Simulator()
 
 #/time to test the API
 
@@ -45,11 +48,12 @@ def simulationsId(simulation_id):
     
     
 #Machines
-
+#####!!!!!here!!!!!
 @app.route('/api/simulations/<int:simulations_id>/machine', methods=['GET', 'PATCH'])
-def machines(simulation_id):
+def machines(simulations_id):
     if request.method == 'GET':
-        return #current state of the machine
+        simulator.updateSimulation(datetime.now())
+        return simulator.__json__()
     elif request.method == 'PATCH':
         return #change parameter(s) in the machine state
 

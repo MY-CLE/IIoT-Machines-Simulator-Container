@@ -5,16 +5,15 @@ import sys
 
 class Simulator: 
     def __init__(self):
-        self.startTime = datetime
-        self.stopTime = datetime
-        self.runTime = datetime
-        self.standstillTime = datetime
+        self.startTime = datetime.now()
+        self.stopTime = None
+        self.runTime: int = 0
+        self.standstillTime: int = 0
 
         self.coolantLevel = 100 #100%
         self.quantity = 0
         self.powerConsumption = 0.0 #in kH/h?
         self.laserModulePower = 100 #100%
-        self.temperature = 0 #Grad Celcius
         
         self.errors = []
         self.securityWarnings = []
@@ -48,9 +47,6 @@ class Simulator:
     def getLaserModulePower(self):
         return self.laserModulePower
 
-    def getTemperature(self):
-        return self.temperature
-
     def getFehler(self):
         return self.errors
     
@@ -62,6 +58,10 @@ class Simulator:
     
     def getLog(self):
         return self.log
+    
+    def updateSimulation(self, time):
+        simLength: float = (time - self.startTime).total_seconds()
+        self.reduceCoolantConsumption(simLength)
 
     def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
@@ -121,12 +121,12 @@ class Simulator:
         self.log.append((errorTime, errorMessage))
         print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
 
-    def laserModuleWearDown(self, simLength: float, divider: int):
-        laserWeardown = simLength / divider #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
+    def laserModuleWearDown(self, simLength: float):
+        laserWeardown = simLength / 40 #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
         self.laserModulePower -= laserWeardown #Verbrauch von aktuellem Stand abziehen
 
-    def reduceCoolantConsumption(self, simLength: float, divider: int):
-        coolantConsumption = simLength / divider #coolantConsumption, teiler flexibel(evtl variabel?)
+    def reduceCoolantConsumption(self, simLength: float):
+        coolantConsumption = simLength / 30  #coolantConsumption, teiler flexibel(evtl variabel?)
         self.coolantLevel -= coolantConsumption #Verbrauch von aktuellem Stand abziehen
 
     def programSimulation(self, currentTime: datetime, targetAmount: int, endProduct: str):
@@ -190,6 +190,20 @@ class Simulator:
         #powerConsumptionPerHour = powerConsumptionApiece * 3600 #umrechnung auf kW/h
         
         return powerConsumptionApiece
+    
+    def __json__(self):
+        return {
+            "startTime": self.startTime.isoformat(),
+            "runTime": self.runTime,
+            "standstillTime": self.standstillTime,
+            "coolantLevel": self.coolantLevel,
+            "quantity": self.quantity,
+            "powerConsumption": self.powerConsumption,
+            "laserModulePower": self.laserModulePower,
+            "errors": self.errors,
+            "status": self.status,
+            "log": self.log
+        }
 
 
 if __name__ == "__main__":
