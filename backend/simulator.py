@@ -115,6 +115,12 @@ class Simulator:
         self.log.append((errorTime, errorMessage))
         print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
 
+    def laserModuleWarning(self):
+        errorMessage = "Laser Modul abgenutzt. Bitte wechseln."
+        errorTime = datetime.now()
+        self.log.append((errorTime, errorMessage))
+        print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
+
     def laserModuleWearDown(self, simLength: float, divider: int):
         laserWeardown = simLength / divider #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
         self.laserModulePower -= laserWeardown #Verbrauch von aktuellem Stand abziehen
@@ -157,6 +163,12 @@ class Simulator:
                     self.stopMachine()
                     break
                 
+                #falls Laser Modul zu abgenutzt ist, errors message -> log und maschine stoppt aufgerufen
+                if self.laserModulePower < 20:
+                    self.laserModuleWarning()
+                    self.stopMachine()
+                    break
+
                 #Prüfung ob Programm abgeschlossen ist
                 if i == targetAmount - 1:
                     #self.powerConsumption = self.calculatePowerConsumption(productionTime) #Stromverbrauch Berechnung 
