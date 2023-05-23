@@ -24,12 +24,11 @@ class OPCUAClient:
     def getParam(self):
         for i in range(len(self.data_variables)):
             self.param = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{self.data_variables[i]}"])
-            logging.info(self.param.get_browse_name().Name + ": " + str(self.param.get_value()))
+            logging.info(str(self.param.nodeid) + " - " + self.param.get_browse_name().Name + ": " + str(self.param.get_value()))
 
     def changeParam(self, param, value):
-        print(str(self.node) + " " + str(self.node.get_browse_name().Name))
-        self.newParam = self.client.get_node(f"ns={self.nameIndex};s={param}").set_value(value)
-        self.names = self.client.get
+        self.newParam = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{param}"])
+        self.newParam.set_value(value)
 
 
 if __name__ == "__main__":
@@ -38,6 +37,10 @@ if __name__ == "__main__":
     try:
         while True:
             ouaClient.changeParam("Runtime", random.randint(0, 100))
+            ouaClient.changeParam("Coolant_Level", random.randint(0, 100))
+            ouaClient.changeParam("Power_Consumption", random.randint(0, 100))
+            ouaClient.changeParam("Power_Laser", random.randint(0, 100))
+            ouaClient.changeParam("Idle_Time", random.randint(0, 100))
             ouaClient.getParam()
             time.sleep(5)
     finally:
