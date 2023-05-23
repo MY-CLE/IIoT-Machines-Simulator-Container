@@ -17,7 +17,7 @@ class Simulator:
         
         self.errors = []
         self.securityWarnings = []
-        self.status = False
+        self.state = False
         self.log = []
 
     def getStartzeit(self):
@@ -54,14 +54,18 @@ class Simulator:
         return self.securityWarnings
     
     def getStatus(self):
-        return self.status
+        return self.state
     
     def getLog(self):
         return self.log
     
     def updateSimulation(self, time):
         simLength: float = (time - self.startTime).total_seconds()
+        self.state = True
+        self.runTime = simLength
         self.reduceCoolantConsumption(simLength)
+        self.laserModuleWearDown(simLength)
+        self.calculatePowerConsumption(simLength)
 
     def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
@@ -74,14 +78,14 @@ class Simulator:
                 self.simulateSafetyDoorError()
             except Exception as e:
                 print("Error occurred while simulating. Error:", e)
-                if self.status:
+                if self.state:
                     self.stopMachine()
                     print("Machine runTime: " + str(self.getRuntime()) + " seconds.")
 
     def startMachine(self):
         #sys.excepthook = self.exceptionHandler
         print("Starting the Machine...")
-        self.status = True
+        self.state = True
         self.startTime = datetime.now()
         #
         #
@@ -94,7 +98,7 @@ class Simulator:
         #
         #
         self.calculateRunTime()
-        self.status = False
+        self.state = False
         print("Machine stopped.")
 
     def calculateRunTime(self):
@@ -124,10 +128,14 @@ class Simulator:
     def laserModuleWearDown(self, simLength: float):
         laserWeardown = simLength / 40 #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
         self.laserModulePower -= laserWeardown #Verbrauch von aktuellem Stand abziehen
+        if self.laserModulePower < 20:
+            self.laserModuleWarning()
 
     def reduceCoolantConsumption(self, simLength: float):
         coolantConsumption = simLength / 30  #coolantConsumption, teiler flexibel(evtl variabel?)
         self.coolantLevel -= coolantConsumption #Verbrauch von aktuellem Stand abziehen
+        if self.coolantLevel < 20:
+            self.coolantWarning()
 
     def programSimulation(self, currentTime: datetime, targetAmount: int, endProduct: str):
         productionTime = 5 #benutzt um productionTime von einem Stück zu berechnen, unterschiedliche productionTime für unterschiedliche Endprodukte
@@ -178,30 +186,23 @@ class Simulator:
         except Exception as e:
             print("Fehler bei der Programmsimulation: ", str(e))
 
-    def calculatePowerConsumption(self, productionTime: int):
-        #je nachdem wie lange produktion von einem Stück braucht, desto höher der Verbrauch
-        if productionTime == 3:
-            powerConsumptionApiece = 0.5 #0.5 kW pro Minute
-        elif productionTime == 5:
-            powerConsumptionApiece = 0.7
-        elif productionTime == 6:
-            powerConsumptionApiece = 0.8
-
-        #powerConsumptionPerHour = powerConsumptionApiece * 3600 #umrechnung auf kW/h
-        
-        return powerConsumptionApiece
+    def calculatePowerConsumption(self, simLength: float):
+        powerConsumption = simLength / 10
+        self.powerConsumption += powerConsumption
+        if self.powerConsumption > 70000:
+            print("Warning! High Level of use. Strongly advice to take a break")
     
     def __json__(self):
         return {
             "startTime": self.startTime.isoformat(),
-            "runTime": self.runTime,
-            "standstillTime": self.standstillTime,
-            "coolantLevel": self.coolantLevel,
+            "runTime": round(self.runTime, 2),
+            "standstillTime": round(self.standstillTime, 2),
+            "coolantLevel": round(self.coolantLevel, 2),
             "quantity": self.quantity,
-            "powerConsumption": self.powerConsumption,
-            "laserModulePower": self.laserModulePower,
+            "powerConsumption": round(self.powerConsumption, 2),
+            "laserModulePower": round(self.laserModulePower, 2),
             "errors": self.errors,
-            "status": self.status,
+            "state": self.state,
             "log": self.log
         }
 
@@ -214,6 +215,7 @@ if __name__ == "__main__":
     machineSimu.programSimulation(now, 6, "dreieck")
     print("Laufzeit des Programmes: ", machineSimu.getRunTime())
     print("Power Consumption of Program in kW: ", machineSimu.getPowerConsumption())
+
 
     #machineSimu.simulateSafetyDoorError()
     #time.sleep(20)
