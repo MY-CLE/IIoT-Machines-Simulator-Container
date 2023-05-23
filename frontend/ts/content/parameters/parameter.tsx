@@ -6,7 +6,7 @@ interface ParameterProps {
   value?: number;
   width?: string;
 }
-function Parameter(props: ParameterProps) {
+function ParameterComponent(props: ParameterProps) {
   return (
     <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl m-2">
       <div className="justify-center items-center flex flex-grow w-1/4 flex-wrap mr-20 font-medium">
@@ -22,4 +22,4 @@ function Parameter(props: ParameterProps) {
   );
 }
 
-export default Parameter;
+export default ParameterComponent;

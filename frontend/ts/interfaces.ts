@@ -7,17 +7,23 @@ export interface Simulation {
 }
 
 export interface Machine {
-  parameter: [Parameter];
+  parameters: Array<Parameter>;
 }
 
 export interface Program {
+  id: number | null;
   description?: string;
-  parameter: [Parameter];
+  parameters: Array<Parameter> | null;
 }
 
 export interface Error {
   id: number;
   name: string;
+}
+
+export interface Errors {
+  errors: Array<Error>;
+  warnings: Array<Error>;
 }
 
 export interface Parameter {
