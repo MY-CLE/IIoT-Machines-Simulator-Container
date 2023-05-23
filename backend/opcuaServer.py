@@ -1,26 +1,36 @@
 from opcua import Server
 import logging
+import socket
 import time
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
+
+def getIPAddress():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    return s.getsockname()[0]
 
 class OPCUAServer:
     
         def __init__(self):
             self.server = Server()
-            self.server.set_endpoint("opc.tcp://127.0.0.1:4840")
-            #self.server.set_server_name("OPCUA Server")
-            self.server.register_namespace("OPCUA Server")
-            self.objects = self.server.get_objects_node()
-            self.param = self.objects.add_object(self.server.get_namespace_index("OPCUA Server"), "Parameters")
+            self.server.set_endpoint(f"opc.tcp://{getIPAddress()}:4840")
+            self.server.set_server_name("Machinesimulator OPC-UA Server")
+            self.regName = self.server.register_namespace("MOUSP") # namespace Machinesimulator OPC-UA Server Parameter
 
-        def addParam(self, name, value):
-            self.param.add_variable(self.server.get_namespace_index("OPCUA Server"), name, value).set_writable()
+            self.param = self.server.get_objects_node().add_object(self.regName, "Parameters")
+
+        def setParameter(self):
+            self.param.add_variable(self.regName, "Runtime", 0).set_writable()
+            self.param.add_variable(self.regName, "Coolant_Level", 0).set_writable()
+            self.param.add_variable(self.regName, "Power_Consumption", 0).set_writable()
+            self.param.add_variable(self.regName, "Power_Laser", 0).set_writable()
+            self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
             
 
 if __name__ == "__main__":
     ouaServer = OPCUAServer()
-    ouaServer.addParam("Runtime", 0)
+    ouaServer.setParameter()
     ouaServer.server.start()
     logging.info("Server started")
     try:
