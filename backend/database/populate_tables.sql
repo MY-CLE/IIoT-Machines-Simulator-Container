@@ -24,6 +24,9 @@ INSERT INTO program_state (program_id, program_target_amount, program_current_am
 VALUES (1, 50, 25, 5),
        (2, 100, 75, 6),
        (3, 200, 150, 7);
+VALUES (1, 50, 25, '04:30:00'),
+       (2, 100, 75, '06:15:00'),
+       (3, 200, 150, '09:45:00');
 
 -- Populating warning table
 INSERT INTO warning (warning_type)
