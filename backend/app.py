@@ -267,11 +267,12 @@ def currentProgram(simulations_id):
         return #set this program to be the current one
     elif request.method == 'PATCH':
         return jsonify({
-    "parameters": [
+        "parameters": [
         {
             "id": "2",
             "description": "target_amount",
             "value": "100"
         }
     ]
-}) #change parameter(s) in the current program state
+    }) #change parameter(s) in the current program state
+
