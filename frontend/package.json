@@ -24,7 +24,7 @@
     "backend-start": "cd ../backend && venv/bin/flask run --no-debugger",
     "start:mock": "cross-env REACT_APP_SERVER_URL=https://1e5e6f35-1e8a-4c16-ad8d-916d7af4b6a9.mock.pstmn.io react-scripts start && tsc -w",
     "start:local": "cross-env REACT_APP_SERVER_URL=http://127.0.0.1:5000/api react-scripts start && tsc -w",
-    "build": "tsc && react-scripts build ",
+    "build": "tsc && cross-env REACT_APP_SERVER_URL=/api react-scripts build ",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

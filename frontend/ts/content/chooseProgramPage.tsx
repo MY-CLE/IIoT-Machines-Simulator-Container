@@ -5,32 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getPrograms } from "../api-service";
 import { Program } from "../interfaces";
 
-const programsdefault = [
-  {
-    description: "Kreis",
-    id: "1",
-  },
-  {
-    description: "Rechteck",
-    id: "2",
-  },
-  {
-    description: "Dreieck",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-];
 function ChooseProgramPage(props: {
   state: {
     simulation_id: number;
@@ -68,7 +42,7 @@ function ChooseProgramPage(props: {
   }, []);
 
   function navigateToMachineStatePage() {
-    navigation("/machineStatePage");
+    navigation("/machine");
   }
 
   function navigateToProgramStatePage(id: number) {
@@ -121,7 +95,7 @@ export default ChooseProgramPage;
 function ProgramCard(props: any) {
   return (
     <button
-      className="flex items-center justify-center w-1/4 m-6  bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
+      className="flex items-center justify-center w-1/4 m-6 bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
       onClick={() => props.func(props.key)}
     >
       <span className="text-4xl ">{props.name}</span>

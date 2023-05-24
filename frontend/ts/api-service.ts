@@ -1,8 +1,7 @@
 import { Errors, Machine, Program, Simulation } from "./interfaces";
+import React from "react";
 
 const url = `${process.env.REACT_APP_SERVER_URL}`;
-// ? `${process.env.REACT_APP_SERVER_URL}`
-// : "";
 export async function getSimultions(): Promise<{ simulations: [Simulation] }> {
   console.log(`GET Request auf ${url}/simulations`);
 

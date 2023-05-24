@@ -82,10 +82,7 @@ function MachineStatePage(props: {
   }, []);
 
   function getStatusbarValues(machineState: Machine): StatusBarValues {
-    let runtime = 0;
-    machineState.parameters.forEach((parameter) => {
-      if (parameter.id === 0) runtime = parameter.value;
-    });
+    let runtime = machineState.parameters[0].value;
     let errors = 0,
       warnings = 0;
     if (machineState.error_state) {

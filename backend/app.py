@@ -7,8 +7,6 @@ import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
 
-from flask_cors import CORS
-
 app = Flask(__name__)
 CORS(app) #For local testing
 
@@ -62,7 +60,7 @@ def simulations():
 
 
 @app.route('/api/simulations/<int:simulations_id>', methods=['GET', 'DELETE'])
-def simulationsId(simulation_id):
+def simulationsId(simulations_id):
     if request.method == 'GET':
         return jsonify({
   "id": "0",
@@ -158,13 +156,13 @@ def machines(simulations_id):
         return #change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
-def auth(simulation_id):
+def auth(simulations_id):
     response = make_response("<h1>Success</h1>")
     response.status_code = 200
     return response#pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
-def error(simulation_id):
+def error(simulations_id):
     if request.method == 'GET':
         return jsonify({
     "errors": [

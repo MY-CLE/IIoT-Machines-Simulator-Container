@@ -5,6 +5,7 @@ import ParameterComponent from "./parameters/parameter";
 import IconArrowBack from "../icons/iconBackArrow";
 import { Program, StatusBarValues } from "../interfaces";
 import { getProgram } from "../api-service";
+import { useNavigate } from "react-router-dom";
 
 function ProgramStatePage(props: {
   state: {
@@ -18,6 +19,7 @@ function ProgramStatePage(props: {
     }>
   >;
 }) {
+  const navigation = useNavigate();
   const [program, setProgram] = useState<Program>({
     description: "",
     parameters: [{ id: 0, description: "", value: 0 }],
@@ -55,11 +57,20 @@ function ProgramStatePage(props: {
         </div>
       </div>
       <div>
-        <SelectionBar program={() => {}} machine={() => {}} />
+        <SelectionBar
+          program={() => {}}
+          machine={() => {
+            navigation("/machine");
+          }}
+        />
       </div>
       <div className="flex flex-col w-full h-full p-4 text-2xl bg-white border border-t-0 border-black border-1">
         <div className="flex flex-row items-center w-full h-auto mb-4 ">
-          <button>
+          <button
+            onClick={() => {
+              navigation("/programs");
+            }}
+          >
             <IconArrowBack width={50}></IconArrowBack>
           </button>
           <span className="text-4xl text-left">
