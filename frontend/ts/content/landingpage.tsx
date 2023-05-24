@@ -45,6 +45,8 @@ function LandingPage(props: {
   async function createSimulation() {
     console.log("create simulation");
     let simulation_id = await postSimulation();
+    console.log(simulation_id);
+
     if (simulation_id.simulation_id) {
       props.setState({
         simulation_id: simulation_id.simulation_id,

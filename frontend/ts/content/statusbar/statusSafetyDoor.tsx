@@ -1,12 +1,14 @@
 import React from "react";
 import IconDoor from "../../icons/iconDoor";
 
-export function StatusSafetyDoor() {
+export function StatusSafetyDoor(props: { value: boolean }) {
   return (
     <>
-      <div className="flex-grow w-auto justify-center h-32 border flex flex-col flex-wrap items-center border-black border-1 border-l-0">
-        <div className="mb-3"><IconDoor/></div>
-        <div>value</div>
+      <div className="flex flex-col flex-wrap items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
+        <div className="mb-3">
+          <IconDoor />
+        </div>
+        <div>{props.value}</div>
       </div>
     </>
   );

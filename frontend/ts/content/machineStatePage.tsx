@@ -6,7 +6,7 @@ import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
 import { useLocation, useNavigate } from "react-router-dom";
 import { authenticate, getErrors, getMachine } from "../api-service";
-import { Errors, Machine } from "../interfaces";
+import { Errors, Machine, Parameter, StatusBarValues } from "../interfaces";
 import Modal from "react-modal";
 
 const customStyles = {
@@ -23,12 +23,10 @@ const customStyles = {
 };
 Modal.setAppElement("#root");
 
-const paramterDefault: Machine = {
-  parameters: [
-    { id: 0, description: "Kühlwassertemperatur", value: 0 },
-    { id: 1, description: "Kühlwasserstand", value: 0 },
-  ],
-};
+const paramterDefault: Array<Parameter> = [
+  { id: 0, description: "", value: 0 },
+  { id: 1, description: "", value: 0 },
+];
 function MachineStatePage(props: {
   state: {
     simulation_id: number;
@@ -42,12 +40,22 @@ function MachineStatePage(props: {
   >;
 }) {
   const location = useLocation(); // mit location.state.simulation_id erhält man die Simulation ID
-  const [parameters, setParameters] = useState<Machine>(paramterDefault); // Array mit Parametern
+  const [parameters, setParameters] =
+    useState<Array<Parameter>>(paramterDefault); // Array mit Parametern
   const [errors, setErrors] = useState<Errors>({
     errors: [{ id: 0, name: "" }],
     warnings: [{ id: 0, name: "" }],
   });
+  const [statuesBarValues, setStatusesBarValues] = useState<StatusBarValues>({
+    runtime: 0,
+    utilization: 0,
+    error: 0,
+    warning: 0,
+    safety_door: false,
+    lock: false,
+  }); // Werte für die Statusbar
   const [modalIsOpen, setModalIsOpen] = useState(false);
+
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -60,15 +68,39 @@ function MachineStatePage(props: {
       }
     })();
     const id = setInterval(async () => {
-      let newParameters = await getMachine(
+      let machineState = await getMachine(
         props.state.simulation_id ? props.state.simulation_id : 0
       );
-      console.log(newParameters);
+      console.log(machineState);
 
-      setParameters(newParameters);
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusesBarValues(values);
+
+      setParameters(machineState.parameters);
     }, 1000);
     return () => clearInterval(id);
   }, []);
+
+  function getStatusbarValues(machineState: Machine): StatusBarValues {
+    let runtime = 0;
+    machineState.parameters.forEach((parameter) => {
+      if (parameter.id === 0) runtime = parameter.value;
+    });
+    let errors = 0,
+      warnings = 0;
+    if (machineState.error_state) {
+      errors = machineState.error_state.errors.length;
+      warnings = machineState.error_state.warnings.length;
+    }
+    return {
+      runtime: runtime,
+      utilization: 5,
+      warning: warnings,
+      error: errors,
+      safety_door: false,
+      lock: false,
+    };
+  }
 
   async function openModal() {
     console.log("open modal");
@@ -108,19 +140,26 @@ function MachineStatePage(props: {
 
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
-      <div className="max-w-full flex flex-row items-center justify-start h-32 bg-gray-300">
+      <div className="flex flex-row items-center justify-start h-32 max-w-full bg-gray-300">
         <div className="w-full text-2xl">
-          <StatusBar />
+          <StatusBar
+            runtime={statuesBarValues.runtime}
+            utilization={statuesBarValues.utilization}
+            error={statuesBarValues.error}
+            warning={statuesBarValues.warning}
+            safety_door={statuesBarValues.safety_door}
+            lock={statuesBarValues.lock}
+          />
         </div>
       </div>
       <div>
         <SelectionBar program={navigateToProgram} machine={null} />
       </div>
-      <div className="flex flex-col justify-start h-full w-full text-2xl border border-black border-1 border-t-0 bg-gray-200 p-2">
+      <div className="flex flex-col justify-start w-full h-full p-2 text-2xl bg-gray-200 border border-t-0 border-black border-1">
         <div className="w-full h-auto text-4xl text-left">Maschinenzustand</div>
-        <div className="flex flex-row w-full h-full flex-grow">
-          <div className="text-center w-2/5 flex flex-col flex-grow h-full justify-center items-center p-2">
-            {parameters.parameters.map((item, index) => {
+        <div className="flex flex-row flex-grow w-full h-full">
+          <div className="flex flex-col items-center justify-center flex-grow w-2/5 h-full p-2 text-center">
+            {parameters.map((item, index) => {
               return (
                 <ParameterComponent
                   key={item.id}
@@ -130,15 +169,15 @@ function MachineStatePage(props: {
               );
             })}
           </div>
-          <div className=" w-2/5 flex flex-col justify-evenly text-center text-2xl p-2">
-            <div className="w-full text-2xl flex flex-grow mb-5">
+          <div className="flex flex-col w-2/5 p-2 text-2xl text-center justify-evenly">
+            <div className="flex flex-grow w-full mb-5 text-2xl">
               <SendError
                 name={"Error"}
                 messages={errors.errors}
                 color={"bg-red-500"}
               />
             </div>
-            <div className="w-full text-2xl flex flex-grow mt-5">
+            <div className="flex flex-grow w-full mt-5 text-2xl">
               <SendError
                 name={"Warning"}
                 messages={errors.warnings}
@@ -146,9 +185,9 @@ function MachineStatePage(props: {
               />
             </div>
           </div>
-          <div className="w-1/5 flex flex-grow p-2">
-            <div className="ml-10 mr-10 h-full w-full flex justify-center items-center">
-              <div className="bg-white w-full h-3/4 border border-black rounded-lg flex flex-col justify-between items-center align-middle">
+          <div className="flex flex-grow w-1/5 p-2">
+            <div className="flex items-center justify-center w-full h-full ml-10 mr-10">
+              <div className="flex flex-col items-center justify-between w-full align-middle bg-white border border-black rounded-lg h-3/4">
                 <div className="mt-5">
                   <IconQuitLock />
                 </div>
@@ -172,12 +211,12 @@ function MachineStatePage(props: {
                     placeholder=""
                     id="inputPassword"
                     type="password"
-                    className=" border border-black rounded-lg w-full text-center"
+                    className="w-full text-center border border-black rounded-lg "
                   />
                   <button
                     type="submit"
                     onClick={sendQuittieren}
-                    className=" border border-black rounded-lg w-full mt-5 "
+                    className="w-full mt-5 border border-black rounded-lg "
                   >
                     send
                   </button>

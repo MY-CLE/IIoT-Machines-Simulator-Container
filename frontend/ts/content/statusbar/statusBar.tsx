@@ -9,21 +9,28 @@ import StatusSafetyDoor from "./statusSafetyDoor";
 import StatusDate from "./statusDate";
 import StatusLock from "./statusLock";
 
-export function StatusBar() {
+export function StatusBar(props: {
+  runtime: number;
+  utilization: number;
+  error: number;
+  warning: number;
+  safety_door: boolean;
+  lock: boolean;
+}) {
+  let date = new Date();
   return (
     <header>
-      <div className="flex flex-row items-center justify-start flex-nowrap w-full">
-      <StatusStatus />
-      <StatusPower />
-      <StatusTime />
-      <StatusUtil />
-      <StatusWarning />
-      <StatusError />
-      <StatusSafetyDoor />
-      <StatusDate />
-      <StatusLock />
+      <div className="flex flex-row items-center justify-start w-full flex-nowrap">
+        <StatusStatus />
+        <StatusPower />
+        <StatusTime value={props.runtime} />
+        <StatusUtil value={props.utilization} />
+        <StatusWarning value={props.warning} />
+        <StatusError value={props.error} />
+        <StatusSafetyDoor value={props.safety_door} />
+        <StatusDate value={date} />
+        <StatusLock value={props.lock} />
       </div>
-      
     </header>
   );
 }

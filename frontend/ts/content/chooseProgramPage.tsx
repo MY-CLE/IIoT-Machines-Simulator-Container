@@ -47,6 +47,14 @@ function ChooseProgramPage(props: {
   const [programs, setPrograms] = useState<Array<Program>>([
     { description: "", parameters: null, id: null },
   ]);
+  const [statusBarValues, setStatusBarValues] = useState({
+    runtime: 0,
+    utilization: 0,
+    error: 0,
+    warning: 0,
+    safety_door: false,
+    lock: false,
+  });
 
   useEffect(() => {
     (async () => {
@@ -73,19 +81,26 @@ function ChooseProgramPage(props: {
 
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
-      <div className="max-w-full flex flex-row items-center justify-start h-32 bg-gray-300">
+      <div className="flex flex-row items-center justify-start h-32 max-w-full bg-gray-300">
         <div className="w-full text-2xl">
-          <StatusBar />
+          <StatusBar
+            runtime={statusBarValues.runtime}
+            utilization={statusBarValues.utilization}
+            error={statusBarValues.error}
+            warning={statusBarValues.warning}
+            safety_door={statusBarValues.safety_door}
+            lock={statusBarValues.lock}
+          />
         </div>
       </div>
       <div>
         <SelectionBar program={() => {}} machine={navigateToMachineStatePage} />
       </div>
-      <div className="flex flex-col justify-start h-full w-full text-2xl border border-black border-1 border-t-0 bg-program-choose-grey">
-        <div className=" w-full h-auto text-center text-5xl p-4 text-white">
+      <div className="flex flex-col justify-start w-full h-full text-2xl border border-t-0 border-black border-1 bg-program-choose-grey">
+        <div className="w-full h-auto p-4 text-5xl text-center text-white ">
           Programauswahl
         </div>
-        <div className="w-full flex flex-row h-full flex-wrap justify-between">
+        <div className="flex flex-row flex-wrap justify-between w-full h-full">
           {programs.map((item: any) => {
             return (
               <ProgramCard
@@ -106,10 +121,10 @@ export default ChooseProgramPage;
 function ProgramCard(props: any) {
   return (
     <button
-      className=" bg-slate-100 rounded-2xl w-1/4 h-1/3 flex justify-center items-center  m-6 drop-shadow-sm"
+      className="flex items-center justify-center w-1/4 m-6  bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
       onClick={() => props.func(props.key)}
     >
-      <span className=" text-4xl">{props.name}</span>
+      <span className="text-4xl ">{props.name}</span>
     </button>
   );
 }

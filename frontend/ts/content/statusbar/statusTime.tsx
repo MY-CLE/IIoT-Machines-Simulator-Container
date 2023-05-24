@@ -1,11 +1,11 @@
 import React from "react";
 
-export function StatusTime() {
+export function StatusTime(props: { value: number }) {
   return (
     <>
-      <div className="flex-grow w-auto justify-center h-32 border flex flex-col items-center border-black border-1 border-l-0 flex-wrap">
+      <div className="flex flex-col flex-wrap items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
         <div className="mt-3 mb-4">Laufzeit</div>
-        <div>value</div>
+        <div>{props.value}</div>
       </div>
     </>
   );

@@ -1,11 +1,12 @@
 import React from "react";
+import IconDoor from "../../icons/iconDoor";
 import IconLock from "../../icons/iconLock";
 
-export function StatusLock() {
+export function StatusLock(props: { value: boolean }) {
   return (
     <>
-      <div className="flex-grow w-auto justify-center h-32 border flex items-center border-black border-1 border-l-0">
-        <div><IconLock/></div>
+      <div className="flex items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
+        <div>{props.value ? <IconDoor /> : <IconLock />}</div>
       </div>
     </>
   );

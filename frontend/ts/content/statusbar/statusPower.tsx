@@ -4,8 +4,10 @@ import IconPower from "../../icons/iconPower";
 export function StatusPower() {
   return (
     <>
-      <div className="flex-grow w-auto justify-center h-32 border flex items-center border-black border-1 border-l-0">
-        <div><IconPower/></div>
+      <div className="flex items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
+        <div>
+          <IconPower />
+        </div>
       </div>
     </>
   );

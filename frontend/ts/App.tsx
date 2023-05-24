@@ -13,7 +13,7 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <LandingPage setState={setState} state={state} />,
+      element: <LandingPage state={state} setState={setState} />,
     },
     {
       path: "/machine",

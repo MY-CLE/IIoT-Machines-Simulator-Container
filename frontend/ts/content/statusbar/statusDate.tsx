@@ -1,11 +1,10 @@
 import React from "react";
 
-export function StatusDate() {
+export function StatusDate(props: { value: Date }) {
   return (
     <>
-      <div className="flex-grow w-auto justify-center h-32 border flex items-center border-black border-1 border-l-0">
-        <div className="px-5">yyyy-mm-dd</div>
-        <div className="px-5">HH:MM:SS</div>
+      <div className="flex items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
+        <div className="px-5">{props.value.toISOString()}</div>
       </div>
     </>
   );
