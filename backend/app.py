@@ -7,6 +7,8 @@ import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
 
+from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app) #For local testing
 
@@ -202,7 +204,7 @@ def error(simulation_id):
 #Programs
 
 @app.route('/api/simulations/<int:simulations_id>/machine/programs')
-def program(simulations_id):
+def programs(simulations_id):
     return jsonify({
     "programs": [
         {

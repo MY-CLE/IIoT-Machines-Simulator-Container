@@ -8,7 +8,7 @@ function IconPower(props: React.SVGProps<SVGSVGElement>) {
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth={2}
+      strokeWidth={3}
       viewBox="0 0 24 24"
       height="1em"
       width="1em"
