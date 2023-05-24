@@ -7,12 +7,14 @@ export interface Simulation {
 }
 
 export interface Machine {
-  parameter: [Parameter];
+  parameters: Array<Parameter>;
+  error_state: Errors;
 }
 
 export interface Program {
+  id: number | null;
   description?: string;
-  parameter: [Parameter];
+  parameters: Array<Parameter> | null;
 }
 
 export interface Error {
@@ -20,8 +22,22 @@ export interface Error {
   name: string;
 }
 
+export interface Errors {
+  errors: Array<Error>;
+  warnings: Array<Error>;
+}
+
 export interface Parameter {
   id: number;
   description: string;
   value: number;
+}
+
+export interface StatusBarValues {
+  runtime: number;
+  utilization: number;
+  error: number;
+  warning: number;
+  safety_door: boolean;
+  lock: boolean;
 }

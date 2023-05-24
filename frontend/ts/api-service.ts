@@ -1,16 +1,17 @@
-import { Machine, Program, Simulation } from "./interfaces";
+import { Errors, Machine, Program, Simulation } from "./interfaces";
+import React from "react";
 
 const url = `${process.env.REACT_APP_SERVER_URL}`;
-// ? `${process.env.REACT_APP_SERVER_URL}`
-// : "";
-export async function getSimultions(): Promise<[Simulation]> {
+export async function getSimultions(): Promise<{ simulations: [Simulation] }> {
   console.log(`GET Request auf ${url}/simulations`);
 
   return await fetch(url + "/simulations", {
     method: "GET",
     redirect: "follow",
   })
-    .then((response) => response.json())
+    .then((response) => {
+      return response.json();
+    })
     .catch((error) => console.log("error", error));
 }
 
@@ -25,13 +26,17 @@ export async function getSimulationById(
     .catch((error) => console.log("error", error));
 }
 
-export async function postSimulation(simulation: Simulation) {
-  return await fetch(url + "/simulation", {
+export async function postSimulation(
+  simulation?: Simulation
+): Promise<{ simulation_id: number }> {
+  console.log(`POST Request auf ${url}/simulations`);
+
+  return await fetch(`${url}/simulations`, {
     method: "POST",
     redirect: "follow",
-    body: JSON.stringify(simulation),
+    body: JSON.stringify(simulation ? simulation : {}),
   })
-    .then((response) => response.status)
+    .then((response) => response.json())
     .catch((error) => console.log("error", error));
 }
 
@@ -45,6 +50,8 @@ export async function deleteSimulationById(simulation_id: number) {
 }
 
 export async function getMachine(simulation_id: number): Promise<Machine> {
+  console.log(`GET Request auf ${url}/simulations/${simulation_id}/machine`);
+
   return await fetch(`${url}/simulations/${simulation_id}/machine`, {
     method: "GET",
     redirect: "follow",
@@ -81,7 +88,11 @@ export async function patchMachineParameter(
     .catch((error) => console.log("error", error));
 }
 
-export async function getErrors(simulation_id: number): Promise<Error> {
+export async function getErrors(simulation_id: number): Promise<Errors> {
+  console.log(
+    `GET Request auf ${url}/simulations/${simulation_id}/machine/errors`
+  );
+
   return await fetch(`${url}/simulations/${simulation_id}/machine/errors`, {
     method: "GET",
     redirect: "follow",
@@ -102,7 +113,9 @@ export async function sendError(simulation_id: number, error_id: number) {
     .catch((error) => console.log("error", error));
 }
 
-export async function getPrograms(simulation_id: number): Promise<[Program]> {
+export async function getPrograms(
+  simulation_id: number
+): Promise<{ programs: Array<Program> }> {
   return await fetch(`${url}/simulations/${simulation_id}/machine/programs`, {
     method: "GET",
     redirect: "follow",
@@ -129,7 +142,7 @@ export async function postCurrentProgram(
     .catch((error) => console.log("error", error));
 }
 
-export async function getProgram(simulation_id: number): Promise<[Program]> {
+export async function getProgram(simulation_id: number): Promise<Program> {
   return await fetch(
     `${url}/simulations/${simulation_id}/machine/programs/current`,
     {

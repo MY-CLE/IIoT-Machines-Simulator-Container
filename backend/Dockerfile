@@ -24,7 +24,7 @@ RUN sqlite3 machine-sim.db < create_tables.sql
 
 WORKDIR /home/iiot-machine-sim/
 
-COPY backend/requirements.txt backend/app.py ./
+COPY backend/requirements.txt backend/ ./
 RUN pip install --trusted-host pypi.org -r ./requirements.txt
 
 CMD sqlite3 machine-sim.db & python3 -m flask run --host=0.0.0.0
