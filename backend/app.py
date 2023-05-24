@@ -4,11 +4,15 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, make_response
 import sqlite3
+from flask_cors import CORS
+from simulator import Simulator
 
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)
+CORS(app) #For local testing
+
+simulator = Simulator()
 
 #/time to test the API
 
@@ -31,27 +35,28 @@ def getLine():
 def simulations():
     if request.method == 'GET':
         return jsonify({
-    "simulations":[
-        {
-            "id":"0",
-            "description":"Simulation LCM Rechteck",
-            "last_edited":"1984-06-09:12:18:33"
-        },
-        {
-            "id":"1",
-            "description":"Simulation LCM Dreieck",
-            "last_edited":"1984-06-09:12:18:33"
-        },
-        {
-            "id":"0",
-            "description":"Simulation LCM Kreis",
-            "last_edited":"1984-06-09:12:18:33"
-        }
-    ]
-})
+  "simulations": [
+    {
+      "id": "0",
+      "description": "Simulation LCM Rechteck",
+      "last_edited": "1984-06-09:12:18:33"
+    },
+    {
+      "id": "1",
+      "description": "Simulation LCM Dreieck",
+      "last_edited": "1984-06-09:12:18:33"
+    },
+    {
+      "id": "0",
+      "description": "Simulation LCM Kreis",
+      "last_edited": "1984-06-09:12:18:33"
+    }
+  ]
+})  #list of all sims
     elif request.method == 'POST':
-        return jsonify({"simulation_id": 1 }) 
-    #create a new sim
+        return jsonify({
+                            "simulation_id": 1
+                        })
     elif request.method == 'DELETE':
         return #delete all stored sims
 
@@ -60,141 +65,106 @@ def simulations():
 def simulationsId(simulation_id):
     if request.method == 'GET':
         return jsonify({
-    "id":"0",
-    "description":"Simulation LCM Rechteck",
-    "last_edited":"1984-06-09:12:18:33",
-    "machine": {
-        "parameters": [
-            {
-                "id":"1",
-                "description":"runtime",
-                "value": "0"
-            },
-            {
-                "id":"2",
-                "description":"coolant_level",
-                "value": "1000"
-            },
-            {
-                "id":"3",
-                "description":"power_consumption",
-                "value": "0"
-            },
-            {
-                "id":"4",
-                "description":"power_laser_module",
-                "value": "0"
-            },
-            {
-                "id":"5",
-                "description":"idle_time",
-                "value": "0"
-            },
-            {
-                "id":"6",
-                "description":"error_state",
-                "value": "false"
-            },
-            {
-                "id":"7",
-                "description":"privilage_state",
-                "value": "false"
-            }
-        ]
-    },
-    "program":{
-        "description": "Zahnrad",
-        "parameters": [
-            {
-                "id": "1",
-                "description": "current_amount",
-                "value": "50"
-            },
-            {
-                "id": "2",
-                "description": "target_amount",
-                "value": "100"
-            },
-            {
-                "id": "3",
-                "description": "uptime_in_s",
-                "value": "50"
-            },
-            {
-                "id": "4",
-                "description": "power_consumption_in_Wh",
-                "value": "5000"
-            },
-            {
-                "id": "5",
-                "description": "coolant_consumption_in_percent",
-                "value": "10"
-            },
-            {
-                "id": "6",
-                "description": "time_per_item_in_s",
-                "value": "1"
-            }
-        ]
-    }
-})#data of a selected sim    
+  "id": "0",
+  "description": "Simulation LCM Rechteck",
+  "last_edited": "1984-06-09:12:18:33",
+  "machine": {
+    "parameters": [
+      {
+        "id": "1",
+        "description": "runtime",
+        "value": "0"
+      },
+      {
+        "id": "2",
+        "description": "coolant_level",
+        "value": "1000"
+      },
+      {
+        "id": "3",
+        "description": "power_consumption",
+        "value": "0"
+      },
+      {
+        "id": "4",
+        "description": "power_laser_module",
+        "value": "0"
+      },
+      {
+        "id": "5",
+        "description": "idle_time",
+        "value": "0"
+      },
+      {
+        "id": "6",
+        "description": "error_state",
+        "value": "false"
+      },
+      {
+        "id": "7",
+        "description": "privilage_state",
+        "value": "false"
+      }
+    ]
+  },
+  "program": {
+    "description": "Zahnrad",
+    "parameters": [
+      {
+        "id": "1",
+        "description": "current_amount",
+        "value": "50"
+      },
+      {
+        "id": "2",
+        "description": "target_amount",
+        "value": "100"
+      },
+      {
+        "id": "3",
+        "description": "uptime_in_s",
+        "value": "50"
+      },
+      {
+        "id": "4",
+        "description": "power_consumption_in_Wh",
+        "value": "5000"
+      },
+      {
+        "id": "5",
+        "description": "coolant_consumption_in_percent",
+        "value": "10"
+      },
+      {
+        "id": "6",
+        "description": "time_per_item_in_s",
+        "value": "1"
+      }
+    ]
+  }
+})
+    elif request.method == 'DELETE':
+        return #delete a selected sim
+    
     
 #Machines
-
+#####!!!!!here!!!!!
 @app.route('/api/simulations/<int:simulations_id>/machine', methods=['GET', 'PATCH'])
 def machines(simulations_id):
     if request.method == 'GET':
-        return jsonify({
-    "parameters": [
-        {
-            "id":"1",
-            "description":"runtime",
-            "value": "0"
-        },
-        {
-            "id":"2",
-            "description":"coolant_level",
-            "value": "1000"
-        },
-        {
-            "id":"3",
-            "description":"power_consumption",
-            "value": "0"
-        },
-        {
-            "id":"4",
-            "description":"power_laser_module",
-            "value": "0"
-        },
-        {
-            "id":"5",
-            "description":"idle_time",
-            "value": "0"
-        },
-        {
-            "id":"6",
-            "description":"error_state",
-            "value": "false"
-        },
-        {
-            "id":"7",
-            "description":"privilage_state",
-            "value": "false"
-        }
-    ]
-}) #current state of the machine
+        simulator.updateSimulation(datetime.now())
+        return simulator.getMachinState()
     elif request.method == 'PATCH':
         return #change parameter(s) in the machine state
 
-@app.route('/api/simulations/<int:simulations_id>/machine/auth', methods=['PUT'])
-def auth(simulations_id):
-    if request.method == 'PUT':
-        response = make_response("<h1>Success</h1>")
-        response.status_code = 200
-        return response
+@app.route('/api/simulations/<int:simulations_id>/machine/auth')
+def auth(simulation_id):
+    response = make_response("<h1>Success</h1>")
+    response.status_code = 200
+    return response#pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
-def errors(simulations_id):
+def error(simulation_id):
     if request.method == 'GET':
         return jsonify({
     "errors": [
@@ -225,7 +195,7 @@ def errors(simulations_id):
             "name":"Kühlwasserstand niedrig"
         }
     ]
-})#list of all errors and warnings
+    }) #list of all errors and warnings
     elif request.method == 'POST':
         error_id = request.args.get('error_id')
         return #creates the given error (via id) on the machine
@@ -257,9 +227,9 @@ def programs(simulations_id):
 })#list of all programs
 
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
-def current(simulations_id):
+def currentProgram(simulations_id):
     if request.method == 'GET':
-        return jsonify({
+         return jsonify({
     "description": "Zahnrad",
     "parameters": [
         {
@@ -306,4 +276,4 @@ def current(simulations_id):
             "value": "100"
         }
     ]
-})#change parameter(s) in the current program state
+}) #change parameter(s) in the current program state
