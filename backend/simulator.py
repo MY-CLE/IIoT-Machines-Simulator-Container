@@ -15,6 +15,8 @@ class Simulator:
         self.powerConsumption = 0.0 #in kH/h?
         self.laserModulePower = 100 #100%
         
+        self.errorState = False
+        self.privilegeState = False
         self.errors = []
         self.securityWarnings = []
         self.state = False
@@ -59,6 +61,12 @@ class Simulator:
     def getLog(self):
         return self.log
     
+    def getErrorState(self):
+        return self.errorState
+    
+    def getPrivilegeState(self):
+        return self.privilegeState
+
     def updateSimulation(self, time):
         simLength: float = (time - self.startTime).total_seconds()
         self.state = True
@@ -66,6 +74,10 @@ class Simulator:
         self.reduceCoolantConsumption(simLength)
         self.laserModuleWearDown(simLength)
         self.calculatePowerConsumption(simLength)
+
+    #return of JSON
+    def getMachinState(self):
+        return self.__json__()
 
     def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
@@ -194,17 +206,58 @@ class Simulator:
     
     def __json__(self):
         return {
-            "startTime": self.startTime.isoformat(),
-            "runTime": round(self.runTime, 2),
-            "standstillTime": round(self.standstillTime, 2),
-            "coolantLevel": round(self.coolantLevel, 2),
-            "quantity": self.quantity,
-            "powerConsumption": round(self.powerConsumption, 2),
-            "laserModulePower": round(self.laserModulePower, 2),
-            "errors": self.errors,
-            "state": self.state,
-            "log": self.log
+            "parameters": [   
+                {
+                    "id": "1",
+                    "description": "runTime",
+                    "value": round(self.runTime, 2)
+                },
+                {
+                    "id": "2",
+                    "description": "coolant_level",
+                    "value": round(self.coolantLevel, 2)
+                },
+                {
+                    "id": "3",
+                    "description": "power_consumption",
+                    "value": round(self.powerConsumption, 2)
+                },
+                {
+                    "id": "4",
+                    "description": "power_laser_module",
+                    "value": round(self.laserModulePower, 2),
+                },
+                {
+                    "id": "5",
+                    "description": "idle_time",
+                    "value": self.standstillTime
+                },
+                {
+                    "id": "6",
+                    "description": "error_state",
+                    "value": self.errorState
+                },
+                {
+                    "id": "7",
+                    "description": "privilage_state",
+                    "value": self.privilegeState
+                }
+            ],
+            "error_state": {
+                "errors": [
+                    {
+                        "error_id": 0
+                    }
+                ],
+                "warnings": [
+                    {
+                        "error_id": 0
+                    }
+                ]
+            }
         }
+
+    
 
 
 if __name__ == "__main__":
