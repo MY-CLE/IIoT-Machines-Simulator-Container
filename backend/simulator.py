@@ -3,6 +3,16 @@ import random
 import time
 import sys
 
+parameterMap ={
+    0: "runTime",
+    1: "coolantLevel",
+    2: "powerConsumption",
+    3: "laserModulePower",
+    4: "standstillTime",
+    5: "errorState",
+    6: "privilegeState"
+}
+
 class Simulator: 
     def __init__(self):
         self.startTime = datetime.now()
@@ -66,19 +76,25 @@ class Simulator:
     
     def getPrivilegeState(self):
         return self.privilegeState
+    
+    def setRunTime(self, runTime: int):
+        self.runTime = runTime
 
     def updateSimulation(self, time):
-        simLength: float = (time - self.startTime).total_seconds()
+        
+        self.runTime: int = self.runTime + (time - self.startTime).total_seconds()
+        self.startTime = time
         self.state = True
-        self.runTime = simLength
-        self.reduceCoolantConsumption(simLength)
-        self.laserModuleWearDown(simLength)
-        self.calculatePowerConsumption(simLength)
+        self.reduceCoolantConsumption(self.runTime)
+        self.laserModuleWearDown(self.runTime)
+        self.calculatePowerConsumption(self.runTime)
 
     #return of JSON
-    def getMachinState(self):
+    def getMachineState(self):
         return self.__json__()
-
+    
+    def setParameter(self, id, value):
+        setattr(self, parameterMap[id], value)
     def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
         time.sleep(timeInterval)
@@ -208,37 +224,37 @@ class Simulator:
         return {
             "parameters": [   
                 {
-                    "id": "1",
+                    "id": "0",
                     "description": "runTime",
                     "value": round(self.runTime, 2)
                 },
                 {
-                    "id": "2",
+                    "id": "1",
                     "description": "coolant_level",
                     "value": round(self.coolantLevel, 2)
                 },
                 {
-                    "id": "3",
+                    "id": "2",
                     "description": "power_consumption",
                     "value": round(self.powerConsumption, 2)
                 },
                 {
-                    "id": "4",
+                    "id": "3",
                     "description": "power_laser_module",
                     "value": round(self.laserModulePower, 2),
                 },
                 {
-                    "id": "5",
-                    "description": "idle_time",
+                    "id": "4",
+                    "description": "Standstill_time",
                     "value": self.standstillTime
                 },
                 {
-                    "id": "6",
+                    "id": "5",
                     "description": "error_state",
                     "value": self.errorState
                 },
                 {
-                    "id": "7",
+                    "id": "6",
                     "description": "privilage_state",
                     "value": self.privilegeState
                 }

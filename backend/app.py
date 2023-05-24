@@ -151,15 +151,20 @@ def simulationsId(simulations_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachinState()
+        return simulator.getMachineState()
     elif request.method == 'PATCH':
-        return #change parameter(s) in the machine state
+        data = request.get_json()
+        print(data)
+        simulator.setParameter(int(data["id"]), int(data["value"]))
+        response = make_response("<h1>Success</h1>")
+        response.status_code = 200
+        return response #change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
 def auth(simulations_id):
     response = make_response("<h1>Success</h1>")
     response.status_code = 200
-    return response#pw in http body sets auth in machine
+    return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
 def error(simulations_id):

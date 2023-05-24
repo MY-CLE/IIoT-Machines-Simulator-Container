@@ -81,11 +81,13 @@ function ProgramStatePage(props: {
           {program.parameters!.map(
             (item: { id: number; description: string; value: number }) => {
               return (
-                <div className="w-1/3 m-2">
+                <div key={item.id} className="w-1/3 m-2">
                   <ParameterComponent
+                    simulation_id={props.state.simulation_id}
                     key={item.id}
                     name={item.description}
                     value={item.value}
+                    id={item.id}
                   />
                 </div>
               );

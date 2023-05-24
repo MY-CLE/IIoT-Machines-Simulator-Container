@@ -77,7 +77,7 @@ function MachineStatePage(props: {
       setStatusesBarValues(values);
 
       setParameters(machineState.parameters);
-    }, 1000);
+    }, 2000);
     return () => clearInterval(id);
   }, []);
 
@@ -159,9 +159,11 @@ function MachineStatePage(props: {
             {parameters.map((item, index) => {
               return (
                 <ParameterComponent
+                  simulation_id={props.state.simulation_id}
                   key={item.id}
                   name={item.description}
                   value={item.value}
+                  id={item.id}
                 />
               );
             })}
@@ -200,7 +202,7 @@ function MachineStatePage(props: {
                   onRequestClose={closeModal}
                   style={customStyles}
                 >
-                  <h1 className="w-full font-bold">Authetification</h1>
+                  <h1 className="w-full font-bold">Authentification</h1>
                   <span className="w-full">
                     Bitte geben sie das Administrator Passwort ein
                   </span>

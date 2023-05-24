@@ -1,4 +1,4 @@
-import { Errors, Machine, Program, Simulation } from "./interfaces";
+import { Errors, Machine, Parameter, Program, Simulation } from "./interfaces";
 import React from "react";
 
 const url = `${process.env.REACT_APP_SERVER_URL}`;
@@ -75,14 +75,15 @@ export async function authenticate(simulation_id: number, password: string) {
 
 export async function patchMachineParameter(
   simulation_id: number,
-  parameter: Machine
+  parameter: Parameter
 ) {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
   return await fetch(`${url}/simulations/${simulation_id}/machine`, {
-    method: "PUT",
+    method: "PATCH",
     body: JSON.stringify(parameter),
     redirect: "follow",
+    headers: myHeaders,
   })
     .then((response) => response.status)
     .catch((error) => console.log("error", error));
