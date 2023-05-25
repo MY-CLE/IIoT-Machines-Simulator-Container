@@ -70,7 +70,7 @@ def simulationsId(simulations_id):
     "parameters": [
       {
         "id": "1",
-        "description": "runtime",
+        "description": "run_time",
         "value": "0"
       },
       {

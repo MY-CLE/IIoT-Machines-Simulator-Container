@@ -6,7 +6,19 @@ import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
-
+const customStyles = {
+  content: {
+    position: "absolute",
+    width: "50%",
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    backgroundColor: "#F2F2F2",
+  },
+};
 function LandingPage(props: {
   state: {
     simulation_id: number;
@@ -74,11 +86,14 @@ function LandingPage(props: {
           isOpen={modalIsOpen}
           onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
+          style={customStyles}
         >
-          {simulations!.map((item: Simulation) => {
-            return <SimulationListElement key={item.id} simulation={item} />;
-          })}
-          <button onClick={closeModal}>close</button>
+          <div className="flex flex-col flex-grow flex-nowrap w-full h-full">
+            {simulations.map((item: Simulation) => {
+              return <SimulationListElement key={item.id} simulation={item} />;
+            })}
+            <button onClick={closeModal}>close</button>
+          </div>
         </Modal>
       </div>
       <div className="w-full h-full bg-center bg-no-repeat bg-contain bg-lasercuter-img"></div>
@@ -90,8 +105,9 @@ export default LandingPage;
 function SimulationListElement(params: any) {
   let sim = params.simulation;
   return (
-    <div>
-      <span>{sim.description}</span>
+    <div className="w-full h-fit border rounded-lg m-2 p-2">
+      <span>{sim.description} </span>
+      <span>{sim.last_edited}</span>
     </div>
   );
 }

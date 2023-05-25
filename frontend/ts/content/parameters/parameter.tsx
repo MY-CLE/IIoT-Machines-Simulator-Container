@@ -68,7 +68,7 @@ function ParameterComponent(props: ParameterProps) {
         onRequestClose={closeModal}
         style={customStyles}
       >
-        <h1 className="w-full font-bold">Authetification</h1>
+        <h1 className="w-full font-bold">{props.name}</h1>
         <span className="w-full"></span>
         <input
           placeholder={props.value.toString()}

@@ -225,7 +225,7 @@ class Simulator:
             "parameters": [   
                 {
                     "id": "0",
-                    "description": "runTime",
+                    "description": "run_time",
                     "value": round(self.runTime, 2)
                 },
                 {

@@ -66,7 +66,18 @@ function MachineStatePage(props: {
         // wenn es Fehlermeldungen gibt, werden diese gesetzt
         setErrors(newErrors);
       }
+
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusesBarValues(values);
+
+      setParameters(machineState.parameters);
     })();
+
     const id = setInterval(async () => {
       let machineState = await getMachine(
         props.state.simulation_id ? props.state.simulation_id : 0
