@@ -1,11 +1,8 @@
 version: "3.9"
 services:
   backend:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile
-    image: flask-api
-    container_name: flask-api
+    image: adstec/priv:flask-api-arm-v7
+    container_name: flask-api-arm-v7
     ports:
       - "5000:5000"
     environment:
@@ -13,11 +10,8 @@ services:
       - FLASK_APP=app.py
 
   nginx:
-    build:
-      context: .
-      dockerfile: ./nginx/Dockerfile
-    image: nginx-service
-    container_name: nginx-service
+    image: adstec/priv:nginx-service-arm-v7 
+    container_name: nginx-service-arm-v7
     ports:
       - "8080:80"
     depends_on:
