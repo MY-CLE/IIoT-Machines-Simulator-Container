@@ -8,6 +8,12 @@ services:
     container_name: flask-api
     ports:
       - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=app.py
+    volumes:
+      - ./backend/database/machine-sim.db:/home/iiot-machine-sim/database/machine-sim.db
+
   nginx:
     build:
       context: .
@@ -18,3 +24,5 @@ services:
       - "8080:80"
     depends_on:
       - backend
+volumes:
+  db-volume:
