@@ -1,4 +1,4 @@
-FROM python:3.10.11-alpine3.17
+FROM python:3.9.16-alpine3.17
 
 # https to http
 RUN sed -ie "s/https/http/g" /etc/apk/repositories
@@ -24,7 +24,12 @@ RUN sqlite3 machine-sim.db < create_tables.sql
 
 WORKDIR /home/iiot-machine-sim/
 
-COPY backend/requirements.txt backend/ ./
-RUN pip install --trusted-host pypi.org -r ./requirements.txt
+# Copy backend files to container
+COPY backend/ ./
+
+# Install requirements
+RUN pip install --upgrade pip
+RUN pip install https://www.piwheels.org/simple/lxml/lxml-4.9.2-cp39-cp39-linux_armv7l.whl#sha256=7311648ee07bbc399f64f3605de71b0f8def24bb90eb68796cfabd2ed4f2c9f3
+RUN pip install -r ./requirements.txt
 
 CMD sqlite3 machine-sim.db & python3 -m flask run --host=0.0.0.0

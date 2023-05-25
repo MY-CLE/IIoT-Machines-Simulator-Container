@@ -102,13 +102,13 @@ If you are on a **linux environment** make sure that you have `docker-buildx` in
 
 ### amd64
 ```
-docker buildx build --platform linux/amd64 -t adstec/priv:nginx-service-amd64 -f "nginx/Dockerfile" .
 docker buildx build --platform linux/amd64 -t adstec/priv:flask-api-amd64 -f "backend/Dockerfile" .
+docker buildx build --platform linux/amd64 -t adstec/priv:nginx-service-amd64 -f "nginx/Dockerfile" .
 ```
 ### arm/v7
 ```
-docker buildx build --platform linux/arm/v7 -t adstec/priv:nginx-service-arm-v7 -f "backend/Dockerfile" .
-docker buildx build --platform linux/arm/v7 -t adstec/priv:flask-api-arm-v7 -f "nginx/Dockerfile" .
+docker buildx build --platform linux/arm/v7 -t adstec/priv:flask-api-arm-v7 -f "backend/Dockerfile" .
+docker buildx build --platform linux/arm/v7 -t adstec/priv:nginx-service-arm-v7 -f "nginx/Dockerfile" .
 ```
 
 
