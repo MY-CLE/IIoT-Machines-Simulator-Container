@@ -15,7 +15,7 @@ def getIPAddress():
 class OPCUAClient:
 
     def __init__(self):
-        self.client = Client(f"opc.tcp://192.168.178.60:4840")
+        self.client = Client(f"opc.tcp://{getIPAddress()}:4840")
         self.client.connect()
         self.data_variables = ["Runtime", "Coolant_Level", "Power_Consumption", "Power_Laser", "Idle_Time"]
         self.nameIndex = self.client.get_namespace_index("MOUSP") # namespace Machinesimulator OPC-UA Server Parameter - Index = 2

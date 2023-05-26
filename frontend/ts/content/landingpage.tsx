@@ -1,12 +1,12 @@
 import React from "react";
 import { useState } from "react";
-import Modal from "react-modal";
+import Modal, { Styles } from "react-modal";
 import { getSimultions, postSimulation } from "../api-service";
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement("#root");
-const customStyles = {
+const customStyles: Styles = {
   content: {
     position: "absolute",
     width: "50%",
