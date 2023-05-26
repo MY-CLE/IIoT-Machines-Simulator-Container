@@ -2,12 +2,15 @@ from datetime import datetime
 import random
 import time
 import sys
-sys.path.append("backend\\opcuaIRF\\")
+#sys.path.append("backend\\opcuaIRF\\")
 import threading
 import logging
 
 from opcuaIRF.opcuaServer import OPCUAServer
 from opcuaIRF.opcuaClient import OPCUAClient
+
+from modbusIRF.modbusServer import ModbusTCPServer
+from modbusIRF.modbusClient import ModbusTCPClient
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
 
@@ -41,11 +44,11 @@ class Simulator:
         self.log = []
 
         self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
-        #self.opcuaClientThread = threading.Thread(target=self.startOPCUAClient)
 
+        self.modbusServerThread = threading.Thread(target=self.startModbusServer)
+        
         self.opcuaServerThread.start()
-        #self.opcuaClientThread.start()
-
+        self.modbusServerThread.start()
 
 
     def startOPCUAServer(self):
@@ -54,9 +57,11 @@ class Simulator:
         self.ouaServer.server.start()
         logging.info("Server started")
 
-    def startOPCUAClient(self):
-        self.ouaClient = OPCUAClient()
-        logging.info("Client started")
+    def startModbusServer(self):
+        self.modbusServer = ModbusTCPServer()
+        self.modbusServer.startServer()
+        self.modbusServer.logServerChanges(0, 10)
+        logging.info("Server started")
 
     def getStartzeit(self):
         return self.startTime
@@ -116,10 +121,15 @@ class Simulator:
         self.calculatePowerConsumption(self.runTime)
 
         self.ouaClient = OPCUAClient()
+        logging.info("Client started")
         self.ouaClient.changeParam("Runtime", int(self.runTime))
         self.ouaClient.getParam()
         self.ouaClient.client.disconnect()
 
+        self.modbusClient = ModbusTCPClient()
+        logging.info("ModbusTCPClient started")
+        self.modbusClient.writeSingleRegister(0, int(self.runTime))
+        self.modbusClient.readHoldingRegisters(0, 10)
 
     #return of JSON
     def getMachineState(self):

@@ -41,7 +41,7 @@ class ModbusTCPServer:
             previousState = currentState
             time.sleep(0.5)
 
-if __name__ == '__main__':
+""" if __name__ == '__main__':
     server = ModbusTCPServer()
     server.startServer()
-    server.logServerChanges(0, 10)
+    server.logServerChanges(0, 10) """
