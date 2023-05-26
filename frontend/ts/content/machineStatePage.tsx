@@ -88,7 +88,7 @@ function MachineStatePage(props: {
       setStatusesBarValues(values);
 
       setParameters(machineState.parameters);
-    }, 2000);
+    }, 5000);
     return () => clearInterval(id);
   }, []);
 

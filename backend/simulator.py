@@ -2,6 +2,14 @@ from datetime import datetime
 import random
 import time
 import sys
+sys.path.append("backend\\opcuaIRF\\")
+import threading
+import logging
+
+from opcuaIRF.opcuaServer import OPCUAServer
+from opcuaIRF.opcuaClient import OPCUAClient
+
+logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
 
 parameterMap ={
     0: "runTime",
@@ -31,6 +39,24 @@ class Simulator:
         self.securityWarnings = []
         self.state = False
         self.log = []
+
+        self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
+        #self.opcuaClientThread = threading.Thread(target=self.startOPCUAClient)
+
+        self.opcuaServerThread.start()
+        #self.opcuaClientThread.start()
+
+
+
+    def startOPCUAServer(self):
+        self.ouaServer = OPCUAServer()
+        self.ouaServer.setParameter()
+        self.ouaServer.server.start()
+        logging.info("Server started")
+
+    def startOPCUAClient(self):
+        self.ouaClient = OPCUAClient()
+        logging.info("Client started")
 
     def getStartzeit(self):
         return self.startTime
@@ -88,6 +114,12 @@ class Simulator:
         self.reduceCoolantConsumption(self.runTime)
         self.laserModuleWearDown(self.runTime)
         self.calculatePowerConsumption(self.runTime)
+
+        self.ouaClient = OPCUAClient()
+        self.ouaClient.changeParam("Runtime", int(self.runTime))
+        self.ouaClient.getParam()
+        self.ouaClient.client.disconnect()
+
 
     #return of JSON
     def getMachineState(self):
