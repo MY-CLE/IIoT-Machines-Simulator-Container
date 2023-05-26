@@ -15,7 +15,7 @@ def getIPAddress():
 class OPCUAClient:
 
     def __init__(self):
-        self.client = Client(f"opc.tcp://{getIPAddress()}:4840")
+        self.client = Client(f"opc.tcp://192.168.178.60:4840")
         self.client.connect()
         self.data_variables = ["Runtime", "Coolant_Level", "Power_Consumption", "Power_Laser", "Idle_Time"]
         self.nameIndex = self.client.get_namespace_index("MOUSP") # namespace Machinesimulator OPC-UA Server Parameter - Index = 2
@@ -31,7 +31,7 @@ class OPCUAClient:
         self.newParam.set_value(value)
 
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     ouaClient = OPCUAClient()
     logging.info("Client started")
     try:
@@ -45,4 +45,4 @@ if __name__ == "__main__":
             time.sleep(5)
     finally:
         ouaClient.client.disconnect()
-        logging.info("Client stopped")
+        logging.info("Client stopped") """
