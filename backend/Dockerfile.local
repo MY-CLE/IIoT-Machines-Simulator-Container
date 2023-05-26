@@ -1,0 +1,41 @@
+FROM python:3.10.11-alpine3.17
+
+# https to http
+RUN sed -ie "s/https/http/g" /etc/apk/repositories
+
+# check for updates & install sqlite3 db
+RUN apk update && apk upgrade
+RUN apk add --no-cache sqlite
+
+# http to http
+RUN sed -ie "s/http/https/g" /etc/apk/repositories
+
+WORKDIR /home/iiot-machine-sim/database
+
+# Copy create_tables.sql to container
+COPY backend/database/create_tables.sql .
+
+# Create database
+RUN sqlite3 machine-sim.db
+
+# Execute create_tables.sql on the machine-sim.db database
+RUN sqlite3 machine-sim.db < create_tables.sql
+
+
+WORKDIR /home/iiot-machine-sim/
+
+# Copy backend files to container
+COPY backend/ ./
+
+#RUN apk add --update --no-cache g++ gcc libxslt-dev
+#RUN apk add --no-cache libxml2-dev musl-dev libxslt-dev
+#RUN ln -s /lib/ld-musl-armhf.so.1 /lib/ld-linux-armhf.so.3
+
+# Install requirements
+RUN pip install --upgrade pip
+#RUN pip install https://wheels.linuxserver.io/alpine-3.17/lxml-4.9.2-cp310-cp310-linux_armv7l.whl
+
+#RUN pip install https://www.piwheels.org/simple/lxml/lxml-4.9.2-cp39-cp39-linux_armv7l.whl#sha256=7311648ee07bbc399f64f3605de71b0f8def24bb90eb68796cfabd2ed4f2c9f3
+RUN pip install -r ./requirements.txt
+
+CMD sqlite3 machine-sim.db & python3 -m flask run --host=0.0.0.0
