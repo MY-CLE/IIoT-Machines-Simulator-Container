@@ -31,6 +31,7 @@ parameterMap ={
 class Simulator: 
     def __init__(self, simulationMode: Mode):
         self.state = True
+        self.privilegeState: bool = False
         
         self.metrics: Metrics = Metrics(100, simulationMode)
         self.warnings: Warnings = Warnings()
@@ -48,6 +49,9 @@ class Simulator:
         self.times.setStopTime()
         print("Machine stopped!")
         self.state = False
+
+    def setPrivilegeState(self, privState: bool) -> None:
+        self.privilegeState = privState 
 
     def startSimulator(self) -> None:
         self.state = True
@@ -143,7 +147,7 @@ class Simulator:
                 {
                     "id": "6",
                     "description": "Privilege_state",
-                    "value": 0
+                    "value": self.privilegeState
                 }
             ],
             "error_state": {
