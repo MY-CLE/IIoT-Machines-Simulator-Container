@@ -2,6 +2,27 @@ from datetime import datetime
 import random
 import time
 import sys
+#sys.path.append("backend\\opcuaIRF\\")
+import threading
+import logging
+
+from opcuaIRF.opcuaServer import OPCUAServer
+from opcuaIRF.opcuaClient import OPCUAClient
+
+from modbusIRF.modbusServer import ModbusTCPServer
+from modbusIRF.modbusClient import ModbusTCPClient
+
+logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
+
+parameterMap ={
+    0: "runTime",
+    1: "coolantLevel",
+    2: "powerConsumption",
+    3: "laserModulePower",
+    4: "standstillTime",
+    5: "errorState",
+    6: "privilegeState"
+}
 
 class Simulator: 
     def __init__(self):
@@ -21,6 +42,26 @@ class Simulator:
         self.securityWarnings = []
         self.state = False
         self.log = []
+
+        self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
+
+        self.modbusServerThread = threading.Thread(target=self.startModbusServer)
+        
+        self.opcuaServerThread.start()
+        self.modbusServerThread.start()
+
+
+    def startOPCUAServer(self):
+        self.ouaServer = OPCUAServer()
+        self.ouaServer.setParameter()
+        self.ouaServer.server.start()
+        logging.info("Server started")
+
+    def startModbusServer(self):
+        self.modbusServer = ModbusTCPServer()
+        self.modbusServer.startServer()
+        self.modbusServer.logServerChanges(0, 10)
+        logging.info("Server started")
 
     def getStartzeit(self):
         return self.startTime
@@ -66,19 +107,36 @@ class Simulator:
     
     def getPrivilegeState(self):
         return self.privilegeState
+    
+    def setRunTime(self, runTime: int):
+        self.runTime = runTime
 
     def updateSimulation(self, time):
-        simLength: float = (time - self.startTime).total_seconds()
+        
+        self.runTime: int = self.runTime + (time - self.startTime).total_seconds()
+        self.startTime = time
         self.state = True
-        self.runTime = simLength
-        self.reduceCoolantConsumption(simLength)
-        self.laserModuleWearDown(simLength)
-        self.calculatePowerConsumption(simLength)
+        self.reduceCoolantConsumption(self.runTime)
+        self.laserModuleWearDown(self.runTime)
+        self.calculatePowerConsumption(self.runTime)
+
+        self.ouaClient = OPCUAClient()
+        logging.info("Client started")
+        self.ouaClient.changeParam("Runtime", int(self.runTime))
+        self.ouaClient.getParam()
+        self.ouaClient.client.disconnect()
+
+        self.modbusClient = ModbusTCPClient()
+        logging.info("ModbusTCPClient started")
+        self.modbusClient.writeSingleRegister(0, int(self.runTime))
+        self.modbusClient.readHoldingRegisters(0, 10)
 
     #return of JSON
-    def getMachinState(self):
+    def getMachineState(self):
         return self.__json__()
-
+    
+    def setParameter(self, id, value):
+        setattr(self, parameterMap[id], value)
     def simulateSafetyDoorError(self):
         timeInterval = random.randint(0, 15)
         time.sleep(timeInterval)
@@ -208,37 +266,37 @@ class Simulator:
         return {
             "parameters": [   
                 {
-                    "id": "1",
-                    "description": "runTime",
+                    "id": "0",
+                    "description": "run_time",
                     "value": round(self.runTime, 2)
                 },
                 {
-                    "id": "2",
+                    "id": "1",
                     "description": "coolant_level",
                     "value": round(self.coolantLevel, 2)
                 },
                 {
-                    "id": "3",
+                    "id": "2",
                     "description": "power_consumption",
                     "value": round(self.powerConsumption, 2)
                 },
                 {
-                    "id": "4",
+                    "id": "3",
                     "description": "power_laser_module",
                     "value": round(self.laserModulePower, 2),
                 },
                 {
-                    "id": "5",
-                    "description": "idle_time",
+                    "id": "4",
+                    "description": "Standstill_time",
                     "value": self.standstillTime
                 },
                 {
-                    "id": "6",
+                    "id": "5",
                     "description": "error_state",
                     "value": self.errorState
                 },
                 {
-                    "id": "7",
+                    "id": "6",
                     "description": "privilage_state",
                     "value": self.privilegeState
                 }

@@ -66,7 +66,18 @@ function MachineStatePage(props: {
         // wenn es Fehlermeldungen gibt, werden diese gesetzt
         setErrors(newErrors);
       }
+
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusesBarValues(values);
+
+      setParameters(machineState.parameters);
     })();
+
     const id = setInterval(async () => {
       let machineState = await getMachine(
         props.state.simulation_id ? props.state.simulation_id : 0
@@ -77,15 +88,12 @@ function MachineStatePage(props: {
       setStatusesBarValues(values);
 
       setParameters(machineState.parameters);
-    }, 1000);
+    }, 5000);
     return () => clearInterval(id);
   }, []);
 
   function getStatusbarValues(machineState: Machine): StatusBarValues {
-    let runtime = 0;
-    machineState.parameters.forEach((parameter) => {
-      if (parameter.id === 0) runtime = parameter.value;
-    });
+    let runtime = machineState.parameters[0].value;
     let errors = 0,
       warnings = 0;
     if (machineState.error_state) {
@@ -162,9 +170,11 @@ function MachineStatePage(props: {
             {parameters.map((item, index) => {
               return (
                 <ParameterComponent
+                  simulation_id={props.state.simulation_id}
                   key={item.id}
                   name={item.description}
                   value={item.value}
+                  id={item.id}
                 />
               );
             })}
@@ -203,7 +213,7 @@ function MachineStatePage(props: {
                   onRequestClose={closeModal}
                   style={customStyles}
                 >
-                  <h1 className="w-full font-bold">Authetification</h1>
+                  <h1 className="w-full font-bold">Authentification</h1>
                   <span className="w-full">
                     Bitte geben sie das Administrator Passwort ein
                   </span>

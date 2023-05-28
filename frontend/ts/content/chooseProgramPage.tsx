@@ -2,35 +2,9 @@ import React, { useEffect, useState } from "react";
 import StatusBar from "./statusbar/statusBar";
 import SelectionBar from "./machineOrProgramBar/selectionBar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getPrograms } from "../api-service";
-import { Program } from "../interfaces";
+import { getMachine, getPrograms } from "../api-service";
+import { Machine, Program, StatusBarValues } from "../interfaces";
 
-const programsdefault = [
-  {
-    description: "Kreis",
-    id: "1",
-  },
-  {
-    description: "Rechteck",
-    id: "2",
-  },
-  {
-    description: "Dreieck",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-  {
-    description: "",
-    id: "3",
-  },
-];
 function ChooseProgramPage(props: {
   state: {
     simulation_id: number;
@@ -64,11 +38,47 @@ function ChooseProgramPage(props: {
         }
       );
       setPrograms(progs);
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusBarValues(values);
     })();
+
+    const id = setInterval(async () => {
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusBarValues(values);
+    }, 2000);
+    return () => clearInterval(id);
   }, []);
 
+  function getStatusbarValues(machineState: Machine): StatusBarValues {
+    let runtime = machineState.parameters[0].value;
+    let errors = 0,
+      warnings = 0;
+    if (machineState.error_state) {
+      errors = machineState.error_state.errors.length;
+      warnings = machineState.error_state.warnings.length;
+    }
+    return {
+      runtime: runtime,
+      utilization: 5,
+      warning: warnings,
+      error: errors,
+      safety_door: false,
+      lock: false,
+    };
+  }
+
   function navigateToMachineStatePage() {
-    navigation("/machineStatePage");
+    navigation("/machine");
   }
 
   function navigateToProgramStatePage(id: number) {
@@ -121,7 +131,7 @@ export default ChooseProgramPage;
 function ProgramCard(props: any) {
   return (
     <button
-      className="flex items-center justify-center w-1/4 m-6  bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
+      className="flex items-center justify-center w-1/4 m-6 bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
       onClick={() => props.func(props.key)}
     >
       <span className="text-4xl ">{props.name}</span>

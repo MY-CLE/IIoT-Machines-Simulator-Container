@@ -7,8 +7,6 @@ import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
 
-from flask_cors import CORS
-
 app = Flask(__name__)
 CORS(app) #For local testing
 
@@ -62,7 +60,7 @@ def simulations():
 
 
 @app.route('/api/simulations/<int:simulations_id>', methods=['GET', 'DELETE'])
-def simulationsId(simulation_id):
+def simulationsId(simulations_id):
     if request.method == 'GET':
         return jsonify({
   "id": "0",
@@ -72,7 +70,7 @@ def simulationsId(simulation_id):
     "parameters": [
       {
         "id": "1",
-        "description": "runtime",
+        "description": "run_time",
         "value": "0"
       },
       {
@@ -153,18 +151,23 @@ def simulationsId(simulation_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachinState()
+        return simulator.getMachineState()
     elif request.method == 'PATCH':
-        return #change parameter(s) in the machine state
+        data = request.get_json()
+        print(data)
+        simulator.setParameter(int(data["id"]), int(data["value"]))
+        response = make_response("<h1>Success</h1>")
+        response.status_code = 200
+        return response #change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
-def auth(simulation_id):
+def auth(simulations_id):
     response = make_response("<h1>Success</h1>")
     response.status_code = 200
-    return response#pw in http body sets auth in machine
+    return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
-def error(simulation_id):
+def error(simulations_id):
     if request.method == 'GET':
         return jsonify({
     "errors": [
@@ -269,11 +272,12 @@ def currentProgram(simulations_id):
         return #set this program to be the current one
     elif request.method == 'PATCH':
         return jsonify({
-    "parameters": [
+        "parameters": [
         {
             "id": "2",
             "description": "target_amount",
             "value": "100"
         }
     ]
-}) #change parameter(s) in the current program state
+    }) #change parameter(s) in the current program state
+

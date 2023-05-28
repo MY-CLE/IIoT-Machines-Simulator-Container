@@ -1,15 +1,11 @@
 version: "3.9"
 services:
   backend:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile.local
-    image: flask-api:local
-    container_name: flask-api
+    image: adstec/priv:flask-api-amd64
+    container_name: flask-api-amd64
     ports:
       - "5000:5000"
       - "4840:4840"
-      - "504:504"
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py
@@ -17,11 +13,8 @@ services:
       - ./backend/database/machine-sim.db:/home/iiot-machine-sim/database/machine-sim.db
 
   nginx:
-    build:
-      context: .
-      dockerfile: ./nginx/Dockerfile
-    image: nginx-service:local
-    container_name: nginx-service
+    image: adstec/priv:nginx-service-amd64
+    container_name: nginx-service-amd64
     ports:
       - "8080:80"
     depends_on:

@@ -28,12 +28,12 @@ WORKDIR /home/iiot-machine-sim/
 COPY backend/ ./
 
 #RUN apk add --update --no-cache g++ gcc libxslt-dev
-RUN apk add --no-cache libxml2-dev musl-dev libxslt-dev
-RUN ln -s /lib/ld-musl-armhf.so.1 /lib/ld-linux-armhf.so.3
+#RUN apk add --no-cache libxml2-dev musl-dev libxslt-dev
+#RUN ln -s /lib/ld-musl-armhf.so.1 /lib/ld-linux-armhf.so.3
 
 # Install requirements
 RUN pip install --upgrade pip
-RUN pip install https://wheels.linuxserver.io/alpine-3.17/lxml-4.9.2-cp310-cp310-linux_armv7l.whl
+#RUN pip install https://wheels.linuxserver.io/alpine-3.17/lxml-4.9.2-cp310-cp310-linux_armv7l.whl
 
 #RUN pip install https://www.piwheels.org/simple/lxml/lxml-4.9.2-cp39-cp39-linux_armv7l.whl#sha256=7311648ee07bbc399f64f3605de71b0f8def24bb90eb68796cfabd2ed4f2c9f3
 RUN pip install -r ./requirements.txt
