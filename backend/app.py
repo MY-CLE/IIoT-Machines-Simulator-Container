@@ -6,11 +6,12 @@ from flask import Flask, jsonify, request, make_response
 import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
+from triangle import Triangle
 
 app = Flask(__name__)
 CORS(app) #For local testing
 
-simulator = Simulator()
+simulator = Simulator(Triangle())
 
 #/time to test the API
 
