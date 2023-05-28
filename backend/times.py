@@ -4,7 +4,7 @@ class Times(object):
     def __init__(self, startTime: datetime, idleTime: int) -> None:
         self.startTime = startTime
         self.stopTime = None
-        self.runTime: int = 0
+        self.runtime: int = 0
         self.idleTime: int = idleTime
 
     def getStartTime(self) -> datetime:
@@ -13,8 +13,8 @@ class Times(object):
     def getStopTime(self) -> int:
         return self.stopTime
         
-    def getRunTime(self) -> int:
-        return self.runTime
+    def getRuntime(self) -> int:
+        return self.runtime
         
     def getIdleTime(self) -> int:
         return self.idleTime
@@ -24,7 +24,7 @@ class Times(object):
         self.stopTime = datetime.now()
     
     def calculateRunTime(self, time: datetime) -> None:
-        self.runTime = self.runTime + (time - self.startTime).total_seconds()
+        self.runtime = self.runtime + (time - self.startTime).total_seconds()
         self.startTime = time
 
     def calculateIdleTime(self, time: datetime) -> int:

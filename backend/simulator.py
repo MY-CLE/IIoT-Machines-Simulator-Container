@@ -66,21 +66,21 @@ class Simulator:
 
     def updateSimulation(self, time: datetime) -> None:
         self.times.calculateRunTime(time)
-        runTime = self.times.getRunTime()
-        self.metrics.updateMetrics(runTime)
+        runtime = self.times.getRuntime()
+        self.metrics.updateMetrics(runtime)
         
         self.checkErrors()
         self.checkWarnings()
         
         self.ouaClient = OPCUAClient()
         logging.info("Client started")
-        self.ouaClient.changeParam("Runtime", int(runTime))
+        self.ouaClient.changeParam("Runtime", int(runtime))
         self.ouaClient.getParam()
         self.ouaClient.client.disconnect()
 
         self.modbusClient = ModbusTCPClient()
         logging.info("ModbusTCPClient started")
-        self.modbusClient.writeSingleRegister(0, int(runTime))
+        self.modbusClient.writeSingleRegister(0, int(runtime))
         self.modbusClient.readHoldingRegisters(0, 10)
 
     def checkErrors(self) -> None:
@@ -112,22 +112,22 @@ class Simulator:
             "parameters": [   
                 {
                     "id": "0",
-                    "description": "run_time",
-                    "value": round(self.times.getRunTime())
+                    "description": "Runtime",
+                    "value": round(self.times.getRuntime())
                 },
                 {
                     "id": "1",
-                    "description": "coolant_level",
+                    "description": "Coolant_level",
                     "value": self.metrics.getCoolantLevelPercent()
                 },
                 {
                     "id": "2",
-                    "description": "power_consumption",
+                    "description": "Power_consumption",
                     "value": self.metrics.getPowerConsumptionKWH()
                 },
                 {
                     "id": "3",
-                    "description": "power_laser_module",
+                    "description": "Power_laser_module",
                     "value": self.metrics.getLaserModulePowerWeardown()
                 },
                 {
@@ -137,12 +137,12 @@ class Simulator:
                 },
                 {
                     "id": "5",
-                    "description": "error_state",
+                    "description": "Error_state",
                     "value": self.warnings.getErrors()
                 },
                 {
                     "id": "6",
-                    "description": "privilege_state",
+                    "description": "Privilege_state",
                     "value": 0
                 }
             ],

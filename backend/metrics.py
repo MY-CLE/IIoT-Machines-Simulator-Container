@@ -43,7 +43,7 @@ if __name__ == "__main__":
     while True:
         time.sleep(5)
         times.calculateRunTime(datetime.now())
-        metrics.updateMetrics(times.getRunTime())
+        metrics.updateMetrics(times.getRuntime())
         print(metrics.getPowerConsumptionKWH())
         print(metrics.getLaserModulePowerWeardown())
         print(metrics.getCoolantLevelPercent())
