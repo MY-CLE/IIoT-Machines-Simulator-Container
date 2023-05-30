@@ -157,9 +157,8 @@ def machines(simulations_id):
         data = request.get_json()
         print(data)
         simulator.setParameter(int(data["id"]), int(data["value"]))
-        response = make_response("<h1>Success</h1>")
-        response.status_code = 200
-        return response #change parameter(s) in the machine state
+
+        return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
 def auth(simulations_id):
@@ -170,39 +169,20 @@ def auth(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
 def error(simulations_id):
     if request.method == 'GET':
-        return jsonify({
-    "errors": [
-        {
-            "id":"0",
-            "name":"Sicherheitstüre offen"
-        },
-        {
-            "id":"1",
-            "name":"Leistung Lasermodul unzureichend"
-        },
-        {
-            "id":"2",
-            "name":"Programmfehler"
-        }
-    ],
-    "warnings": [
-        {
-            "id":"0",
-            "name":"Kühlwasser zu sauer"
-        },
-        {
-            "id":"1",
-            "name":"Hohe Laufzeit"
-        },
-        {
-            "id":"2",
-            "name":"Kühlwasserstand niedrig"
-        }
-    ]
-    }) #list of all errors and warnings
+        data = simulator.warnings.getNotificationsJSON()
+        return data #list of all errors and warnings
     elif request.method == 'POST':
-        error_id = request.args.get('error_id')
-        return #creates the given error (via id) on the machine
+        error_id = request.form.get('error_id')
+        warning_id = request.form.get('warning_id')
+
+        if error_id is None and warning_id is None:
+            return jsonify({'error': 'No error_id or warning_id provided.'})
+        if error_id:
+            simulator.warnings.setSelectedError(error_id)
+        elif warning_id:
+            simulator.warnings.setSelectedWarning(warning_id)
+
+        return jsonify({'message': 'Success'})
 
 
 #Programs
@@ -282,3 +262,7 @@ def currentProgram(simulations_id):
     ]
     }) #change parameter(s) in the current program state
 
+
+#debuggin purposes
+if __name__ == '__main__':
+  print(jsonify(simulator.warnings.getNotificationsJSON()))
