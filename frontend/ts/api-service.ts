@@ -85,7 +85,7 @@ export async function patchMachineParameter(
     redirect: "follow",
     headers: myHeaders,
   })
-    .then((response) => response.status)
+    .then((response) => response.json())
     .catch((error) => console.log("error", error));
 }
 
@@ -104,14 +104,28 @@ export async function getErrors(simulation_id: number): Promise<Errors> {
 
 export async function sendError(simulation_id: number, error_id: number) {
   const formdata = new FormData();
+  console.log(error_id);
   formdata.append("error_id", error_id.toString());
   return await fetch(`${url}/simulations/${simulation_id}/machine/errors`, {
     method: "POST",
     redirect: "follow",
     body: formdata,
   })
-    .then((response) => response.status)
+    .then((response) => response.json())
     .catch((error) => console.log("error", error));
+}
+
+export async function sendWarning(simulation_id: number, warning_id: number){
+  const formdata = new FormData();
+  console.log(warning_id);
+  formdata.append("warning_id", warning_id.toString());
+  return await fetch(`${url}/simulations/${simulation_id}/machine/errors`, {
+    method: "POST",
+    redirect: "follow",
+    body: formdata,
+  })
+  .then((response) => response.json())
+  .catch((error) => console.log("error", error));
 }
 
 export async function getPrograms(
