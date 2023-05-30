@@ -28,7 +28,7 @@ class OPCUAServer:
             self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
             
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     ouaServer = OPCUAServer()
     ouaServer.setParameter()
     ouaServer.server.start()
@@ -38,4 +38,4 @@ if __name__ == "__main__":
             time.sleep(5)
     finally:
         ouaServer.server.stop()
-        logging.info("Server stopped")
+        logging.info("Server stopped") """

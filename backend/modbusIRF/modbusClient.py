@@ -12,7 +12,7 @@ def getIPAddress():
     s.connect(("8.8.8.8", 80))
     return s.getsockname()[0]
 
-class Modbus:
+class ModbusTCPClient:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self):
@@ -79,8 +79,8 @@ class Modbus:
         else:
             logging.error(self.connError)
 
-if __name__ == '__main__':
-    c = Modbus()
+""" if __name__ == '__main__':
+    c = ModbusTCPClient()
     #c.writeSingleCoil(0, True)
     i = 0
     while i < 10:
@@ -94,4 +94,4 @@ if __name__ == '__main__':
         if i == 9:
             i=0
     c.client.close()
-    
+     """

@@ -5,6 +5,7 @@ services:
     container_name: flask-api-arm-v7
     ports:
       - "5000:5000"
+      - "4840:4840"
     environment:
       - FLASK_ENV=production
       - FLASK_APP=app.py

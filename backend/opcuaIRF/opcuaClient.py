@@ -31,7 +31,7 @@ class OPCUAClient:
         self.newParam.set_value(value)
 
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     ouaClient = OPCUAClient()
     logging.info("Client started")
     try:
@@ -45,4 +45,4 @@ if __name__ == "__main__":
             time.sleep(5)
     finally:
         ouaClient.client.disconnect()
-        logging.info("Client stopped")
+        logging.info("Client stopped") """
