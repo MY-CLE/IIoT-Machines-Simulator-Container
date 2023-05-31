@@ -21,8 +21,9 @@ CREATE TABLE machine_state (
 CREATE TABLE machine_program (
 	machine_program_id integer PRIMARY KEY AUTOINCREMENT,
 	machine_program_description text,
-	program_laser_power_consumption_watt integer,
-	program_coolant_consumption_ml float,
+	laser_module_weardown integer, 
+	coolant_consumption_ml integer,
+	power_consumption_kwh integer,
 	program_time_per_item float
 );
 

@@ -31,6 +31,7 @@ parameterMap ={
 class Simulator: 
     def __init__(self, simulationMode: Mode):
         self.state = True
+
         self.privilegeState: bool = False
         
         self.metrics: Metrics = Metrics(100, simulationMode)
@@ -49,7 +50,7 @@ class Simulator:
         self.times.setStopTime()
         print("Machine stopped!")
         self.state = False
-
+    
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
@@ -172,4 +173,4 @@ if __name__ == "__main__":
     while True:
         time.sleep(3)
         machine.updateSimulation(datetime.now())
-    
+        

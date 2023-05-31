@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 
+from database.handler.databaseHandler import DatabaseHandler
+
 class Warnings:
     def __init__(self) -> None:    
         self.errors = []
@@ -24,16 +26,14 @@ class Warnings:
     
     #in correct id order
     def initPossibleErrors(self):
-        self.possibleErrors.append("Coolant empty. Machine is stopping!")
-        self.possibleErrors.append("Laser module burnt out. Machine is stopping!")
-        self.possibleErrors.append("Power consumption significantly too high. Machine is stopping!")
+        for errorMessage in DatabaseHandler.selectErrorMessages():
+            self.possibleErrors.append(errorMessage)
         print("InitErrors complete")
         
     #in correct id order
     def initPossibleWarnings(self):
-        self.possibleWarnings.append("Coolant Level below 10%. Please refill!")
-        self.possibleWarnings.append("Laser module power below 10%. Please swap module!")
-        self.possibleWarnings.append("Power Consumption is getting high. Please take a break!") 
+        for warningMessage in DatabaseHandler.selectWarningMessages():
+            self.possibleWarnings.append(warningMessage)
         print("InitWarnings complete")      
     
     def coolantLvlWarning(self):

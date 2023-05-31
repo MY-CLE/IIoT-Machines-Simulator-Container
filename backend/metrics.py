@@ -9,6 +9,11 @@ class Metrics(object):
         self.coolantLevelPercent: int = coolantLevelPercent
         self.powerConsumptionKWH: int = simulationMode.getPowerConsumptionKWH()
         self.laserModuleWeardownPercent: int = simulationMode.getLaserModuleWeardown()
+        self.timePerItem: int = simulationMode.getTimePerItem()
+        self.totalItemsProduced: int = 0
+
+    def getTotalItemsProduced(self) -> int:
+        return self.totalItemsProduced
 
     def getCoolantLevelPercent(self) -> int:
         return (int)(round(self.coolantLevelPercent))
@@ -23,9 +28,11 @@ class Metrics(object):
         self.updateCoolantLevel()
         self.updatePowerConsumption(runtimeInSeconds)
         self.updateLaserModule(runtimeInSeconds)
+        self.updateTotalItemsProduced(runtimeInSeconds, self.timePerItem)
         print(self.coolantLevelPercent)
         print(self.powerConsumptionKWH)
         print(self.laserModuleWeardownPercent)
+        print(self.timePerItem)
 
     def updateCoolantLevel(self) -> None:
         self.coolantLevelPercent -= (self.laserModuleWeardownPercent / 120)
@@ -36,6 +43,9 @@ class Metrics(object):
     def updateLaserModule(self, runtimeInSeconds: int) -> None:
         self.laserModuleWeardownPercent -= (runtimeInSeconds / 60)
 
+    def updateTotalItemsProduced(self, runTimeInSeconds: int, timePerItem: int) -> None:
+        self.totalItemsProduced = runTimeInSeconds / timePerItem
+
 
 if __name__ == "__main__":
     metrics = Metrics(100, Triangle())
@@ -44,6 +54,7 @@ if __name__ == "__main__":
         time.sleep(5)
         times.calculateRunTime(datetime.now())
         metrics.updateMetrics(times.getRuntime())
-        print(metrics.getPowerConsumptionKWH())
-        print(metrics.getLaserModulePowerWeardown())
-        print(metrics.getCoolantLevelPercent())
+        print("PowerConsumptionKWH: ", metrics.getPowerConsumptionKWH())
+        print("LaserModulePowerWeardown: ", metrics.getLaserModulePowerWeardown())
+        print("CoolantLevelPercent: ", metrics.getCoolantLevelPercent())
+        print("TotalItemsProduced: ", int(metrics.getTotalItemsProduced()))
