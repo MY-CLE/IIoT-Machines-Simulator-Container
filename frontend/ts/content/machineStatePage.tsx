@@ -5,7 +5,7 @@ import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
 import { useLocation, useNavigate } from "react-router-dom";
-import { authenticate, getErrors, getMachine } from "../api-service";
+import { authenticate, getErrors, getMachine, sendError } from "../api-service";
 import { Errors, Machine, Parameter, StatusBarValues } from "../interfaces";
 import Modal from "react-modal";
 
@@ -61,10 +61,11 @@ function MachineStatePage(props: {
   useEffect(() => {
     (async () => {
       let newErrors = await getErrors(props.state.simulation_id | 0);
-
+      console.log("new Errors getting fetched")
       if (newErrors.errors && newErrors.warnings) {
         // wenn es Fehlermeldungen gibt, werden diese gesetzt
         setErrors(newErrors);
+        
       }
 
       let machineState = await getMachine(
@@ -182,6 +183,7 @@ function MachineStatePage(props: {
           <div className="flex flex-col w-2/5 p-2 text-2xl text-center justify-evenly">
             <div className="flex flex-grow w-full mb-5 text-2xl">
               <SendError
+                simulationID={props.state.simulation_id}
                 name={"Error"}
                 messages={errors.errors}
                 color={"bg-red-500"}
@@ -189,6 +191,7 @@ function MachineStatePage(props: {
             </div>
             <div className="flex flex-grow w-full mt-5 text-2xl">
               <SendError
+                simulationID={props.state.simulation_id}
                 name={"Warning"}
                 messages={errors.warnings}
                 color={"bg-orange-500"}
