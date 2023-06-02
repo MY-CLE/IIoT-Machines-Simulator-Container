@@ -170,7 +170,7 @@ def auth(simulations_id):
 def error(simulations_id):
     if request.method == 'GET':
         data = simulator.warnings.getNotificationsJSON()
-        return data #list of all errors and warnings
+        return jsonify(simulator.getProgramState()) #list of all errors and warnings
     elif request.method == 'POST':
         error_id = request.form.get('error_id')
         warning_id = request.form.get('warning_id')
@@ -213,41 +213,7 @@ def programs(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
 def currentProgram(simulations_id):
     if request.method == 'GET':
-         return jsonify({
-    "description": "Zahnrad",
-    "parameters": [
-        {
-            "id": "1",
-            "description": "current_amount",
-            "value": "50"
-        },
-        {
-            "id": "2",
-            "description": "target_amount",
-            "value": "100"
-        },
-        {
-            "id": "3",
-            "description": "uptime_in_s",
-            "value": "50"
-        },
-        {
-            "id": "4",
-            "description": "power_consumption_in_Wh",
-            "value": "5000"
-        },
-        {
-            "id": "5",
-            "description": "coolant_consumption_in_percent",
-            "value": "10"
-        },
-        {
-            "id": "6",
-            "description": "time_per_item_in_s",
-            "value": "1"
-        }
-    ]
-})#current program state
+         return simulator.getProgramState()#current program state
     elif request.method == 'POST':
         program_id = request.args.get('program_id')
         return #set this program to be the current one

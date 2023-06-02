@@ -11,6 +11,7 @@ class Metrics(object):
         self.laserModuleWeardownPercent: int = simulationMode.getLaserModuleWeardown()
         self.timePerItem: int = simulationMode.getTimePerItem()
         self.totalItemsProduced: int = 0
+        self.targetAmount: int = 100
 
     def getTotalItemsProduced(self) -> int:
         return self.totalItemsProduced
@@ -23,6 +24,18 @@ class Metrics(object):
 
     def getLaserModulePowerWeardown(self) -> int:
         return (int)(round(self.laserModuleWeardownPercent))
+    
+    def getTimePerItem(self) -> int:
+        return self.timePerItem
+    
+    def getUptime(self) -> int:
+        return 2
+    
+    def getCoolantConsumption(self) -> int:
+        return 2
+    
+    def getTargetAmount(self) -> int:
+        return self.targetAmount
     
     def updateMetrics(self, runtimeInSeconds: int) -> None:
         self.updateCoolantLevel()
@@ -44,8 +57,7 @@ class Metrics(object):
         self.laserModuleWeardownPercent -= (runtimeInSeconds / 60)
 
     def updateTotalItemsProduced(self, runTimeInSeconds: int, timePerItem: int) -> None:
-        self.totalItemsProduced = runTimeInSeconds / timePerItem
-
+        self.totalItemsProduced = int(runTimeInSeconds / timePerItem)
 
 if __name__ == "__main__":
     metrics = Metrics(100, Triangle())

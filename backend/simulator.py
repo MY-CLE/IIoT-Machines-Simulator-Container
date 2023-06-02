@@ -1,4 +1,5 @@
-from datetime import datetime 
+from datetime import datetime
+import json 
 import random
 import time
 import sys
@@ -24,8 +25,9 @@ parameterMap ={
     2: "powerConsumption",
     3: "laserModulePower",
     4: "standstillTime",
-    5: "errorState",
-    6: "privilegeState"
+    5: "privilegeState",
+    6: "timePerItem",
+    7: "totalItems"
 }
 
 class Simulator: 
@@ -107,11 +109,36 @@ class Simulator:
         if self.metrics.getLaserModulePowerWeardown() <= 10:
             self.warnings.laserModuleWarning()
 
-
+    
     #return of JSON
     def getMachineState(self):
         return self.__json__()
-    
+
+    #return on Parametes in JSON format
+    def getProgramState(self):
+        programParameterList = [{"description": "Program runtime", "value":self.times.getRuntime()},
+                           {"description": "Target amount", "value": self.metrics.getTargetAmount()},
+                           {"description": "Current amount", "value": self.metrics.getTotalItemsProduced()},
+                           {"description": "Coolant consumption", "value": self.metrics.getCoolantConsumption()},
+                           {"description": "Power consumption", "value": self.metrics.getPowerConsumptionKWH()},
+                           {"description": "Laser module power", "value": self.metrics.getLaserModulePowerWeardown()},
+                           {"description": "Items per s", "value": self.metrics.getTimePerItem()},
+                           ]
+
+        data = {
+            "description": "Zahnrad",
+            "parameters": []
+        }
+        for index, param in enumerate(programParameterList):
+            parameter = {
+                "id": index,
+                "description": param["description"],
+                "value": param["value"]
+            }
+            data["parameters"].append(parameter)
+        print(data)
+        return data
+        
     def __json__(self):
         return {
             "parameters": [   
@@ -142,13 +169,18 @@ class Simulator:
                 },
                 {
                     "id": "5",
-                    "description": "Error_state",
-                    "value": self.warnings.getErrors()
+                    "description": "Privilege_state",
+                    "value": self.privilegeState
                 },
                 {
                     "id": "6",
-                    "description": "Privilege_state",
-                    "value": self.privilegeState
+                    "description": "Time_per_item",
+                    "value": self.metrics.getTimePerItem()
+                },
+                {
+                    "id": "7",
+                    "description": "Items_produced",
+                    "value": self.metrics.getTotalItemsProduced()
                 }
             ],
             "error_state": {

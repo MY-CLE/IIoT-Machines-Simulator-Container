@@ -14,10 +14,10 @@ class Times(object):
         return self.stopTime
         
     def getRuntime(self) -> int:
-        return self.runtime
+        return int(self.runtime)
         
     def getIdleTime(self) -> int:
-        return self.idleTime
+        return int(self.idleTime)
     
         
     def setStopTime(self) -> None:

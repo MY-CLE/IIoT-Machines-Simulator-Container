@@ -4,6 +4,7 @@ class Mode(object):
         self.timePerItem: int = timePerItem
         self.powerConsumptionKWH: int = powerConsumptionKWH
         self.laserModuleWeardown: int = laserModuleWeardown
+        #self.targetAmount: int = targetAmount
 
     def getTimePerItem(self) -> int:
         return self.timePerItem
