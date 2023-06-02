@@ -7,6 +7,7 @@ import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
 from triangle import Triangle
+from circle import Circle
 
 app = Flask(__name__)
 CORS(app) #For local testing

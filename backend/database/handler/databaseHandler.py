@@ -4,6 +4,7 @@ import sys
 sys.path.append("../backend")
 from database.orm.databaseObject import DatabaseObject
 from database.orm.machine.machineProgram import MachineProgram
+from database.orm.program.programState import ProgramState
 from database.orm.notification.warning import Warning
 from database.orm.notification.error import Error
 
@@ -12,6 +13,10 @@ class DatabaseHandler:
     _CONNECTION = sqlite3.connect("database/machine-sim.db")
     _CURSOR = _CONNECTION.cursor()
 
+    @staticmethod
+    def selectProgramState(wId: int) -> ProgramState:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM program_state WHERE program_state_id = '{wId}'")
+        return ProgramState(DatabaseObject(resultSet[0]))
 
     @staticmethod
     def select(query: str) -> list[DatabaseObject]:

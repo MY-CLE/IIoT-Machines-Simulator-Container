@@ -8,5 +8,5 @@ class Rectangle(Mode):
      
      def __init__(self) -> None:
           program: MachineProgram = DatabaseHandler.selectMachineProgram('Rectangle')
-          #program_state: ProgramState = DatabaseHandler.select
-          super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem())
+          programState: ProgramState = DatabaseHandler.selectProgramStateTargetAmount(1) #1 rectangle, 2 triangle, 3 circle
+          super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount())

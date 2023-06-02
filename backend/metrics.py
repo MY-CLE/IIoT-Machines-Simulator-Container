@@ -11,7 +11,7 @@ class Metrics(object):
         self.laserModuleWeardownPercent: int = simulationMode.getLaserModuleWeardown()
         self.timePerItem: int = simulationMode.getTimePerItem()
         self.totalItemsProduced: int = 0
-        self.targetAmount: int = 100
+        self.targetAmount: int = simulationMode.getTargetAmount()
 
     def getTotalItemsProduced(self) -> int:
         return self.totalItemsProduced
