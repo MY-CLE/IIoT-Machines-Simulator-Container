@@ -153,7 +153,7 @@ def simulationsId(simulations_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachineState()
+        return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
         print(data)

@@ -53,6 +53,9 @@ class Simulator:
         print("Machine stopped!")
         self.state = False
     
+    def getPrivilegeState(self) -> bool:
+        return self.privilegeState
+
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
@@ -111,10 +114,13 @@ class Simulator:
 
     
     #return of JSON
-    def getMachineState(self):
-        return self.__json__()
+    def getMachineStateJson(self):
+        return self.getmachineState()
+    
+    def getProgramStateJson(self):
+        return self.getProgramState()
 
-    #return on Parametes in JSON format
+    #return on programStateParametes in JSON format
     def getProgramState(self):
         programParameterList = [{"description": "Program runtime", "value":self.times.getRuntime()},
                            {"description": "Target amount", "value": self.metrics.getTargetAmount()},
@@ -136,68 +142,32 @@ class Simulator:
                 "value": param["value"]
             }
             data["parameters"].append(parameter)
-        print(data)
         return data
         
-    def __json__(self):
-        return {
-            "parameters": [   
-                {
-                    "id": "0",
-                    "description": "Runtime",
-                    "value": round(self.times.getRuntime())
-                },
-                {
-                    "id": "1",
-                    "description": "Coolant_level",
-                    "value": self.metrics.getCoolantLevelPercent()
-                },
-                {
-                    "id": "2",
-                    "description": "Power_consumption",
-                    "value": self.metrics.getPowerConsumptionKWH()
-                },
-                {
-                    "id": "3",
-                    "description": "Power_laser_module",
-                    "value": self.metrics.getLaserModulePowerWeardown()
-                },
-                {
-                    "id": "4",
-                    "description": "Standstill_time",
-                    "value": self.times.calculateIdleTime(datetime.now())
-                },
-                {
-                    "id": "5",
-                    "description": "Privilege_state",
-                    "value": self.privilegeState
-                },
-                {
-                    "id": "6",
-                    "description": "Time_per_item",
-                    "value": self.metrics.getTimePerItem()
-                },
-                {
-                    "id": "7",
-                    "description": "Items_produced",
-                    "value": self.metrics.getTotalItemsProduced()
-                }
-            ],
-            "error_state": {
-                "errors": [
-                    {
-                        "error_id": 0
-                    }
-                ],
-                "warnings": [
-                    {
-                        "error_id": 0
-                    }
-                ]
-            }
+    #build machineStateParameters JSON
+    def getmachineState(self):
+        machineParametersList = [{"description": "Runtime", "Value": self.times.getRuntime()},
+                             {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
+                             {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
+                             {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
+                             {"description": "PrivilegeState", "Value": self.getPrivilegeState()},
+                             {"description": "Time_per_item", "Value": self.metrics.getTimePerItem()},
+                             {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
+                             {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
+                             ]
+        
+        data = {
+            "parameters": []
         }
 
-    
+        for index, param in enumerate(machineParametersList):
+            parameter = {
+                "id:": index,
+                "description": param["description"],
+                "value": param["Value"]
+            }
+            data["parameters"].append(parameter)
+        return data
 
 
 if __name__ == "__main__":
