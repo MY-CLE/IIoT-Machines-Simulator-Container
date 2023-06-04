@@ -160,23 +160,47 @@ class Simulator:
                              {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
                              {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
-                             {"description": "PrivilegeState", "Value": self.getPrivilegeState()},
+                             {"description": "Privilege_state", "Value": self.getPrivilegeState()},
                              {"description": "Time_per_item", "Value": self.metrics.getTimePerItem()},
                              {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
                              {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
                              ]
         
         data = {
-            "parameters": []
+            "parameters": [],
+            "error_state": {
+                "errors": [],
+                "warnings": [],
+            }
         }
 
         for index, param in enumerate(machineParametersList):
             parameter = {
-                "id:": index,
+                "id:": str(index),
                 "description": param["description"],
                 "value": param["Value"]
             }
             data["parameters"].append(parameter)
+        
+        currentErrors = self.warnings.getErrors()
+        for index, error in enumerate(currentErrors):
+            tempError = {
+                "id": str(index),
+                "description": error
+            }
+            data["error_state"]["errors"].append(tempError)
+            print("here")
+            print(index)
+            print(error)
+            print(data["error_state"]["errors"])
+        
+        currentWarnings = self.warnings.getWarnings()
+        for index, warning in enumerate(currentWarnings):
+            tempWarning = {
+                "id": str(index),
+                "description": warning
+            }
+            data["error_state"]["warnings"].append(tempWarning)
         return data
 
 
