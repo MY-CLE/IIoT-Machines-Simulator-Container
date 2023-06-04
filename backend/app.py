@@ -6,11 +6,13 @@ from flask import Flask, jsonify, request, make_response
 import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
+from triangle import Triangle
+from circle import Circle
 
 app = Flask(__name__)
 CORS(app) #For local testing
 
-simulator = Simulator()
+simulator = Simulator(Triangle())
 
 #/time to test the API
 
@@ -151,14 +153,13 @@ def simulationsId(simulations_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachineState()
+        return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
         print(data)
         simulator.setParameter(int(data["id"]), int(data["value"]))
-        response = make_response("<h1>Success</h1>")
-        response.status_code = 200
-        return response #change parameter(s) in the machine state
+
+        return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
 def auth(simulations_id):
@@ -169,39 +170,20 @@ def auth(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
 def error(simulations_id):
     if request.method == 'GET':
-        return jsonify({
-    "errors": [
-        {
-            "id":"0",
-            "name":"Sicherheitstüre offen"
-        },
-        {
-            "id":"1",
-            "name":"Leistung Lasermodul unzureichend"
-        },
-        {
-            "id":"2",
-            "name":"Programmfehler"
-        }
-    ],
-    "warnings": [
-        {
-            "id":"0",
-            "name":"Kühlwasser zu sauer"
-        },
-        {
-            "id":"1",
-            "name":"Hohe Laufzeit"
-        },
-        {
-            "id":"2",
-            "name":"Kühlwasserstand niedrig"
-        }
-    ]
-    }) #list of all errors and warnings
+        data = simulator.warnings.getNotificationsJSON()
+        return data #list of all errors and warnings
     elif request.method == 'POST':
-        error_id = request.args.get('error_id')
-        return #creates the given error (via id) on the machine
+        error_id = request.form.get('error_id')
+        warning_id = request.form.get('warning_id')
+
+        if error_id is None and warning_id is None:
+            return jsonify({'error': 'No error_id or warning_id provided.'})
+        if error_id:
+            simulator.warnings.setSelectedError(error_id)
+        elif warning_id:
+            simulator.warnings.setSelectedWarning(warning_id)
+
+        return jsonify({'message': 'Success'})
 
 
 #Programs
@@ -232,41 +214,7 @@ def programs(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
 def currentProgram(simulations_id):
     if request.method == 'GET':
-         return jsonify({
-    "description": "Zahnrad",
-    "parameters": [
-        {
-            "id": "1",
-            "description": "current_amount",
-            "value": "50"
-        },
-        {
-            "id": "2",
-            "description": "target_amount",
-            "value": "100"
-        },
-        {
-            "id": "3",
-            "description": "uptime_in_s",
-            "value": "50"
-        },
-        {
-            "id": "4",
-            "description": "power_consumption_in_Wh",
-            "value": "5000"
-        },
-        {
-            "id": "5",
-            "description": "coolant_consumption_in_percent",
-            "value": "10"
-        },
-        {
-            "id": "6",
-            "description": "time_per_item_in_s",
-            "value": "1"
-        }
-    ]
-})#current program state
+         return simulator.getProgramState()#current program state
     elif request.method == 'POST':
         program_id = request.args.get('program_id')
         return #set this program to be the current one
@@ -281,3 +229,7 @@ def currentProgram(simulations_id):
     ]
     }) #change parameter(s) in the current program state
 
+
+#debuggin purposes
+if __name__ == '__main__':
+  print(jsonify(simulator.warnings.getNotificationsJSON()))

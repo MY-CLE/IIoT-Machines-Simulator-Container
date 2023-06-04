@@ -1,0 +1,7 @@
+{
+    "python.analysis.extraPaths": [
+        "./backend/database/orm",
+        "./backend/database/orm/machine",
+        "./backend/database/orm/notification"
+    ]
+}
