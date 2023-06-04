@@ -12,7 +12,7 @@ class Metrics(object):
         self.timePerItem: int = simulationMode.getTimePerItem()
         self.totalItemsProduced: int = 0
         self.targetAmount: int = simulationMode.getTargetAmount()
-        self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 120
+        self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 1200
 
     def setCoolantLevelPercent(self, coolantLevelPercent: int) -> None:
         self.coolantLevelPercent = coolantLevelPercent

@@ -171,7 +171,7 @@ def auth(simulations_id):
 def error(simulations_id):
     if request.method == 'GET':
         data = simulator.warnings.getNotificationsJSON()
-        return jsonify(simulator.getProgramState()) #list of all errors and warnings
+        return data #list of all errors and warnings
     elif request.method == 'POST':
         error_id = request.form.get('error_id')
         warning_id = request.form.get('warning_id')

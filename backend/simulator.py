@@ -122,8 +122,7 @@ class Simulator:
             self.warnings.powerConsumptionWarning()
         if self.metrics.getLaserModulePowerWeardown() <= 10:
             self.warnings.laserModuleWarning()
-
-    
+   
     #return of JSON
     def getMachineStateJson(self):
         return self.getMachineState()
@@ -143,7 +142,7 @@ class Simulator:
                            ]
 
         data = {
-            "description": "Zahnrad",
+            "description": "Triangle",
             "parameters": []
         }
         for index, param in enumerate(programParameterList):
