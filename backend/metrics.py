@@ -14,6 +14,18 @@ class Metrics(object):
         self.targetAmount: int = simulationMode.getTargetAmount()
         self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 120
 
+    def setCoolantLevelPercent(self, coolantLevelPercent: int) -> None:
+        self.coolantLevelPercent = coolantLevelPercent
+
+    def setPowerConsumptionKWH(self, simulationMode: Mode) -> None:
+        self.powerConsumptionKWH = simulationMode.getPowerConsumptionKWH()
+
+    def setLaserModulePowerWeardown(self, simulationMode: Mode) -> None:
+        self.laserModuleWeardownPercent = simulationMode.getLaserModuleWeardown()
+    
+    def setTotalItemsProduced(self, itemsProduced: int) -> None:
+        self.totalItemsProduced = itemsProduced
+    
     def getTotalItemsProduced(self) -> int:
         return self.totalItemsProduced
 
@@ -34,16 +46,17 @@ class Metrics(object):
     
     def getTargetAmount(self) -> int:
         return self.targetAmount
-    
+
     def updateMetrics(self, runtimeInSeconds: int) -> None:
         self.updateCoolantLevel()
         self.updatePowerConsumption(runtimeInSeconds)
         self.updateLaserModule(runtimeInSeconds)
         self.updateTotalItemsProduced(runtimeInSeconds, self.timePerItem)
-        print(self.coolantLevelPercent)
-        print(self.powerConsumptionKWH)
-        print(self.laserModuleWeardownPercent)
-        print(self.timePerItem)
+        print("Coolant level percent: ", self.coolantLevelPercent)
+        print("Power consumption in KWH: ", self.powerConsumptionKWH)
+        print("Laser module weardown: ", self.laserModuleWeardownPercent)
+        print("Time per item:", self.timePerItem)
+        print("Total items produced:", self.totalItemsProduced)
 
     def updateCoolantLevel(self) -> None:
         self.coolantLevelPercent -= self.coolantCoolantConsumption

@@ -33,6 +33,7 @@ parameterMap ={
 class Simulator: 
     def __init__(self, simulationMode: Mode):
         self.state = True
+        self.simulationMode = simulationMode
 
         self.privilegeState: bool = False
         
@@ -73,6 +74,16 @@ class Simulator:
         self.modbusServer.startServer()
         self.modbusServer.logServerChanges(0, 10)
         logging.info("Server started")
+
+    def resetSimulator(self):
+        self.state = False
+        self.times.setRunTime(0)
+        self.times.setStopTime()
+
+        self.metrics.setCoolantLevelPercent(100)
+        self.metrics.setPowerConsumptionKWH(self.simulationMode)
+        self.metrics.setLaserModulePowerWeardown(self.simulationMode)
+        self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
         self.times.calculateRunTime(time)
@@ -115,7 +126,7 @@ class Simulator:
     
     #return of JSON
     def getMachineStateJson(self):
-        return self.getmachineState()
+        return self.getMachineState()
     
     def getProgramStateJson(self):
         return self.getProgramState()
@@ -145,7 +156,7 @@ class Simulator:
         return data
         
     #build machineStateParameters JSON
-    def getmachineState(self):
+    def getMachineState(self):
         machineParametersList = [{"description": "Runtime", "Value": self.times.getRuntime()},
                              {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
@@ -172,7 +183,10 @@ class Simulator:
 
 if __name__ == "__main__":
     machine = Simulator(Triangle())
-    while True:
+    #while True:
+    for i in range(5):
         time.sleep(3)
         machine.updateSimulation(datetime.now())
+    machine.resetSimulator()
+    print(machine.getMachineState())
         

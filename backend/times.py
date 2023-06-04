@@ -19,7 +19,15 @@ class Times(object):
     def getIdleTime(self) -> int:
         return int(self.idleTime)
     
+    def setRunTime(self, runtime: int) -> None:
+        self.runtime = runtime
         
+    def setStartTime(self, startTime: datetime) -> None:
+        self.startTime = startTime
+    
+    def setIdleTime(self, idleTime: int) -> None:
+        self.idleTime = idleTime
+
     def setStopTime(self) -> None:
         self.stopTime = datetime.now()
     
