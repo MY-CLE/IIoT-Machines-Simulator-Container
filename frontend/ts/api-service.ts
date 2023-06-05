@@ -82,6 +82,76 @@ export async function setProtocol(formdata: FormData) {
     .catch((error) => console.log("error", error));
 }
 
+export async function startProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [
+          { id: 900, description: "program_status", value: "start" },
+        ],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
+export async function stopProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [{ id: 900, description: "program_status", value: "stop" }],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
+export async function restartProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [
+          { id: 900, description: "program_status", value: "restart" },
+        ],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
 export async function patchMachineParameter(
   simulation_id: number,
   parameter: Parameter
