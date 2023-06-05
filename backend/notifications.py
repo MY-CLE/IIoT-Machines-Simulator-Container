@@ -38,54 +38,75 @@ class Warnings:
     
     def coolantLvlWarning(self):
         warningMessage = self.possibleWarnings[0]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
+            print(warningMessage)
 
     def laserModuleWarning(self):
         warningMessage = self.possibleWarnings[1]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
+            print(warningMessage)
 
     def powerConsumptionWarning(self):
         warningMessage = self.possibleWarnings[2]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
+            print(warningMessage)
 
     def coolantLvlError(self):
         errorMessage = self.possibleErrors[0]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
+            print(errorMessage)
 
     def laserModuleError(self):
         errorMessage = self.possibleErrors[1]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
+            print(errorMessage)
 
     def powerConsumption(self):
         errorMessage = self.possibleErrors[2]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
+            print(errorMessage)
         
     def setSelectedError(self, error_id):
         errorMessage = self.possibleErrors[int(error_id)]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
-        print("Lenght of current Error List =" , len(self.errors))
+        if not self.checkExistingErrors(errorMessage):          
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
+            print(errorMessage)
+            print("Lenght of current Error List =" , len(self.errors))
 
     def setSelectedWarning(self, warning_id):
         warningMessage = self.possibleWarnings[int(warning_id)]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
-        print("Lenght of current Error List =" , len(self.warnings))
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
+            print(warningMessage)
+            print("Lenght of current Error List =" , len(self.warnings))
         
+    def checkExistingErrors(self, errorMessage):
+        for index, message in enumerate(self.errors):
+            if message[1] is errorMessage:
+                return True
+        return False
+        
+        
+    def checkExistingWarnings(self, warningMessage):
+        for index, message in enumerate(self.warnings):
+            if message[1] is warningMessage:
+                return True
+        return False
+    
     def getNotificationsJSON(self):
         data = {
             "errors": [],

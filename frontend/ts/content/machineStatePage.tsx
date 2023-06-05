@@ -55,17 +55,24 @@ function MachineStatePage(props: {
     lock: false,
   }); // Werte für die Statusbar
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [listPopup, setListPopup] = useState(false);
+  const [activeErrorsAndWarnings, setActiveErrorsAndWarnings] = useState<{
+    errors: { id: number; name: string }[];
+    warnings: { id: number; name: string }[];
+  }>({
+    errors: [],
+    warnings: [],
+  });
 
   const navigation = useNavigate();
 
   useEffect(() => {
     (async () => {
       let newErrors = await getErrors(props.state.simulation_id | 0);
-      console.log("new Errors getting fetched")
+      console.log("new Errors getting fetched");
       if (newErrors.errors && newErrors.warnings) {
         // wenn es Fehlermeldungen gibt, werden diese gesetzt
         setErrors(newErrors);
-        
       }
 
       let machineState = await getMachine(
@@ -89,6 +96,7 @@ function MachineStatePage(props: {
       setStatusesBarValues(values);
 
       setParameters(machineState.parameters);
+      setActiveErrorsAndWarnings(machineState.error_state);
     }, 5000);
     return () => clearInterval(id);
   }, []);
@@ -113,6 +121,7 @@ function MachineStatePage(props: {
 
   async function openModal() {
     console.log("open modal");
+    setListPopup(false);
     setModalIsOpen(true);
   }
   function afterOpenModal() {}
@@ -137,9 +146,15 @@ function MachineStatePage(props: {
     closeModal();
   }
 
+  function openListPopup() {
+    setListPopup(true);
+    console.log(activeErrorsAndWarnings.errors[1]);
+    console.log(activeErrorsAndWarnings.errors[1].id);
+    console.log(activeErrorsAndWarnings.errors[1].name[0]);
+  }
+
   function navigateToProgram() {
     console.log(props.state.program_id);
-
     if (props.state.program_id === -1) {
       navigation(`/programs`);
     } else {
@@ -165,6 +180,87 @@ function MachineStatePage(props: {
         <SelectionBar program={navigateToProgram} machine={null} />
       </div>
       <div className="flex flex-col justify-start w-full h-full p-2 text-2xl bg-gray-200 border border-t-0 border-black border-1">
+        {listPopup && (
+          <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white w-1/2 h-full p-4 flex flex-col justify-between items-center border border-gray-500">
+              <div>
+                {activeErrorsAndWarnings.errors.length > 0 && (
+                  <>
+                    <h1>Errors:</h1>
+                    <br />
+                    <table className="border-collapse">
+                      <thead>
+                        <tr>
+                          <th className="border border-gray-500 px-4 py-2 w-1/4">
+                            Time
+                          </th>
+                          <th className="border border-gray-500 px-4 py-2 w-3/4">
+                            Description
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeErrorsAndWarnings.errors.map(
+                          (error: { id: number; name: string }) => (
+                            <tr key={error.id}>
+                              <td className="border border-gray-500 px-4 py-2 w-1/4">
+                                {error.name[0]}
+                              </td>
+                              <td className="border border-gray-500 px-4 py-2 w-3/4">
+                                {error.name[1]}
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+              <div>
+                {activeErrorsAndWarnings.warnings.length > 0 && (
+                  <>
+                    <br />
+                    <h1>Warnings:</h1>
+                    <br />
+                    <table className="border-collapse">
+                      <thead>
+                        <tr>
+                          <th className="border border-gray-500 px-4 py-2 w-1/4">
+                            Time
+                          </th>
+                          <th className="border border-gray-500 px-4 py-2 w-3/4">
+                            Description
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {activeErrorsAndWarnings.warnings.map(
+                          (warning: { id: number; name: string}) => (
+                            <tr key={warning.id}>
+                              <td className="border border-gray-500 px-4 py-2 w-1/4">
+                                {warning.name[0]}
+                              </td>
+                              <td className="border border-gray-500 px-4 py-2 w-3/4">
+                                {warning.name[1]}
+                              </td>
+                            </tr>
+                          )
+                        )}
+                      </tbody>
+                    </table>
+                  </>
+                )}
+              </div>
+              <button
+                className="border border-gray-500 rounded px-4 py-2 mt-4"
+                onClick={openModal}
+              >
+                Quittieren
+              </button>
+            </div>
+          </div>
+        )}
         <div className="w-full h-auto text-4xl text-left">Maschinenzustand</div>
         <div className="flex flex-row flex-grow w-full h-full">
           <div className="flex flex-col items-center justify-center flex-grow w-2/5 h-full p-2 text-center">
@@ -206,7 +302,7 @@ function MachineStatePage(props: {
                 </div>
                 <button
                   className={`w-52 h-52 border border-black rounded-full mb-5 text-center pt-20 bg-red-500 font-medium`}
-                  onClick={openModal}
+                  onClick={openListPopup}
                 >
                   <span> Quittieren</span>
                 </button>

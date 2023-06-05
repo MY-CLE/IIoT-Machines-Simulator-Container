@@ -46,6 +46,7 @@ function SendError(props: sendErrorProps) {
         id={props.name}
         onChange={handleSelectChange}
       >
+        <option value="">Select {props.name}</option>
         {props.messages.map((item) => {
           return (
             <option key={item.id} value={item.id}>
