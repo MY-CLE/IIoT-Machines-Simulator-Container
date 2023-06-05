@@ -49,7 +49,6 @@ class Simulator:
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
-
     def setProtocol(self, protocol: str) -> None:
         self.protocol = protocol
 
@@ -58,34 +57,35 @@ class Simulator:
 
     def stopSimulator(self) -> None:
         self.simulatorState = False
-        
+
         if (self.protocol == "OPCUA"):
             self.opcuaServerThread.terminate()
+            logging.info("OPCUA Server stopped")
         elif (self.protocol == "Modbus/TCP"):
             self.modbusServerThread.terminate()
+            logging.info("Modbus/TCP Server stopped")
+        else:
+            self.protocol = "None"
     
     #start the simulation by flipping the simulators simulatorState and setting the current time 
     def startSimulator(self) -> None:
 
         self.simulatorState = True
 
-        if (self.protocol == "OPCUA"):
+        if (self.protocol == "OPCUA" and self.opcuaServerThread.is_alive() == False):
             self.opcuaServerThread.start()
-        elif (self.protocol == "Modbus/TCP"):
+        elif (self.protocol == "Modbus/TCP" and self.modbusServerThread.is_alive() == False):
             self.modbusServerThread.start()
         else:
             logging.info("No protocol selected")
-
 
     def startProgram(self) -> None:
         self.programState = True
         self.times.setStartTime(datetime.now())
 
-
     def stopProgram(self) -> None:
         self.programState = False
         self.times.setStopTime()
-
 
         logging.info("Machine stopped!")
 
@@ -127,7 +127,7 @@ class Simulator:
             if(self.protocol == "OPCUA"):
                 self.updateOPCUA()
 
-
+    # implemenation of OPCUA into the simulator
     def updateOPCUA(self) -> None:
         try:
             self.ouaClient = OPCUAClient()
@@ -141,6 +141,7 @@ class Simulator:
         except:
             self.ouaClient.client.disconnect()
 
+    # implemenation of Modbus into the simulator
     def updateModbus(self) -> None:
         try:
             self.modbusClient = ModbusTCPClient()
