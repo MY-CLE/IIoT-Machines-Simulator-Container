@@ -4,9 +4,11 @@ from database.orm.program.programState import ProgramState
 from database.orm.databaseObject import DatabaseObject
 from mode import Mode
 
+#extends class mode
+#retrieves the rectangle mode specific parameters out of the database
 class Rectangle(Mode):
      
      def __init__(self) -> None:
           program: MachineProgram = DatabaseHandler.selectMachineProgram('Rectangle')
-          programState: ProgramState = DatabaseHandler.selectProgramStateTargetAmount(1) #1 rectangle, 2 triangle, 3 circle
+          programState: ProgramState = DatabaseHandler.selectProgramState(1) 
           super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount())
