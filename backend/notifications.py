@@ -28,71 +28,61 @@ class Warnings:
     def initPossibleErrors(self):
         for errorMessage in DatabaseHandler.selectErrorMessages():
             self.possibleErrors.append(errorMessage)
-        print("InitErrors complete")
         
     #in correct id order
     def initPossibleWarnings(self):
         for warningMessage in DatabaseHandler.selectWarningMessages():
-            self.possibleWarnings.append(warningMessage)
-        print("InitWarnings complete")      
+            self.possibleWarnings.append(warningMessage)  
     
     def coolantLvlWarning(self):
         warningMessage = self.possibleWarnings[0]
         if not self.checkExistingWarnings(warningMessage):
             warningTime = datetime.now()
             self.warnings.append((warningTime, warningMessage))
-            print(warningMessage)
 
     def laserModuleWarning(self):
         warningMessage = self.possibleWarnings[1]
         if not self.checkExistingWarnings(warningMessage):
             warningTime = datetime.now()
             self.warnings.append((warningTime, warningMessage))
-            print(warningMessage)
 
     def powerConsumptionWarning(self):
         warningMessage = self.possibleWarnings[2]
         if not self.checkExistingWarnings(warningMessage):
             warningTime = datetime.now()
             self.warnings.append((warningTime, warningMessage))
-            print(warningMessage)
 
     def coolantLvlError(self):
         errorMessage = self.possibleErrors[0]
         if not self.checkExistingErrors(errorMessage):
             errorTime = datetime.now()
             self.errors.append((errorTime, errorMessage))
-            print(errorMessage)
 
     def laserModuleError(self):
         errorMessage = self.possibleErrors[1]
         if not self.checkExistingErrors(errorMessage):
             errorTime = datetime.now()
             self.errors.append((errorTime, errorMessage))
-            print(errorMessage)
 
     def powerConsumption(self):
         errorMessage = self.possibleErrors[2]
         if not self.checkExistingErrors(errorMessage):
             errorTime = datetime.now()
             self.errors.append((errorTime, errorMessage))
-            print(errorMessage)
         
     def setSelectedError(self, error_id):
         errorMessage = self.possibleErrors[int(error_id)]
         if not self.checkExistingErrors(errorMessage):          
             errorTime = datetime.now()
             self.errors.append((errorTime, errorMessage))
-            print(errorMessage)
-            print("Lenght of current Error List =" , len(self.errors))
+
 
     def setSelectedWarning(self, warning_id):
         warningMessage = self.possibleWarnings[int(warning_id)]
         if not self.checkExistingWarnings(warningMessage):
             warningTime = datetime.now()
             self.warnings.append((warningTime, warningMessage))
-            print(warningMessage)
-            print("Lenght of current Error List =" , len(self.warnings))
+        
         
     def checkExistingErrors(self, errorMessage):
         for index, message in enumerate(self.errors):
