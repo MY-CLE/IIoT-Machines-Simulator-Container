@@ -228,7 +228,14 @@ def currentProgram(simulations_id):
         simulator.setMode(programId)
         return #set this program to be the current one
     elif request.method == 'PATCH':
-        simulator.startProgram()
+        json = request.get_json()
+        for parameter in json["parameters"]:
+            if(parameter['value'] == "start"):
+                simulator.startProgram()
+            elif(parameter['value'] == "stop"):
+                simulator.stopProgram()
+            elif(parameter['value'] == "restart"):
+                simulator.resetSimulator()
         return jsonify({
         "parameters": [
         {

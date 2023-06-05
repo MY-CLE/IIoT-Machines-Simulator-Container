@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 import time
 import logging
-import threading
+import multiprocessing
 
 from mode import Mode
 from times import Times
@@ -24,7 +24,8 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 class Simulator: 
 
     def __init__(self):
-        self.state = False
+        self.simulatorState = False
+        self.programState = False
         self.protocol = "None"
         self.privilegeState: bool = False
         self.simulationMode = Triangle()
@@ -32,16 +33,14 @@ class Simulator:
         
         #call constructor with coolantLevelPercent and simulationMode
         self.metrics: Metrics = Metrics(100, self.simulationMode)
+        
         self.warnings: Warnings = Warnings()
 
         self.times: Times = Times(datetime.now(), 0)
-        
 
         
-        self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
-
-        self.modbusServerThread = threading.Thread(target=self.startModbusServer)
-        
+        self.opcuaServerThread = multiprocessing.Process(target=self.startOPCUAServer, args=())
+        self.modbusServerThread = multiprocessing.Process(target=self.startModbusServer, args=())
 
 
     def getPrivilegeState(self) -> bool:
@@ -55,55 +54,55 @@ class Simulator:
         self.protocol = protocol
 
     def setMode(self, modeId: str) -> None:
-        #self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
-        pass
+        self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
 
     def stopSimulator(self) -> None:
-        self.times.setStopTime()
-        print("Machine stopped!")
-        self.state = False
+        self.simulatorState = False
+        
+        if (self.protocol == "OPCUA"):
+            self.opcuaServerThread.terminate()
+        elif (self.protocol == "Modbus/TCP"):
+            self.modbusServerThread.terminate()
     
-    #start the simulation by flipping the simulators state and setting the current time 
+    #start the simulation by flipping the simulators simulatorState and setting the current time 
     def startSimulator(self) -> None:
-        self.state = True
-        try:
+
+        self.simulatorState = True
+
+        if (self.protocol == "OPCUA"):
             self.opcuaServerThread.start()
+        elif (self.protocol == "Modbus/TCP"):
             self.modbusServerThread.start()
-        except:
-            os.kill(self.opcuaServerThread.ident, 9)
-            os.kill(self.modbusServerThread.ident, 9)
-        self.resetSimulator()
+        else:
+            logging.info("No protocol selected")
 
 
     def startProgram(self) -> None:
-        #self.metrics: Metrics = Metrics(100, self.simulationMode)
-        #self.warnings: Warnings = Warnings()
-        threading.Event().set()
-        self.opcuaServerThread.join()
-        self.modbusServerThread.join()
+        self.programState = True
+        self.times.setStartTime(datetime.now())
 
-        self.times: Times = Times(datetime.now(), 0)
+
+    def stopProgram(self) -> None:
+        self.programState = False
+        self.times.setStopTime()
+
+
+        logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
-        try:
-            self.ouaServer = OPCUAServer()
-            self.ouaServer.startServer()
-            logging.info("Server started")
-        except:
-            self.opcuaServerThread.join()
+        self.ouaServer = OPCUAServer()
+        self.ouaServer.startServer()
+        logging.info("Server started")
 
     def startModbusServer(self):
-        try:
-            self.modbusServer = ModbusTCPServer()
-            self.modbusServer.startServer()
-            self.modbusServer.logServerChanges(0, 10)
-            logging.info("Server started")
-        except:
-            self.modbusServerThread.join()
+        self.modbusServer = ModbusTCPServer()
+        self.modbusServer.startServer()
+        self.modbusServer.logServerChanges(0, 10)
+        logging.info("Server started")
     
-    #function to reset Simulator to default metrics, times and state
+    #function to reset Simulator to default metrics, times and simulatorState
     def resetSimulator(self):
-        self.state = False
+        self.simulatorState = False
         self.times.setRunTime(0)
         self.times.setStopTime()
 
@@ -113,7 +112,7 @@ class Simulator:
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
-        if(self.state):
+        if(self.programState == True):
             #calculate runtime with curret time
             self.times.calculateRunTime(time)
             runtime = self.times.getRuntime()
@@ -127,12 +126,10 @@ class Simulator:
                 self.updateModbus()
             if(self.protocol == "OPCUA"):
                 self.updateOPCUA()
-        else:
-            self.resetSimulator()
 
 
     def updateOPCUA(self) -> None:
-        try: 
+        try:
             self.ouaClient = OPCUAClient()
             logging.info("OPCUA Client started")
             self.ouaClient.changeParam("Runtime", int(self.times.getRuntime()))
