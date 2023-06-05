@@ -1,5 +1,4 @@
 import { Errors, Machine, Parameter, Program, Simulation } from "./interfaces";
-import React from "react";
 
 const url = `${process.env.REACT_APP_SERVER_URL}`;
 export async function getSimultions(): Promise<{ simulations: [Simulation] }> {
@@ -73,6 +72,86 @@ export async function authenticate(simulation_id: number, password: string) {
     .catch((error) => console.log("error", error));
 }
 
+export async function setProtocol(formdata: FormData) {
+  return await fetch(`${url}/simulations/protocol`, {
+    method: "PUT",
+    body: formdata,
+    redirect: "follow",
+  })
+    .then((response) => response.status)
+    .catch((error) => console.log("error", error));
+}
+
+export async function startProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [
+          { id: 900, description: "program_status", value: "start" },
+        ],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
+export async function stopProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [{ id: 900, description: "program_status", value: "stop" }],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
+export async function restartProgram(simulation_id: number) {
+  return await fetch(
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
+    {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        parameters: [
+          { id: 900, description: "program_status", value: "restart" },
+        ],
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  )
+    .then((response) => {
+      console.log(response.status);
+
+      return response.status;
+    })
+    .catch((error) => console.log("error", error));
+}
+
 export async function patchMachineParameter(
   simulation_id: number,
   parameter: Parameter
@@ -115,7 +194,7 @@ export async function sendError(simulation_id: number, error_id: number) {
     .catch((error) => console.log("error", error));
 }
 
-export async function sendWarning(simulation_id: number, warning_id: number){
+export async function sendWarning(simulation_id: number, warning_id: number) {
   const formdata = new FormData();
   console.log(warning_id);
   formdata.append("warning_id", warning_id.toString());
@@ -124,8 +203,8 @@ export async function sendWarning(simulation_id: number, warning_id: number){
     redirect: "follow",
     body: formdata,
   })
-  .then((response) => response.json())
-  .catch((error) => console.log("error", error));
+    .then((response) => response.json())
+    .catch((error) => console.log("error", error));
 }
 
 export async function getPrograms(

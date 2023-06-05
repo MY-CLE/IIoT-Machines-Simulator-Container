@@ -5,7 +5,7 @@ import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
 import { useLocation, useNavigate } from "react-router-dom";
-import { authenticate, getErrors, getMachine, sendError } from "../api-service";
+import { authenticate, getErrors, getMachine } from "../api-service";
 import { Errors, Machine, Parameter, StatusBarValues } from "../interfaces";
 import Modal from "react-modal";
 
@@ -137,7 +137,7 @@ function MachineStatePage(props: {
     console.log(password);
     (async () => {
       let statuscode = await authenticate(
-        location.state.simulation_id | 0,
+        props.state.simulation_id | 0,
         password
       );
       console.log(statuscode);
@@ -148,9 +148,9 @@ function MachineStatePage(props: {
 
   function openListPopup() {
     setListPopup(true);
-    console.log(activeErrorsAndWarnings.errors[1]);
-    console.log(activeErrorsAndWarnings.errors[1].id);
-    console.log(activeErrorsAndWarnings.errors[1].name[0]);
+    console.log(activeErrorsAndWarnings.errors[0]);
+    console.log(activeErrorsAndWarnings.errors[0].id);
+    console.log(activeErrorsAndWarnings.errors[0].name[0]);
   }
 
   function navigateToProgram() {
@@ -236,7 +236,7 @@ function MachineStatePage(props: {
                       </thead>
                       <tbody>
                         {activeErrorsAndWarnings.warnings.map(
-                          (warning: { id: number; name: string}) => (
+                          (warning: { id: number; name: string }) => (
                             <tr key={warning.id}>
                               <td className="border border-gray-500 px-4 py-2 w-1/4">
                                 {warning.name[0]}

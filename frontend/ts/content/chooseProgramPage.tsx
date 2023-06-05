@@ -55,7 +55,7 @@ function ChooseProgramPage(props: {
 
       let values: StatusBarValues = getStatusbarValues(machineState);
       setStatusBarValues(values);
-    }, 2000);
+    }, 5000);
     return () => clearInterval(id);
   }, []);
 

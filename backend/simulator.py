@@ -22,10 +22,13 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 
 
 class Simulator: 
+
     def __init__(self):
         self.state = False
+        self.protocol = "None"
         self.privilegeState: bool = False
         self.simulationMode = Triangle()
+      
         
         #call constructor with coolantLevelPercent and simulationMode
         self.metrics: Metrics = Metrics(100, self.simulationMode)
@@ -46,6 +49,10 @@ class Simulator:
 
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
+
+
+    def setProtocol(self, protocol: str) -> None:
+        self.protocol = protocol
 
     def setMode(self, modeId: str) -> None:
         #self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
@@ -106,7 +113,6 @@ class Simulator:
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
-
         if(self.state):
             #calculate runtime with curret time
             self.times.calculateRunTime(time)
@@ -117,9 +123,10 @@ class Simulator:
             #each time we check for errors and warnings
             self.checkErrors()
             self.checkWarnings()
-
-            self.updateModbus()
-            self.updateOPCUA()
+            if(self.protocol == "Modbus/TCP"):
+                self.updateModbus()
+            if(self.protocol == "OPCUA"):
+                self.updateOPCUA()
         else:
             self.resetSimulator()
 

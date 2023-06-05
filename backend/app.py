@@ -63,6 +63,12 @@ def simulations():
         return #delete all stored sims
 
 
+@app.route('/api/simulations/protocol', methods=['PUT'])
+def simultaionsProtocol():
+  if request.method == 'PUT':
+    simulator.setProtocol(request.form['protocol']);
+    return "Protocol set successfully"
+
 @app.route('/api/simulations/<int:simulations_id>', methods=['GET', 'DELETE'])
 def simulationsId(simulations_id):
     if request.method == 'GET':
