@@ -1,16 +1,17 @@
 from datetime import datetime
-import json 
-import random
+
+import os
 import time
-import sys
-#sys.path.append("backend\\opcuaIRF\\")
-import threading
 import logging
-from metrics import Metrics
-from times import Times
-from triangle import Triangle
+import threading
+
 from mode import Mode
+from times import Times
+from metrics import Metrics
+from triangle import Triangle
 from notifications import Warnings
+from database.handler.databaseHandler import DatabaseHandler
+
 from opcuaIRF.opcuaServer import OPCUAServer
 from opcuaIRF.opcuaClient import OPCUAClient
 
@@ -19,30 +20,19 @@ from modbusIRF.modbusClient import ModbusTCPClient
 
 logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
 
-parameterMap ={
-    0: "runTime",
-    1: "coolantLevel",
-    2: "powerConsumption",
-    3: "laserModulePower",
-    4: "standstillTime",
-    5: "privilegeState",
-    6: "timePerItem",
-    7: "totalItems"
-}
 
 class Simulator: 
-    def __init__(self, simulationMode: Mode):
-        self.state = True
-        self.simulationMode = simulationMode
-
+    def __init__(self):
+        self.state = False
         self.privilegeState: bool = False
+        self.simulationMode = Triangle()
         
         #call constructor with coolantLevelPercent and simulationMode
-        self.metrics: Metrics = Metrics(100, simulationMode)
+        self.metrics: Metrics = Metrics(100, self.simulationMode)
         self.warnings: Warnings = Warnings()
 
-        #call contructor with current time to set startTime of the machine
         self.times: Times = Times(datetime.now(), 0)
+        
 
         
         self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
@@ -50,25 +40,42 @@ class Simulator:
         self.modbusServerThread = threading.Thread(target=self.startModbusServer)
         
 
-        self.opcuaServerThread.start()
-        self.modbusServerThread.start()
 
-
-
-    def stopSimulator(self) -> None:
-        self.times.setStopTime()
-        print("Machine stopped!")
-        self.state = False
-    
     def getPrivilegeState(self) -> bool:
         return self.privilegeState
 
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
+    def setMode(self, modeId: str) -> None:
+        #self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
+        pass
+
+    def stopSimulator(self) -> None:
+        self.times.setStopTime()
+        print("Machine stopped!")
+        self.state = False
+    
+    #start the simulation by flipping the simulators state and setting the current time 
     def startSimulator(self) -> None:
         self.state = True
+        try:
+            self.opcuaServerThread.start()
+            self.modbusServerThread.start()
+        except:
+            os.kill(self.opcuaServerThread.ident, 9)
+            os.kill(self.modbusServerThread.ident, 9)
+        self.resetSimulator()
 
+
+    def startProgram(self) -> None:
+        #self.metrics: Metrics = Metrics(100, self.simulationMode)
+        #self.warnings: Warnings = Warnings()
+        threading.Event().set()
+        self.opcuaServerThread.join()
+        self.modbusServerThread.join()
+
+        self.times: Times = Times(datetime.now(), 0)
 
     def startOPCUAServer(self):
         try:
@@ -100,18 +107,21 @@ class Simulator:
 
     def updateSimulation(self, time: datetime) -> None:
 
-        #calculate runtime with curret time
-        self.times.calculateRunTime(time)
-        runtime = self.times.getRuntime()
-        #call of updateMetrics function with the runtime
-        self.metrics.updateMetrics(runtime)
-        
-        #each time we check for errors and warnings
-        self.checkErrors()
-        self.checkWarnings()
+        if(self.state):
+            #calculate runtime with curret time
+            self.times.calculateRunTime(time)
+            runtime = self.times.getRuntime()
+            #call of updateMetrics function with the runtime
+            self.metrics.updateMetrics(runtime)
+            
+            #each time we check for errors and warnings
+            self.checkErrors()
+            self.checkWarnings()
 
-        self.updateModbus()
-        self.updateOPCUA()
+            self.updateModbus()
+            self.updateOPCUA()
+        else:
+            self.resetSimulator()
 
 
     def updateOPCUA(self) -> None:
@@ -243,7 +253,7 @@ class Simulator:
         return data
 
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     machine = Simulator(Triangle())
     #while True:
     for i in range(5):
@@ -252,3 +262,4 @@ if __name__ == "__main__":
     machine.resetSimulator()
     print(machine.getMachineState())
         
+ """

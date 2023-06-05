@@ -77,7 +77,7 @@ class Metrics(object):
         #we calculate totalItemsProduced by dividing the runTime with timePerItem which we both get as parameters
         self.totalItemsProduced = int(runTimeInSeconds / timePerItem)
 
-if __name__ == "__main__":
+""" if __name__ == "__main__":
     metrics = Metrics(100, Triangle())
     times = Times(datetime.now(), 0)
     while True:
@@ -88,3 +88,4 @@ if __name__ == "__main__":
         print("LaserModulePowerWeardown: ", metrics.getLaserModulePowerWeardown())
         print("CoolantLevelPercent: ", metrics.getCoolantLevelPercent())
         print("TotalItemsProduced: ", int(metrics.getTotalItemsProduced()))
+ """

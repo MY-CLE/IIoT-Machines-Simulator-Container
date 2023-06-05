@@ -39,9 +39,12 @@ class ModbusTCPServer:
         previousState = self.mbS.data_bank.get_holding_registers(address=regAddr, number=numParams)  # Get initial state of all registers
 
         while True:
-            currentState = self.mbS.data_bank.get_holding_registers(address=regAddr, number=numParams) # Get current state of all registers
-            for addr, prevValue, currValue in zip(range(len(previousState)), previousState, currentState): # Tripel of addr, prevValue, currValue
-                if prevValue != currValue:
-                    logging.info(f"Register {addr} changed: {prevValue} -> {currValue}") 
-            previousState = currentState
-            time.sleep(0.5)
+            try:
+                currentState = self.mbS.data_bank.get_holding_registers(address=regAddr, number=numParams) # Get current state of all registers
+                for addr, prevValue, currValue in zip(range(len(previousState)), previousState, currentState): # Tripel of addr, prevValue, currValue
+                    if prevValue != currValue:
+                        logging.info(f"Register {addr} changed: {prevValue} -> {currValue}") 
+                previousState = currentState
+                time.sleep(0.5)
+            except:
+                return

@@ -12,7 +12,7 @@ from circle import Circle
 app = Flask(__name__)
 CORS(app) #For local testing
 
-simulator = Simulator(Triangle())
+simulator = Simulator()
 
 
 #/time to test the API
@@ -55,6 +55,7 @@ def simulations():
   ]
 })  #list of all sims
     elif request.method == 'POST':
+        simulator.startSimulator()
         return jsonify({
                             "simulation_id": 1
                         })
@@ -217,9 +218,11 @@ def currentProgram(simulations_id):
     if request.method == 'GET':
          return simulator.getProgramState()#current program state
     elif request.method == 'POST':
-        program_id = request.args.get('program_id')
+        programId = request.args.get('program_id')
+        simulator.setMode(programId)
         return #set this program to be the current one
     elif request.method == 'PATCH':
+        simulator.startProgram()
         return jsonify({
         "parameters": [
         {
