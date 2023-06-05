@@ -66,7 +66,7 @@ class Warnings:
         self.errors.append((errorTime, errorMessage))
         print(errorMessage)
 
-    def powerConsumption(self):
+    def powerConsumptionError(self):
         errorMessage = self.possibleErrors[2]
         errorTime = datetime.now()
         self.errors.append((errorTime, errorMessage))

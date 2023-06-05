@@ -7,11 +7,14 @@ class Metrics(object):
 
     def __init__(self, coolantLevelPercent: int, simulationMode: Mode) -> None:
         self.coolantLevelPercent: int = coolantLevelPercent
+        #Luis
         self.powerConsumptionKWH: int = simulationMode.getPowerConsumptionKWH()
         self.laserModuleWeardownPercent: int = simulationMode.getLaserModuleWeardown()
         self.timePerItem: int = simulationMode.getTimePerItem()
-        self.totalItemsProduced: int = 0
         self.targetAmount: int = simulationMode.getTargetAmount()
+        self.totalItemsProduced: int = 0
+        #coolantConsumption gets calculated and depends on the laserModuleWeardownPercent which is, depending on what we 'produce' a standard amount coming from the DB
+        #we devide that by 1200 (random)
         self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 1200
 
     def setCoolantLevelPercent(self, coolantLevelPercent: int) -> None:
@@ -59,15 +62,19 @@ class Metrics(object):
         print("Total items produced:", self.totalItemsProduced)
 
     def updateCoolantLevel(self) -> None:
+        #substract coolantConsumption from coolantLevel
         self.coolantLevelPercent -= self.coolantCoolantConsumption
 
     def updatePowerConsumption(self, runtimeInSeconds: int) -> None:
+        #add powerConsumption up depending on how long the machine is running
         self.powerConsumptionKWH += (runtimeInSeconds / 60)
 
     def updateLaserModule(self, runtimeInSeconds: int) -> None:
+        #substract laserModuleWeardown depending on how long the machine is running
         self.laserModuleWeardownPercent -= (runtimeInSeconds / 60)
 
     def updateTotalItemsProduced(self, runTimeInSeconds: int, timePerItem: int) -> None:
+        #we calculate totalItemsProduced by dividing the runTime with timePerItem which we both get as parameters
         self.totalItemsProduced = int(runTimeInSeconds / timePerItem)
 
 if __name__ == "__main__":

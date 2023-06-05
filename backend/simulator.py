@@ -37,9 +37,11 @@ class Simulator:
 
         self.privilegeState: bool = False
         
+        #call constructor with coolantLevelPercent and simulationMode
         self.metrics: Metrics = Metrics(100, simulationMode)
         self.warnings: Warnings = Warnings()
 
+        #call contructor with current time to set startTime of the machine
         self.times: Times = Times(datetime.now(), 0)
 
         self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
@@ -75,6 +77,7 @@ class Simulator:
         self.modbusServer.logServerChanges(0, 10)
         logging.info("Server started")
 
+    #function to reset Simulator to default metrics, times and state
     def resetSimulator(self):
         self.state = False
         self.times.setRunTime(0)
@@ -86,10 +89,13 @@ class Simulator:
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
+        #calculate runtime with curret time
         self.times.calculateRunTime(time)
         runtime = self.times.getRuntime()
+        #call of updateMetrics function with the runtime
         self.metrics.updateMetrics(runtime)
         
+        #each time we check for errors and warnings
         self.checkErrors()
         self.checkWarnings()
         
@@ -105,17 +111,19 @@ class Simulator:
         self.modbusClient.readHoldingRegisters(0, 10)
 
     def checkErrors(self) -> None:
+        #check if metrics are above or below a certain 'amount' to throw errors
         if self.metrics.getCoolantLevelPercent() <= 0:
             self.warnings.coolantLvlError()
             self.stopSimulator()
         if self.metrics.getPowerConsumptionKWH() >= 1000:
-            self.warnings.powerConsumption()
+            self.warnings.powerConsumptionError()
             self.stopSimulator()
         if self.metrics.getLaserModulePowerWeardown() <= 0:
             self.warnings.laserModuleError()
             self.stopSimulator()
 
     def checkWarnings(self) -> None: 
+        #check if metrics are above or below a certain 'amount' to throw warnings
         if self.metrics.getCoolantLevelPercent() <= 10:
             self.warnings.coolantLvlWarning()
         if self.metrics.getPowerConsumptionKWH() >= 900:
