@@ -1,3 +1,6 @@
+
+#define blueprint class for a simulation mode the simulator can work with
+#capsules all necessary metrics to produce simulationMode specific data
 class Mode(object):
 
     def __init__(self, powerConsumptionKWH: int, laserModuleWeardown: int, timePerItem: int, targetAmount: int) -> None:
