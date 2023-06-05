@@ -44,12 +44,16 @@ class Simulator:
         #call contructor with current time to set startTime of the machine
         self.times: Times = Times(datetime.now(), 0)
 
+        
         self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
 
         self.modbusServerThread = threading.Thread(target=self.startModbusServer)
         
+
         self.opcuaServerThread.start()
         self.modbusServerThread.start()
+
+
 
     def stopSimulator(self) -> None:
         self.times.setStopTime()
@@ -65,18 +69,24 @@ class Simulator:
     def startSimulator(self) -> None:
         self.state = True
 
+
     def startOPCUAServer(self):
-        self.ouaServer = OPCUAServer()
-        self.ouaServer.setParameter()
-        self.ouaServer.server.start()
-        logging.info("Server started")
+        try:
+            self.ouaServer = OPCUAServer()
+            self.ouaServer.startServer()
+            logging.info("Server started")
+        except:
+            self.opcuaServerThread.join()
 
     def startModbusServer(self):
-        self.modbusServer = ModbusTCPServer()
-        self.modbusServer.startServer()
-        self.modbusServer.logServerChanges(0, 10)
-        logging.info("Server started")
-
+        try:
+            self.modbusServer = ModbusTCPServer()
+            self.modbusServer.startServer()
+            self.modbusServer.logServerChanges(0, 10)
+            logging.info("Server started")
+        except:
+            self.modbusServerThread.join()
+    
     #function to reset Simulator to default metrics, times and state
     def resetSimulator(self):
         self.state = False
@@ -89,6 +99,7 @@ class Simulator:
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
+
         #calculate runtime with curret time
         self.times.calculateRunTime(time)
         runtime = self.times.getRuntime()
@@ -98,17 +109,37 @@ class Simulator:
         #each time we check for errors and warnings
         self.checkErrors()
         self.checkWarnings()
-        
-        self.ouaClient = OPCUAClient()
-        logging.info("Client started")
-        self.ouaClient.changeParam("Runtime", int(runtime))
-        self.ouaClient.getParam()
-        self.ouaClient.client.disconnect()
 
-        self.modbusClient = ModbusTCPClient()
-        logging.info("ModbusTCPClient started")
-        self.modbusClient.writeSingleRegister(0, int(runtime))
-        self.modbusClient.readHoldingRegisters(0, 10)
+        self.updateModbus()
+        self.updateOPCUA()
+
+
+    def updateOPCUA(self) -> None:
+        try: 
+            self.ouaClient = OPCUAClient()
+            logging.info("OPCUA Client started")
+            self.ouaClient.changeParam("Runtime", int(self.times.getRuntime()))
+            self.ouaClient.changeParam("Coolant_Level", int(self.metrics.getCoolantLevelPercent()))
+            self.ouaClient.changeParam("Power_Consumption", int(self.metrics.getPowerConsumptionKWH()))
+            self.ouaClient.changeParam("Power_Laser", int(self.metrics.getLaserModulePowerWeardown()))
+            self.ouaClient.changeParam("Idle_Time", int(self.times.getIdleTime()))
+            self.ouaClient.getParam()
+        except:
+            self.ouaClient.client.disconnect()
+
+    def updateModbus(self) -> None:
+        try:
+            self.modbusClient = ModbusTCPClient()
+            logging.info("ModbusTCP Client started")
+            self.modbusClient.writeSingleRegister(0, int(self.times.getRuntime()))
+            self.modbusClient.writeSingleRegister(1, int(self.metrics.getCoolantLevelPercent()))
+            self.modbusClient.writeSingleRegister(2, int(self.metrics.getPowerConsumptionKWH()))
+            self.modbusClient.writeSingleRegister(3, int(self.metrics.getLaserModulePowerWeardown()))
+            self.modbusClient.writeSingleRegister(4, int(self.times.getIdleTime()))
+            self.modbusClient.readHoldingRegisters(0, 10)
+        except:
+            self.modbusClient.client.close()
+
 
     def checkErrors(self) -> None:
         #check if metrics are above or below a certain 'amount' to throw errors

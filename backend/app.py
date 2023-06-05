@@ -14,6 +14,7 @@ CORS(app) #For local testing
 
 simulator = Simulator(Triangle())
 
+
 #/time to test the API
 
 @app.route('/api/time')
