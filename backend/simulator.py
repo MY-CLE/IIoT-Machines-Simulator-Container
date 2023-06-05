@@ -225,7 +225,7 @@ class Simulator:
         for index, error in enumerate(currentErrors):
             tempError = {
                 "id": str(index),
-                "description": error
+                "name": error
             }
             data["error_state"]["errors"].append(tempError)
             print("here")
@@ -237,7 +237,7 @@ class Simulator:
         for index, warning in enumerate(currentWarnings):
             tempWarning = {
                 "id": str(index),
-                "description": warning
+                "name": warning
             }
             data["error_state"]["warnings"].append(tempWarning)
         return data

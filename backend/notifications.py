@@ -28,64 +28,75 @@ class Warnings:
     def initPossibleErrors(self):
         for errorMessage in DatabaseHandler.selectErrorMessages():
             self.possibleErrors.append(errorMessage)
-        print("InitErrors complete")
         
     #in correct id order
     def initPossibleWarnings(self):
         for warningMessage in DatabaseHandler.selectWarningMessages():
-            self.possibleWarnings.append(warningMessage)
-        print("InitWarnings complete")      
+            self.possibleWarnings.append(warningMessage)  
     
     def coolantLvlWarning(self):
         warningMessage = self.possibleWarnings[0]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
 
     def laserModuleWarning(self):
         warningMessage = self.possibleWarnings[1]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
 
     def powerConsumptionWarning(self):
         warningMessage = self.possibleWarnings[2]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
 
     def coolantLvlError(self):
         errorMessage = self.possibleErrors[0]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
 
     def laserModuleError(self):
         errorMessage = self.possibleErrors[1]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
 
     def powerConsumptionError(self):
         errorMessage = self.possibleErrors[2]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
+        if not self.checkExistingErrors(errorMessage):
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
         
     def setSelectedError(self, error_id):
         errorMessage = self.possibleErrors[int(error_id)]
-        errorTime = datetime.now()
-        self.errors.append((errorTime, errorMessage))
-        print(errorMessage)
-        print("Lenght of current Error List =" , len(self.errors))
+        if not self.checkExistingErrors(errorMessage):          
+            errorTime = datetime.now()
+            self.errors.append((errorTime, errorMessage))
+
 
     def setSelectedWarning(self, warning_id):
         warningMessage = self.possibleWarnings[int(warning_id)]
-        warningTime = datetime.now()
-        self.warnings.append((warningTime, warningMessage))
-        print(warningMessage)
-        print("Lenght of current Error List =" , len(self.warnings))
+        if not self.checkExistingWarnings(warningMessage):
+            warningTime = datetime.now()
+            self.warnings.append((warningTime, warningMessage))
         
+        
+    def checkExistingErrors(self, errorMessage):
+        for index, message in enumerate(self.errors):
+            if message[1] is errorMessage:
+                return True
+        return False
+        
+        
+    def checkExistingWarnings(self, warningMessage):
+        for index, message in enumerate(self.warnings):
+            if message[1] is warningMessage:
+                return True
+        return False
+    
     def getNotificationsJSON(self):
         data = {
             "errors": [],
