@@ -4,6 +4,8 @@ from database.orm.program.programState import ProgramState
 from database.orm.databaseObject import DatabaseObject
 from mode import Mode
 
+#extends class mode
+#retrieves the triangle mode specific parameters out of the database
 class Triangle(Mode):
      
      def __init__(self) -> None:
