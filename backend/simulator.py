@@ -34,6 +34,7 @@ class Simulator:
     def __init__(self, simulationMode: Mode):
         self.state = True
         self.simulationMode = simulationMode
+        self.protocol = "None"
 
         self.privilegeState: bool = False
         
@@ -60,6 +61,8 @@ class Simulator:
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
+    def setProtocol(self, protocol: str) -> None:
+        self.protocol = protocol
     def startSimulator(self) -> None:
         self.state = True
 
@@ -89,20 +92,21 @@ class Simulator:
         self.times.calculateRunTime(time)
         runtime = self.times.getRuntime()
         self.metrics.updateMetrics(runtime)
-        
+        print(self.protocol)
         self.checkErrors()
         self.checkWarnings()
-        
-        self.ouaClient = OPCUAClient()
-        logging.info("Client started")
-        self.ouaClient.changeParam("Runtime", int(runtime))
-        self.ouaClient.getParam()
-        self.ouaClient.client.disconnect()
+        if(self.protocol == "OPCUA"):
+            self.ouaClient = OPCUAClient()
+            logging.info("Client started")
+            self.ouaClient.changeParam("Runtime", int(runtime))
+            self.ouaClient.getParam()
+            self.ouaClient.client.disconnect()
 
-        self.modbusClient = ModbusTCPClient()
-        logging.info("ModbusTCPClient started")
-        self.modbusClient.writeSingleRegister(0, int(runtime))
-        self.modbusClient.readHoldingRegisters(0, 10)
+        if(self.protocol == "Modbus/TCP"):
+            self.modbusClient = ModbusTCPClient()
+            logging.info("ModbusTCPClient started")
+            self.modbusClient.writeSingleRegister(0, int(runtime))
+            self.modbusClient.readHoldingRegisters(0, 10)
 
     def checkErrors(self) -> None:
         if self.metrics.getCoolantLevelPercent() <= 0:
