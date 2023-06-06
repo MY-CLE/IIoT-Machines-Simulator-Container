@@ -1,6 +1,7 @@
 import React from "react";
 import IconSettings from "./icons/iconSettings";
 import IconArrowBack from "./icons/iconBackArrow";
+import IconSave from "./icons/iconSave";
 import Modal from "react-modal";
 import { setProtocol } from "./api-service";
 
@@ -51,6 +52,9 @@ export function Header() {
           }}
         >
           <IconArrowBack />
+        </button>
+        <button className="mx-3 w-10 h-10" onClick={() => {}}>
+          <IconSave />
         </button>
         <button onClick={handleOpenSettingsModal}>
           <IconSettings className="mx-3" />

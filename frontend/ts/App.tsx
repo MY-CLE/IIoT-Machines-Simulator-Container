@@ -9,7 +9,7 @@ import ChooseProgramPage from "./content/chooseProgramPage";
 import { useState } from "react";
 
 function App() {
-  const [state, setState] = useState({ simulation_id: 1, program_id: -1 });
+  const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const router = createBrowserRouter([
     {
       path: "/",
