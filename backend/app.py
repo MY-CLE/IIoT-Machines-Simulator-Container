@@ -164,9 +164,6 @@ def machines(simulations_id):
         return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
-        print(data)
-        simulator.setParameter(int(data["id"]), int(data["value"]))
-
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')

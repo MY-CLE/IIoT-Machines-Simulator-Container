@@ -6,8 +6,6 @@ CREATE TABLE admin (
 CREATE TABLE machine_state (
 	machine_state_id integer PRIMARY KEY AUTOINCREMENT,
 	machine_state_name text,
-	error_state integer,
-	warning_state integer,
 	program_state integer,
 	machine_start_time timestamp,
 	machine_stop_time timestamp,
@@ -16,6 +14,7 @@ CREATE TABLE machine_state (
 	energy_consumption_watt integer,
 	capacity_lasermodule float,
 	coolant_level float
+	FOREIGN KEY (program_state_id) REFERENCES program_state(program_state_id)
 );
 
 CREATE TABLE machine_program (
