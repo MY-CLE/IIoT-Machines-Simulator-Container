@@ -51,6 +51,10 @@ class Simulator:
 
     # if protocol is changed, stop the current server and start the new one
     def setProtocol(self, protocol: str) -> None:
+        if self.protocol == protocol:
+            logging.info("No protocol selected")
+            return
+        
         self.protocol = protocol
 
         if self.protocol == "Modbus/TCP" and self.opcuaServerThread != None:
@@ -69,8 +73,7 @@ class Simulator:
         elif self.protocol == "Modbus/TCP":
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
-        else:
-            logging.info("No protocol selected")
+
 
 
     def setMode(self, modeId: str) -> None:
@@ -79,11 +82,8 @@ class Simulator:
     def stopSimulator(self) -> None:
         self.simulatorState = False
     
-    #start the simulation by flipping the simulators simulatorState and setting the current time 
     def startSimulator(self) -> None:
-
         self.simulatorState = True
-
     
     def startProgram(self) -> None:
         self.programState = True
@@ -92,7 +92,6 @@ class Simulator:
     def stopProgram(self) -> None:
         self.programState = False
         self.times.setStopTime()
-
         logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
