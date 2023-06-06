@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 import time
 import logging
-import multiprocessing
+import threading
 
 from mode import Mode
 from times import Times
@@ -39,8 +39,8 @@ class Simulator:
         self.times: Times = Times(datetime.now(), 0)
 
         
-        self.opcuaServerThread = multiprocessing.Process(target=self.startOPCUAServer, args=())
-        self.modbusServerThread = multiprocessing.Process(target=self.startModbusServer, args=())
+        self.opcuaServerThread = None
+        self.modbusServerThread = None
 
 
     def getPrivilegeState(self) -> bool:
@@ -49,36 +49,42 @@ class Simulator:
     def setPrivilegeState(self, privState: bool) -> None:
         self.privilegeState = privState 
 
+    # if protocol is changed, stop the current server and start the new one
     def setProtocol(self, protocol: str) -> None:
         self.protocol = protocol
+
+        if self.protocol == "Modbus/TCP" and self.opcuaServerThread != None:
+            self.opcuaServerThread.join(timeout=1)
+            self.opcuaServerThread = None
+            logging.info("OPCUA Server stopped")
+
+        if self.protocol == "OPCUA" and self.modbusServerThread != None:
+            self.modbusServerThread.join(timeout=1)
+            self.modbusServerThread = None
+            logging.info("Modbus/TCP Server stopped")
+
+        if self.protocol == "OPCUA":
+            self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
+            self.opcuaServerThread.start()
+        elif self.protocol == "Modbus/TCP":
+            self.modbusServerThread = threading.Thread(target=self.startModbusServer)
+            self.modbusServerThread.start()
+        else:
+            logging.info("No protocol selected")
+
 
     def setMode(self, modeId: str) -> None:
         self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
 
     def stopSimulator(self) -> None:
         self.simulatorState = False
-
-        if (self.protocol == "OPCUA"):
-            self.opcuaServerThread.terminate()
-            logging.info("OPCUA Server stopped")
-        elif (self.protocol == "Modbus/TCP"):
-            self.modbusServerThread.terminate()
-            logging.info("Modbus/TCP Server stopped")
-        else:
-            self.protocol = "None"
     
     #start the simulation by flipping the simulators simulatorState and setting the current time 
     def startSimulator(self) -> None:
 
         self.simulatorState = True
 
-        if (self.protocol == "OPCUA" and self.opcuaServerThread.is_alive() == False):
-            self.opcuaServerThread.start()
-        elif (self.protocol == "Modbus/TCP" and self.modbusServerThread.is_alive() == False):
-            self.modbusServerThread.start()
-        else:
-            logging.info("No protocol selected")
-
+    
     def startProgram(self) -> None:
         self.programState = True
         self.times.setStartTime(datetime.now())
