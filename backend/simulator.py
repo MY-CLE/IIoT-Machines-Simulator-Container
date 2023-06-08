@@ -74,7 +74,30 @@ class Simulator:
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
 
+    def updateMachineState(self, data):
+        attributeMapTimes = {
+            'Runtime': 'RunTime',
+            'Standstill_time': 'IdleTime',
+        }
+        attributeMapMetrics = {
+            'Coolant_level': 'CoolantLevelPercent',
+            'Power_consumption': 'PowerConsumptionKWH',
+            'Time_per_item': 'TimePerItem',
+            'Items_produced': 'TotalItemsProduced',
+            'Power_laser_module': 'LaserModulePowerWeardown'
+        }
 
+        for key, value in data.items():
+            if key == 'value':
+                description = data.get('description')
+                if description in attributeMapTimes:
+                    attribute = attributeMapTimes.get(description)
+                    setMethod = getattr(self.times, 'set' + attribute)
+                    setMethod(value)
+                elif description in attributeMapMetrics:
+                    attribute = attributeMapMetrics.get(description)
+                    setMethod = getattr(self.metrics, 'set' + attribute)
+                    setMethod(value)
 
     def setMode(self, modeId: str) -> None:
         self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
@@ -112,8 +135,8 @@ class Simulator:
         self.times.setStopTime()
 
         self.metrics.setCoolantLevelPercent(100)
-        self.metrics.setPowerConsumptionKWH(self.simulationMode)
-        self.metrics.setLaserModulePowerWeardown(self.simulationMode)
+        self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
+        self.metrics.setLaserModulePowerWeardownMode(self.simulationMode)
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:

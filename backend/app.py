@@ -164,6 +164,7 @@ def machines(simulations_id):
         return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
+        simulator.updateMachineState(data)
         print(data)
 
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
