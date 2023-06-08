@@ -1,4 +1,4 @@
-from orm.databaseObject import DatabaseObject
+from database.orm.databaseObject import DatabaseObject
 from datetime import datetime
 
 class MachineState(object):

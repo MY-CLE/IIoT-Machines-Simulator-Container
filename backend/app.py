@@ -4,13 +4,14 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, make_response
 import sqlite3
-from flask_cors import CORS
+#from flask_cors import CORS
 from simulator import Simulator
 from triangle import Triangle
 from circle import Circle
+from database.handler.databaseHandler import DatabaseHandler
 
 app = Flask(__name__)
-CORS(app) #For local testing
+#CORS(app) #For local testing
 
 simulator = Simulator()
 
@@ -246,4 +247,5 @@ def currentProgram(simulations_id):
 
 #debuggin purposes
 if __name__ == '__main__':
-  print(jsonify(simulator.warnings.getNotificationsJSON()))
+  
+    
