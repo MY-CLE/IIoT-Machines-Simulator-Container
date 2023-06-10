@@ -20,6 +20,9 @@ class Times(object):
     def getIdleTime(self) -> int:
         return int(self.idleTime)
     
+    def setState(self, bool: bool) -> None:
+        self.state = bool
+    
     def setRunTime(self, runtime: int) -> None:
         self.runtime = runtime
         

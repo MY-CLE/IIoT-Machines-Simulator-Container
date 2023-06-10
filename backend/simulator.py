@@ -74,7 +74,8 @@ class Simulator:
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
 
-    def updateMachineState(self, data):
+    #get parameters from frontend and overwrite backend parameters
+    def updateMachineStateParameters(self, data):
         attributeMapTimes = {
             'Runtime': 'RunTime',
             'Standstill_time': 'IdleTime',
@@ -133,6 +134,9 @@ class Simulator:
         self.simulatorState = False
         self.times.setRunTime(0)
         self.times.setStopTime()
+        self.times.setIdleTime(0)
+        #state of times to be set True so idleTime stops counting
+        self.times.setState(True)
 
         self.metrics.setCoolantLevelPercent(100)
         self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
