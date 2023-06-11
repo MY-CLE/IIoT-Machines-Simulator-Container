@@ -11,5 +11,5 @@ class Triangle(Mode):
      def __init__(self) -> None:
         program: MachineProgram = DatabaseHandler.selectMachineProgram('Triangle')
         programState: ProgramState = DatabaseHandler.selectProgramState(2)
-        super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount())
+        super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription()) 
         

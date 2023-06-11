@@ -188,6 +188,9 @@ class Simulator:
     
     def getProgramStateJson(self):
         return self.getProgramState()
+    
+    def getPrograms(self):
+        return DatabaseHandler.selectAllMachinePrograms()
 
     #return on programStateParametes in JSON format
     def getProgramState(self):
@@ -201,7 +204,7 @@ class Simulator:
                            ]
 
         data = {
-            "description": "Triangle",
+            "description": self.simulationMode.getDescription(),
             "parameters": []
         }
         for index, param in enumerate(programParameterList):
@@ -220,7 +223,6 @@ class Simulator:
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
                              {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
                              {"description": "Privilege_state", "Value": self.getPrivilegeState()},
-                             {"description": "Time_per_item", "Value": self.metrics.getTimePerItem()},
                              {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
                              {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
                              ]
