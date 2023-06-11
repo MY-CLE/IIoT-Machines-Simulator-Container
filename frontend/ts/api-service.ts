@@ -210,6 +210,9 @@ export async function sendWarning(simulation_id: number, warning_id: number) {
 export async function getPrograms(
   simulation_id: number
 ): Promise<{ programs: Array<Program> }> {
+  console.log(
+    `GET Request auf ${url}/simulations/${simulation_id}/machine/programs`
+  );
   return await fetch(`${url}/simulations/${simulation_id}/machine/programs`, {
     method: "GET",
     redirect: "follow",
@@ -218,14 +221,17 @@ export async function getPrograms(
     .catch((error) => console.log("error", error));
 }
 
-export async function postCurrentProgram(
+export async function setCurrentProgram(
   simulation_id: number,
   program_id: number
 ) {
+  console.log(
+    `POST Request auf ${url}/simulations/${simulation_id}/machine/programs/current`
+  );
   const formdata = new FormData();
   formdata.append("program_id", program_id.toString());
   return await fetch(
-    `${url}/simulations/${simulation_id}/machine/programs/current?program_id=${program_id}`,
+    `${url}/simulations/${simulation_id}/machine/programs/current`,
     {
       method: "POST",
       redirect: "follow",
