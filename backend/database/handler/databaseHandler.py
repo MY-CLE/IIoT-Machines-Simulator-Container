@@ -11,7 +11,7 @@ from database.orm.notification.error import Error
 class DatabaseHandler:
 
     #set up the connection to the database file and use a cusror for queries
-    _CONNECTION = sqlite3.connect("database/machine-sim.db", check_same_thread=False)
+    _CONNECTION = sqlite3.connect("database/machine-sim.db")
     _CURSOR = _CONNECTION.cursor()
 
     #execute a query with the cursor and return the result set in a list
@@ -36,20 +36,10 @@ class DatabaseHandler:
     def selectMachineProgram(name: str) -> MachineProgram:
        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_description = '{name}'")
        return MachineProgram(DatabaseObject(resultSet[0]))
-   
-    @staticmethod
-    def selectAllMachinePrograms() -> list[MachineProgram]:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program")
-        print(resultSet)
-        allProgramslist: list[MachineProgram] = []
-        for result in resultSet:
-            allProgramslist.append(MachineProgram(DatabaseObject(result)))
-        return allProgramslist
     
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
-        print(id)
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_prorgram_id = '{id}'")
         return MachineProgram(DatabaseObject(resultSet[0]))
     
     #get all possible warning messages within the Database

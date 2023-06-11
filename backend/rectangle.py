@@ -11,4 +11,4 @@ class Rectangle(Mode):
      def __init__(self) -> None:
           program: MachineProgram = DatabaseHandler.selectMachineProgram('Rectangle')
           programState: ProgramState = DatabaseHandler.selectProgramState(1) 
-          super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription())
+          super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount())
