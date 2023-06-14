@@ -11,6 +11,7 @@ from metrics import Metrics
 from triangle import Triangle
 from notifications import Warnings
 from database.handler.databaseHandler import DatabaseHandler
+from database.orm.program.programState import ProgramState
 
 from opcuaIRF.opcuaServer import OPCUAServer
 from opcuaIRF.opcuaClient import OPCUAClient
@@ -25,7 +26,7 @@ class Simulator:
 
     def __init__(self):
         self.simulatorState = False
-        self.programState = False
+        self.isProgramOn = False
         self.protocol = "None"
         self.privilegeState: bool = False
         self.simulationMode = Triangle()
@@ -110,11 +111,11 @@ class Simulator:
         self.simulatorState = True
     
     def startProgram(self) -> None:
-        self.programState = True
+        self.isProgramOn = True
         self.times.setStartTime(datetime.now())
 
     def stopProgram(self) -> None:
-        self.programState = False
+        self.isProgramOn = False
         self.times.setStopTime()
         logging.info("Machine stopped!")
 
@@ -144,7 +145,7 @@ class Simulator:
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
-        if(self.programState == True):
+        if(self.isProgramOn == True):
             #calculate runtime with curret time
             self.times.calculateRunTime(time)
             runtime = self.times.getRuntime()
@@ -218,6 +219,12 @@ class Simulator:
     
     def getPrograms(self):
         return DatabaseHandler.selectAllMachinePrograms()
+    
+    #here is TotalItemsProduced implemeted instead CurrentAmount
+    def saveSimulation(self, simName: str ):
+        activeProgram = self.simulationMode.getProgramId()
+        stateId = DatabaseHandler.storeProgramState( activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
+        DatabaseHandler.storeMachineState(0, simName, self.warnings.getErrors()[0], self.warnings.getWarnings()[0], stateId, self.times.startTime, self.times.stopTime, self.times.idleTime, self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.coolantLevelPercent())
 
     #return on programStateParametes in JSON format
     def getProgramState(self):
