@@ -15,19 +15,28 @@ class Metrics(object):
         self.totalItemsProduced: int = 0
         #coolantConsumption gets calculated and depends on the laserModuleWeardownPercent which is, depending on what we 'produce' a standard amount coming from the DB
         #we devide that by 1200 (random)
-        self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 1200
+        self.coolantCoolantConsumption = self.laserModuleWeardownPercent / 2500
 
     def setCoolantLevelPercent(self, coolantLevelPercent: int) -> None:
         self.coolantLevelPercent = coolantLevelPercent
 
-    def setPowerConsumptionKWH(self, simulationMode: Mode) -> None:
+    def setPowerConsumptionKWHMode(self, simulationMode: Mode) -> None:
         self.powerConsumptionKWH = simulationMode.getPowerConsumptionKWH()
 
-    def setLaserModulePowerWeardown(self, simulationMode: Mode) -> None:
+    def setLaserModulePowerWeardownMode(self, simulationMode: Mode) -> None:
         self.laserModuleWeardownPercent = simulationMode.getLaserModuleWeardown()
     
+    def setPowerConsumptionKWH(self, consumption: int) -> None:
+        self.powerConsumptionKWH = consumption
+
+    def setLaserModulePowerWeardown(self, consumption: int) -> None:
+        self.laserModuleWeardownPercent = consumption
+
     def setTotalItemsProduced(self, itemsProduced: int) -> None:
         self.totalItemsProduced = itemsProduced
+
+    def setTimePerItem(self, timePerItem: int) -> None:
+        self.timePerItem = timePerItem
     
     def getTotalItemsProduced(self) -> int:
         return self.totalItemsProduced

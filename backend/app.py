@@ -165,6 +165,7 @@ def machines(simulations_id):
         return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
+        simulator.updateMachineStateParameters(data)
         print(data)
 
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
@@ -188,6 +189,7 @@ def error(simulations_id):
             return jsonify({'error': 'No error_id or warning_id provided.'})
         if error_id:
             simulator.warnings.setSelectedError(error_id)
+            simulator.stopProgram()
         elif warning_id:
             simulator.warnings.setSelectedWarning(warning_id)
 
