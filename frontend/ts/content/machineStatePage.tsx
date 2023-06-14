@@ -147,9 +147,9 @@ function MachineStatePage(props: {
 
   function openListPopup() {
     setListPopup(true);
-    console.log(activeErrorsAndWarnings.errors[0]);
-    console.log(activeErrorsAndWarnings.errors[0].id);
-    console.log(activeErrorsAndWarnings.errors[0].name[0]);
+    //console.log(activeErrorsAndWarnings.errors[0]);
+    //console.log(activeErrorsAndWarnings.errors[0].id);
+    //console.log(activeErrorsAndWarnings.errors[0].name[0]);
   }
 
   function navigateToProgram() {
