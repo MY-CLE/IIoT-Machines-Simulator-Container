@@ -8,8 +8,10 @@ from mode import Mode
 #retrieves the triangle mode specific parameters out of the database
 class Triangle(Mode):
      
-     def __init__(self) -> None:
-        program: MachineProgram = DatabaseHandler.selectMachineProgram('Triangle')
-        programState: ProgramState = DatabaseHandler.selectProgramState(2)
-        super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription()) 
-        
+   def __init__(self) -> None:
+      program: MachineProgram = DatabaseHandler.selectMachineProgram('Triangle')
+      programState: ProgramState = DatabaseHandler.selectProgramState(2)
+      super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription()) 
+      
+   def getProgramId(self) -> int:
+         return 2

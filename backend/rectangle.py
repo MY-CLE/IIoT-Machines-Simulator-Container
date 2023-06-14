@@ -12,3 +12,6 @@ class Rectangle(Mode):
           program: MachineProgram = DatabaseHandler.selectMachineProgram('Rectangle')
           programState: ProgramState = DatabaseHandler.selectProgramState(1) 
           super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription())
+          
+     def getProgramId(self) -> int:
+         return 1
