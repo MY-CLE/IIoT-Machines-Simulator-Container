@@ -170,10 +170,19 @@ def machines(simulations_id):
 
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
-@app.route('/api/simulations/<int:simulations_id>/machine/auth')
+@app.route('/api/simulations/<int:simulations_id>/machine/auth', methods=['PUT'])
 def auth(simulations_id):
-    response = make_response("<h1>Success</h1>")
-    response.status_code = 200
+    if request.method == 'PUT':
+      pw = request.form['password']
+      for admin in DatabaseHandler.selectAdminUsers():
+        if(admin.getPassword() == pw):
+          simulator.warnings.errors = []
+          simulator.warnings.warnings = []
+          response = jsonify({'message': 'Success'})
+          response.status_code = 200
+          return response
+        response = jsonify({'message': 'Wrong password'})
+        response.status_code = 401
     return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])

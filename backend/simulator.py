@@ -256,7 +256,6 @@ class Simulator:
                              {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
                              {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
-                             {"description": "Privilege_state", "Value": self.getPrivilegeState()},
                              {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
                              {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
                              ]
