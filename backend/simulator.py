@@ -52,17 +52,17 @@ class Simulator:
     # if protocol is changed, stop the current server and start the new one
     def setProtocol(self, protocol: str) -> None:
         if self.protocol == protocol:
-            logging.info("No protocol selected")
+            logging.info(f"Protocol '{self.protocol}' already selected")
             return
         
         self.protocol = protocol
 
-        if self.protocol == "Modbus/TCP" and self.opcuaServerThread != None:
+        if (self.protocol == "Modbus/TCP" or self.protocol == "None") and self.opcuaServerThread != None:
             self.opcuaServerThread.join(timeout=1)
             self.opcuaServerThread = None
             logging.info("OPCUA Server stopped")
 
-        if self.protocol == "OPCUA" and self.modbusServerThread != None:
+        if (self.protocol == "OPCUA" or self.protocol == "None") and self.modbusServerThread != None:
             self.modbusServerThread.join(timeout=1)
             self.modbusServerThread = None
             logging.info("Modbus/TCP Server stopped")
