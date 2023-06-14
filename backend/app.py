@@ -4,7 +4,8 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, make_response
 import sqlite3
-#from flask_cors import CORS
+from flask_cors import CORS
+from database.handler.databaseHandler import DatabaseHandler
 from simulator import Simulator
 from triangle import Triangle
 from circle import Circle
@@ -65,7 +66,7 @@ def simulations():
 
 
 @app.route('/api/simulations/protocol', methods=['PUT'])
-def simultaionsProtocol():
+def simulationsProtocol():
   if request.method == 'PUT':
     simulator.setProtocol(request.form['protocol']);
     return "Protocol set successfully"
@@ -165,6 +166,9 @@ def machines(simulations_id):
         return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
+        simulator.updateMachineStateParameters(data)
+        print(data)
+
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
 @app.route('/api/simulations/<int:simulations_id>/machine/auth')
@@ -186,6 +190,7 @@ def error(simulations_id):
             return jsonify({'error': 'No error_id or warning_id provided.'})
         if error_id:
             simulator.warnings.setSelectedError(error_id)
+            simulator.stopProgram()
         elif warning_id:
             simulator.warnings.setSelectedWarning(warning_id)
 
@@ -195,36 +200,24 @@ def error(simulations_id):
 #Programs
 
 @app.route('/api/simulations/<int:simulations_id>/machine/programs')
-def programs(simulations_id):
-    return jsonify({
-    "programs": [
-        {
-            "description": "",
-            "id": "0"
-        },
-        {
-            "description": "Kreis",
-            "id": "1"
-        },
-        {
-            "description": "Rechteck",
-            "id": "2"
-        },
-        {
-            "description": "Dreieck",
-            "id": "3"
-        }
-    ]
-})#list of all programs
+def allPrograms(simulations_id):
+    listOfPrograms = simulator.getPrograms()
+    data = {"programs": []}
+    for program in listOfPrograms:
+        data["programs"].append(program.toJSON())
+    print(data)
+    
+    return jsonify(data)#list of all programs
 
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
 def currentProgram(simulations_id):
     if request.method == 'GET':
          return simulator.getProgramState()#current program state
     elif request.method == 'POST':
-        programId = request.args.get('program_id')
+        programId = request.form.get('program_id')
+        print(programId)
         simulator.setMode(programId)
-        return #set this program to be the current one
+        return "Success"#set this program to be the current one
     elif request.method == 'PATCH':
         json = request.get_json()
         for parameter in json["parameters"]:

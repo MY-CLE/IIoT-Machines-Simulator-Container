@@ -12,7 +12,8 @@ from database.orm.program.programState import ProgramState
 
 class DatabaseHandler:
 
-    _CONNECTION = sqlite3.connect("database/machine-sim.db")
+    #set up the connection to the database file and use a cusror for queries
+    _CONNECTION = sqlite3.connect("database/machine-sim.db", check_same_thread=False)
     _CURSOR = _CONNECTION.cursor()
 
 
@@ -37,7 +38,23 @@ class DatabaseHandler:
     def selectMachineProgram(name: str) -> MachineProgram:
        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
        return MachineProgram(DatabaseObject(resultSet[0]))
+   
+    @staticmethod
+    def selectAllMachinePrograms() -> list[MachineProgram]:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program")
+        print(resultSet)
+        allProgramslist: list[MachineProgram] = []
+        for result in resultSet:
+            allProgramslist.append(MachineProgram(DatabaseObject(result)))
+        return allProgramslist
     
+    @staticmethod
+    def selectMachineProgramById(id: str) -> MachineProgram:
+        print(id)
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
+        return MachineProgram(DatabaseObject(resultSet[0]))
+    
+    #get all possible warning messages within the Database
     @staticmethod
     def selectWarningMessages() -> list[str]:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM warning")

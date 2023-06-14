@@ -39,7 +39,6 @@ function MachineStatePage(props: {
     }>
   >;
 }) {
-  const location = useLocation(); // mit location.state.simulation_id erhält man die Simulation ID
   const [parameters, setParameters] =
     useState<Array<Parameter>>(paramterDefault); // Array mit Parametern
   const [errors, setErrors] = useState<Errors>({
@@ -68,10 +67,10 @@ function MachineStatePage(props: {
 
   useEffect(() => {
     (async () => {
+      // when the page is loaded the first time, the errors are fetched
       let newErrors = await getErrors(props.state.simulation_id | 0);
       console.log("new Errors getting fetched");
       if (newErrors.errors && newErrors.warnings) {
-        // wenn es Fehlermeldungen gibt, werden diese gesetzt
         setErrors(newErrors);
       }
 

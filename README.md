@@ -25,7 +25,7 @@ source venv/bin/activate
 ```
 **Windows:**
 ```
-.\venv\Script\activate
+.\venv\Scripts\activate
 ```
 When venv is active we can install all dependencies using the requirements.txt
 ```

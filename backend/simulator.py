@@ -51,6 +51,10 @@ class Simulator:
 
     # if protocol is changed, stop the current server and start the new one
     def setProtocol(self, protocol: str) -> None:
+        if self.protocol == protocol:
+            logging.info("No protocol selected")
+            return
+        
         self.protocol = protocol
 
         if self.protocol == "Modbus/TCP" and self.opcuaServerThread != None:
@@ -69,9 +73,32 @@ class Simulator:
         elif self.protocol == "Modbus/TCP":
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
-        else:
-            logging.info("No protocol selected")
 
+    #get parameters from frontend and overwrite backend parameters
+    def updateMachineStateParameters(self, data):
+        attributeMapTimes = {
+            'Runtime': 'RunTime',
+            'Standstill_time': 'IdleTime',
+        }
+        attributeMapMetrics = {
+            'Coolant_level': 'CoolantLevelPercent',
+            'Power_consumption': 'PowerConsumptionKWH',
+            'Time_per_item': 'TimePerItem',
+            'Items_produced': 'TotalItemsProduced',
+            'Power_laser_module': 'LaserModulePowerWeardown'
+        }
+
+        for key, value in data.items():
+            if key == 'value':
+                description = data.get('description')
+                if description in attributeMapTimes:
+                    attribute = attributeMapTimes.get(description)
+                    setMethod = getattr(self.times, 'set' + attribute)
+                    setMethod(value)
+                elif description in attributeMapMetrics:
+                    attribute = attributeMapMetrics.get(description)
+                    setMethod = getattr(self.metrics, 'set' + attribute)
+                    setMethod(value)
 
     def setMode(self, modeId: str) -> None:
         self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
@@ -79,11 +106,8 @@ class Simulator:
     def stopSimulator(self) -> None:
         self.simulatorState = False
     
-    #start the simulation by flipping the simulators simulatorState and setting the current time 
     def startSimulator(self) -> None:
-
         self.simulatorState = True
-
     
     def startProgram(self) -> None:
         self.programState = True
@@ -92,7 +116,6 @@ class Simulator:
     def stopProgram(self) -> None:
         self.programState = False
         self.times.setStopTime()
-
         logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
@@ -111,10 +134,13 @@ class Simulator:
         self.simulatorState = False
         self.times.setRunTime(0)
         self.times.setStopTime()
+        self.times.setIdleTime(0)
+        #state of times to be set True so idleTime stops counting
+        self.times.setState(True)
 
         self.metrics.setCoolantLevelPercent(100)
-        self.metrics.setPowerConsumptionKWH(self.simulationMode)
-        self.metrics.setLaserModulePowerWeardown(self.simulationMode)
+        self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
+        self.metrics.setLaserModulePowerWeardownMode(self.simulationMode)
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
@@ -189,6 +215,9 @@ class Simulator:
     
     def getProgramStateJson(self):
         return self.getProgramState()
+    
+    def getPrograms(self):
+        return DatabaseHandler.selectAllMachinePrograms()
 
     #return on programStateParametes in JSON format
     def getProgramState(self):
@@ -202,7 +231,7 @@ class Simulator:
                            ]
 
         data = {
-            "description": "Triangle",
+            "description": self.simulationMode.getDescription(),
             "parameters": []
         }
         for index, param in enumerate(programParameterList):
@@ -221,7 +250,6 @@ class Simulator:
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
                              {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
                              {"description": "Privilege_state", "Value": self.getPrivilegeState()},
-                             {"description": "Time_per_item", "Value": self.metrics.getTimePerItem()},
                              {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
                              {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
                              ]
