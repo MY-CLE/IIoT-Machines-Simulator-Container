@@ -4,25 +4,17 @@ CREATE TABLE admin (
 );
 
 CREATE TABLE machine_state (
-    machine_state_id integer PRIMARY KEY AUTOINCREMENT,
-    machine_state_name text,
-    program_state integer,
-    machine_start_time timestamp,
-    machine_stop_time timestamp,
-    machine_down_time integer,
-    all_items integer,
-    energy_consumption_watt integer,
-    capacity_lasermodule float,
-    coolant_level float,
-    FOREIGN KEY(program_state) REFERENCES program_state(program_state_id)
-);
-
-CREATE TABLE program_state (
-    program_state_id integer PRIMARY KEY AUTOINCREMENT,
-    program_id integer,
-    program_target_amount integer,
-    program_current_amount integer,
-    program_runtime integer
+	machine_state_id integer PRIMARY KEY AUTOINCREMENT,
+	machine_state_name text,
+	program_state integer,
+	machine_start_time timestamp,
+	machine_stop_time timestamp,
+	machine_down_time integer,
+	all_items integer,
+	energy_consumption_watt integer,
+	capacity_lasermodule float,
+	coolant_level float
+	FOREIGN KEY (program_state_id) REFERENCES program_state(program_state_id)
 );
 
 CREATE TABLE machine_program (

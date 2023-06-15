@@ -57,7 +57,7 @@ source venv/bin/activate
 ```
 To start the flask application we need to run 
 ```
-flask run
+py -3.10 -m flask run
 ```
 
 ## Fronted
