@@ -13,8 +13,16 @@ CREATE TABLE machine_state (
 	all_items integer,
 	energy_consumption_watt integer,
 	capacity_lasermodule float,
-	coolant_level float
-	FOREIGN KEY (program_state_id) REFERENCES program_state(program_state_id)
+	coolant_level float,
+	FOREIGN KEY(program_state) REFERENCES program_state(program_state_id)
+);
+
+CREATE TABLE program_state (
+	program_state_id integer PRIMARY KEY AUTOINCREMENT,
+	program_id integer,
+	program_target_amount integer,
+	program_current_amount integer,
+	program_runtime integer
 );
 
 CREATE TABLE machine_program (
@@ -31,16 +39,7 @@ CREATE TABLE error (
 	error_type text
 );
 
-CREATE TABLE program_state (
-	program_state_id integer PRIMARY KEY AUTOINCREMENT,
-	program_id integer,
-	program_target_amount integer,
-	program_current_amount integer,
-	program_runtime integer
-);
-
 CREATE TABLE warning (
 	warning_id integer PRIMARY KEY AUTOINCREMENT,
 	warning_type text
 );
-
