@@ -51,6 +51,7 @@ def simulations():
         return jsonify(json)  #list of all sims
     elif request.method == 'POST':
         if(request.form.get('action') == 'save'):
+          print("TEST")
           simulator.saveSimulation(request.form.get("name"))
         elif(request.form.get('action') == 'start'):
           simulator.startSimulator()
@@ -257,7 +258,5 @@ def currentProgram(simulations_id):
     }) #change parameter(s) in the current program state
 
 
-#debuggin purposes
-#if __name__ == '__main__':
   
     

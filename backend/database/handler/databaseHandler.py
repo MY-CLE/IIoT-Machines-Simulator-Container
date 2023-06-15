@@ -10,11 +10,12 @@ from database.orm.notification.error import Error
 from database.orm.user.admin import Admin
 from database.orm.machine.machineState import MachineState
 from database.orm.program.programState import ProgramState
+from database.orm.machine.protocol import Protocol
 
 class DatabaseHandler:
 
     #set up the connection to the database file and use a cusror for queries
-    _CONNECTION = sqlite3.connect("database/machine-sim.db")
+    _CONNECTION = sqlite3.connect("database/machine-sim.db", check_same_thread=False)
     _CURSOR = _CONNECTION.cursor()
     
     
@@ -92,6 +93,16 @@ class DatabaseHandler:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id = ?", (id,))
         listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
         return ProgramState(*listOfParameters)
+    
+    @staticmethod
+    def selectProtocol(id: int) -> Protocol:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE machine_protocol_id= ?", (id,))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+
+    @staticmethod
+    def selectProtocol(description: str) -> Protocol:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
     
     @staticmethod
     def storeMachineState(machineState: MachineState) -> None:

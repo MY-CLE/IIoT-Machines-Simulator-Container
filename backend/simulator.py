@@ -226,7 +226,9 @@ class Simulator:
         activeProgram = 1#self.simulationMode.getProgramId()
         programState = ProgramState(0,activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
         stateId = DatabaseHandler.storeProgramState(programState)
-        machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        #machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        machineState = MachineState(0, datetime.now, 0, simName, 0, 0, programState.getID(), self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.times.getRuntime(),  self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        print(machineState)
         DatabaseHandler.storeMachineState(machineState)
 
 

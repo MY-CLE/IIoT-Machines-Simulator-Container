@@ -17,29 +17,36 @@ class MachineState(object):
     #    self.capacityLaserModule: float = databaseObject.getResultRow()[10]
     #    self.coolantLevelMl: float = databaseObject.getResultRow()[11]
     
-    def __init__(self, id: int, name: str, errorState: int, warningState: int, programState: int, machineStartTime: int, machineStopTime: int, machineDownTime: int, allItems: int, energyConsumptionWatt: float, capacityLaserModule: float, coolantLevelMl: float) -> None:
-        self.ID: int = id
-        self.name: str = name
+    from datetime import datetime
+    
+    def __init__(self, machineStateID: int, lastEdited: datetime, machineProtocol: int, machineStateName: str, errorState: int, warningState: int, programState: int, 
+                 machineStartTime: datetime, machineStopTime: datetime, machineDownTime: int, machineRunTime: int, totalItems: int, energyConsumptionWatt: int, capacityLasermodule: int, coolantLevel: int) -> None:
+        self.machineStateID: int = machineStateID
+        self.lastEdited: datetime = lastEdited
+        self.machineProtocol: int = machineProtocol
+        self.machineStateName: str = machineStateName
         self.errorState: int = errorState
         self.warningState: int = warningState
         self.programState: int = programState
-        self.machineStartTime: int = machineStartTime
-        self.machineStopTime: int = machineStopTime
+        self.machineStartTime: datetime = machineStartTime
+        self.machineStopTime: datetime = machineStopTime
         self.machineDownTime: int = machineDownTime
-        self.allItems: int = allItems
-        self.energyConsumptionWatt: float = energyConsumptionWatt
-        self.capacityLaserModule: float = capacityLaserModule
-        self.coolantLevelMl: float= coolantLevelMl
+        self.machineRunTime: int = machineRunTime
+        self.totalItems: int = totalItems
+        self.energyConsumptionWatt: int = energyConsumptionWatt
+        self.capacityLasermodule: int = capacityLasermodule
+        self.coolantLevel: int = coolantLevel
+
         
 
     def getID(self) -> int:
-        return self.ID
+        return self.machineStateID
     
     def getName(self) -> str:
-        return self.name
+        return self.machineStateName
     
     def getErrorState(self) -> int:
-        return self.errorState
+        return self.erroState
     
     def getWarningState(self) -> int:
         return self.warningState
@@ -57,16 +64,16 @@ class MachineState(object):
         return self.machineDownTime
     
     def getAllItems(self) -> int:
-        return self.allItems
+        return self.totalItems
     
     def getEnergyConsumptionWatt(self) -> int:
         return self.energyConsumptionWatt
     
     def getCapacityLaserModule(self) -> float:
-        return self.capacityLaserModule
+        return self.capacityLasermodule
     
     def getCoolantLevelMl(self) -> float:
-        return self.coolantLevelMl
+        return self.coolantLevel
     
     def __str__(self):
         return f"ID: {self.ID}\n" \
@@ -77,25 +84,25 @@ class MachineState(object):
                f"Machine start time: {self.machineStartTime}\n" \
                f"Machine stop time: {self.machineStopTime}\n" \
                f"Machine down time: {self.machineDownTime}\n" \
-               f"All items: {self.allItems}\n" \
+               f"All items: {self.totalItems}\n" \
                f"Energy consumption (Watt): {self.energyConsumptionWatt}\n" \
-               f"Capacity of laser module: {self.capacityLaserModule}\n" \
-               f"Coolant level (mL): {self.coolantLevelMl}"
+               f"Capacity of laser module: {self.capacityLasermodule}\n" \
+               f"Coolant level (mL): {self.coolantLevel}"
     
     def getJson(self):
         return {
-            "id": self.ID,
-            "name": self.name,
+            "id": self.machineStateID,
+            "name": self.machineStateName,
             "errorState": self.errorState,
             "warningState": self.warningState,  # Corrected typo here
             "programState": self.programState,
             "machineStartTime": self.machineStartTime,
             "machineStopTime": self.machineStopTime,
             "machineDownTime": self.machineDownTime,
-            "allItems": self.allItems,
+            "allItems": self.totalItems,
             "energyConsumptionWatt": self.energyConsumptionWatt,
-            "capacityLaserModule": self.capacityLaserModule,
-            "coolantLevelMl": self.coolantLevelMl
+            "capacityLaserModule": self.capacityLasermodule,
+            "coolantLevelMl": self.coolantLevel
         }
 
         
