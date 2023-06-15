@@ -25,7 +25,7 @@ source venv/bin/activate
 ```
 **Windows:**
 ```
-.\venv\Script\activate
+.\venv\Scripts\activate
 ```
 When venv is active we can install all dependencies using the requirements.txt
 ```
@@ -57,7 +57,7 @@ source venv/bin/activate
 ```
 To start the flask application we need to run 
 ```
-flask run
+py -3.10 -m flask run
 ```
 
 ## Fronted
@@ -90,7 +90,7 @@ npx tailwindcss -i ./input.css -o ./src/css/output.css --watch
 When developing in vs code, you can start a typescript watch service by pressing ctrl + shift + b and selecting the typescript watch option. 
 
 # Deployment
-To create a compact application,  we use docker compose. We have 2 separate docker-compose.yml files to compile for 2 different platforms
+To create a compact application,  we use docker compose. We have 3 separate docker-compose.yml files to compile for 2 different platforms
 ## Build frontend
 We need to create a new build version of our frontend. In order to do that we run setup.py
 ```python3 setup.py``` 
@@ -102,25 +102,30 @@ If you are on a **linux environment** make sure that you have `docker-buildx` in
 
 ### amd64
 ```
-docker buildx build --platform linux/amd64 -t adstec/priv:nginx-service-amd64 -f "nginx/Dockerfile" .
 docker buildx build --platform linux/amd64 -t adstec/priv:flask-api-amd64 -f "backend/Dockerfile" .
+docker buildx build --platform linux/amd64 -t adstec/priv:nginx-service-amd64 -f "nginx/Dockerfile" .
 ```
 ### arm/v7
 ```
-docker buildx build --platform linux/arm/v7 -t adstec/priv:nginx-service-arm-v7 -f "backend/Dockerfile" .
-docker buildx build --platform linux/arm/v7 -t adstec/priv:flask-api-arm-v7 -f "nginx/Dockerfile" .
+docker buildx build --platform linux/arm/v7 -t adstec/priv:flask-api-arm-v7 -f "backend/Dockerfile" .
+docker buildx build --platform linux/arm/v7 -t adstec/priv:nginx-service-arm-v7 -f "nginx/Dockerfile" .
 ```
 
 
 ## Docker compose
-To start the docker application, we use docker compose. We have 2 seperate docker compose files to compose for the 2 platforms
-### amd64
+To start the docker application, we use docker compose. We have 3 seperate docker compose files to compose for the 2 platforms
+
+### local development
 ```
 docker compose -f "docker-compose.yml" up
 ```
+### amd64
+```
+docker compose -f "docker-compose-amd64.yml" up
+```
 ### arm/v7
 ```
-docker compose -f "docker-compose-IRF.yml" up
+docker compose -f "docker-compose-armv7.yml" up
 ```
 ## Deleting old files
 To delete outdated docker images, all depending docker container have to be deleted first.

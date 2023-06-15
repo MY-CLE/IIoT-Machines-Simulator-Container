@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import StatusBar from "./statusbar/statusBar";
 import SelectionBar from "./machineOrProgramBar/selectionBar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getPrograms } from "../api-service";
-import { Program } from "../interfaces";
+import { getMachine, getPrograms } from "../api-service";
+import { Machine, Program, StatusBarValues } from "../interfaces";
 
 function ChooseProgramPage(props: {
   state: {
@@ -38,8 +38,44 @@ function ChooseProgramPage(props: {
         }
       );
       setPrograms(progs);
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusBarValues(values);
     })();
+
+    const id = setInterval(async () => {
+      let machineState = await getMachine(
+        props.state.simulation_id ? props.state.simulation_id : 0
+      );
+      console.log(machineState);
+
+      let values: StatusBarValues = getStatusbarValues(machineState);
+      setStatusBarValues(values);
+    }, 5000);
+    return () => clearInterval(id);
   }, []);
+
+  function getStatusbarValues(machineState: Machine): StatusBarValues {
+    let runtime = machineState.parameters[0].value;
+    let errors = 0,
+      warnings = 0;
+    if (machineState.error_state) {
+      errors = machineState.error_state.errors.length;
+      warnings = machineState.error_state.warnings.length;
+    }
+    return {
+      runtime: runtime,
+      utilization: 5,
+      warning: warnings,
+      error: errors,
+      safety_door: false,
+      lock: false,
+    };
+  }
 
   function navigateToMachineStatePage() {
     navigation("/machine");

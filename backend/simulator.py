@@ -1,292 +1,314 @@
-from datetime import datetime 
-import random
-import time
-import sys
+from datetime import datetime
 
-parameterMap ={
-    0: "runTime",
-    1: "coolantLevel",
-    2: "powerConsumption",
-    3: "laserModulePower",
-    4: "standstillTime",
-    5: "errorState",
-    6: "privilegeState"
-}
+import os
+import time
+import logging
+import threading
+from database.orm.machine.machineState import MachineState
+
+from mode import Mode
+from times import Times
+from metrics import Metrics
+from triangle import Triangle
+from notifications import Warnings
+from database.handler.databaseHandler import DatabaseHandler
+from database.orm.program.programState import ProgramState
+
+from opcuaIRF.opcuaServer import OPCUAServer
+from opcuaIRF.opcuaClient import OPCUAClient
+
+from modbusIRF.modbusServer import ModbusTCPServer
+from modbusIRF.modbusClient import ModbusTCPClient
+
+logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=logging.INFO, encoding='utf-8')
+
 
 class Simulator: 
+
     def __init__(self):
-        self.startTime = datetime.now()
-        self.stopTime = None
-        self.runTime: int = 0
-        self.standstillTime: int = 0
-
-        self.coolantLevel = 100 #100%
-        self.quantity = 0
-        self.powerConsumption = 0.0 #in kH/h?
-        self.laserModulePower = 100 #100%
+        self.simulatorState = False
+        self.isProgramOn = False
+        self.protocol = "None"
+        self.privilegeState: bool = False
+        self.simulationMode = Triangle()
+      
         
-        self.errorState = False
-        self.privilegeState = False
-        self.errors = []
-        self.securityWarnings = []
-        self.state = False
-        self.log = []
+        #call constructor with coolantLevelPercent and simulationMode
+        self.metrics: Metrics = Metrics(100, self.simulationMode)
+        
+        self.warnings: Warnings = Warnings()
 
-    def getStartzeit(self):
-        return self.startTime
-    
-    def getStopTime(self):
-        return self.stopTime
-    
-    def getStandstillTime(self):
-        return self.standstillTime
-    
-    def getRunTime(self):
-        return self.runTime
-    
-    def getTotalRunTime(self):
-        return self.totalRunTime
+        self.times: Times = Times(datetime.now(), 0)
 
-    def getCoolantLevel(self):
-        return self.coolantLevel
-    
-    def getQuantity(self):
-        return self.quantity
+        
+        self.opcuaServerThread = None
+        self.modbusServerThread = None
 
-    def getPowerConsumption(self):
-        return self.powerConsumption
 
-    def getLaserModulePower(self):
-        return self.laserModulePower
-
-    def getFehler(self):
-        return self.errors
-    
-    def getSicherheitswarungen(self):
-        return self.securityWarnings
-    
-    def getStatus(self):
-        return self.state
-    
-    def getLog(self):
-        return self.log
-    
-    def getErrorState(self):
-        return self.errorState
-    
-    def getPrivilegeState(self):
+    def getPrivilegeState(self) -> bool:
         return self.privilegeState
-    
-    def setRunTime(self, runTime: int):
-        self.runTime = runTime
 
-    def updateSimulation(self, time):
+    def setPrivilegeState(self, privState: bool) -> None:
+        self.privilegeState = privState 
+
+    # if protocol is changed, stop the current server and start the new one
+    def setProtocol(self, protocol: str) -> None:
+        if self.protocol == protocol:
+            logging.info(f"Protocol '{self.protocol}' already selected")
+            return
         
-        self.runTime: int = self.runTime + (time - self.startTime).total_seconds()
-        self.startTime = time
-        self.state = True
-        self.reduceCoolantConsumption(self.runTime)
-        self.laserModuleWearDown(self.runTime)
-        self.calculatePowerConsumption(self.runTime)
+        self.protocol = protocol
 
-    #return of JSON
-    def getMachineState(self):
-        return self.__json__()
+        if (self.protocol == "Modbus/TCP" or self.protocol == "None") and self.opcuaServerThread != None:
+            self.opcuaServerThread.join(timeout=1)
+            self.opcuaServerThread = None
+            logging.info("OPCUA Server stopped")
+
+        if (self.protocol == "OPCUA" or self.protocol == "None") and self.modbusServerThread != None:
+            self.modbusServerThread.join(timeout=1)
+            self.modbusServerThread = None
+            logging.info("Modbus/TCP Server stopped")
+
+        if self.protocol == "OPCUA":
+            self.opcuaServerThread = threading.Thread(target=self.startOPCUAServer)
+            self.opcuaServerThread.start()
+        elif self.protocol == "Modbus/TCP":
+            self.modbusServerThread = threading.Thread(target=self.startModbusServer)
+            self.modbusServerThread.start()
+
+    #get parameters from frontend and overwrite backend parameters
+    def updateMachineStateParameters(self, data):
+        attributeMapTimes = {
+            'Runtime': 'RunTime',
+            'Standstill_time': 'IdleTime',
+        }
+        attributeMapMetrics = {
+            'Coolant_level': 'CoolantLevelPercent',
+            'Power_consumption': 'PowerConsumptionKWH',
+            'Time_per_item': 'TimePerItem',
+            'Items_produced': 'TotalItemsProduced',
+            'Power_laser_module': 'LaserModulePowerWeardown'
+        }
+
+        for key, value in data.items():
+            if key == 'value':
+                description = data.get('description')
+                if description in attributeMapTimes:
+                    attribute = attributeMapTimes.get(description)
+                    setMethod = getattr(self.times, 'set' + attribute)
+                    setMethod(value)
+                elif description in attributeMapMetrics:
+                    attribute = attributeMapMetrics.get(description)
+                    setMethod = getattr(self.metrics, 'set' + attribute)
+                    setMethod(value)
+
+    def setMode(self, modeId: str) -> None:
+        self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
+
+    def stopSimulator(self) -> None:
+        self.simulatorState = False
     
-    def setParameter(self, id, value):
-        setattr(self, parameterMap[id], value)
-    def simulateSafetyDoorError(self):
-        timeInterval = random.randint(0, 15)
-        time.sleep(timeInterval)
-        raise Exception("Safety door open!")
+    def startSimulator(self) -> None:
+        self.simulatorState = True
     
-    def exceptionHandler(self, exc_type, exc_value, traceback):
-        if exc_type is not KeyboardInterrupt:
-            try:
-                self.simulateSafetyDoorError()
-            except Exception as e:
-                print("Error occurred while simulating. Error:", e)
-                if self.state:
-                    self.stopMachine()
-                    print("Machine runTime: " + str(self.getRuntime()) + " seconds.")
+    def startProgram(self) -> None:
+        self.isProgramOn = True
+        self.times.setStartTime(datetime.now())
 
-    def startMachine(self):
-        #sys.excepthook = self.exceptionHandler
-        print("Starting the Machine...")
-        self.state = True
-        self.startTime = datetime.now()
-        #
-        #
-        print("Machine is running.")
+    def stopProgram(self) -> None:
+        self.isProgramOn = False
+        self.times.setStopTime()
+        logging.info("Machine stopped!")
+
+    def startOPCUAServer(self):
+        self.ouaServer = OPCUAServer()
+        self.ouaServer.startServer()
+        logging.info("Server started")
+
+    def startModbusServer(self):
+        self.modbusServer = ModbusTCPServer()
+        self.modbusServer.startServer()
+        self.modbusServer.logServerChanges(0, 10)
+        logging.info("Server started")
     
-    def stopMachine(self):
-        print("Stopping the Machine...")
-        self.stopTime = datetime.now()
-        #
-        #
-        #
-        self.calculateRunTime()
-        self.state = False
-        print("Machine stopped.")
+    #function to reset Simulator to default metrics, times and simulatorState
+    def resetSimulator(self):
+        self.simulatorState = False
+        self.times.setRunTime(0)
+        self.times.setStopTime()
+        self.times.setIdleTime(0)
+        #state of times to be set True so idleTime stops counting
+        self.times.setState(True)
 
-    def calculateRunTime(self):
-        self.runTime = self.stopTime - self.startTime
+        self.metrics.setCoolantLevelPercent(100)
+        self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
+        self.metrics.setLaserModulePowerWeardownMode(self.simulationMode)
+        self.metrics.setTotalItemsProduced(0)
 
-    def calculateSimLength(self, quantity: int, productionTime: int) -> int:
-        simLength = 0
-        resetTimeLaser = 0.1 #Annahme Lasermodul braucht kurz um wieder zu resetten
-        for i in range(quantity):
-            simLength += productionTime + resetTimeLaser
-        
-        simLength = round(simLength * 1.1) #*1.1 um Puffer einzubauen/einzurechnen
-        return simLength
-    
-    def coolantWarning(self):
-        errorMessage = "Kühlwasser ist unter 20%. Bitte nachfüllen."
-        errorTime = datetime.now()
-        self.log.append((errorTime, errorMessage))
-        print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
+    def updateSimulation(self, time: datetime) -> None:
+        if(self.isProgramOn == True):
+            #calculate runtime with curret time
+            self.times.calculateRunTime(time)
+            runtime = self.times.getRuntime()
+            #call of updateMetrics function with the runtime
+            self.metrics.updateMetrics(runtime)
+            
+            #each time we check for errors and warnings
+            self.checkErrors()
+            self.checkWarnings()
+            if(self.protocol == "Modbus/TCP"):
+                self.updateModbus()
+            if(self.protocol == "OPCUA"):
+                self.updateOPCUA()
 
-    def laserModuleWarning(self):
-        errorMessage = "Laser Modul abgenutzt. Bitte wechseln."
-        errorTime = datetime.now()
-        self.log.append((errorTime, errorMessage))
-        print(f"errorTime: {errorTime}, errorMessage: {errorMessage}")
-
-    def laserModuleWearDown(self, simLength: float):
-        laserWeardown = simLength / 40 #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
-        self.laserModulePower -= laserWeardown #Verbrauch von aktuellem Stand abziehen
-        if self.laserModulePower < 20:
-            self.laserModuleWarning()
-
-    def reduceCoolantConsumption(self, simLength: float):
-        coolantConsumption = simLength / 30  #coolantConsumption, teiler flexibel(evtl variabel?)
-        self.coolantLevel -= coolantConsumption #Verbrauch von aktuellem Stand abziehen
-        if self.coolantLevel < 20:
-            self.coolantWarning()
-
-    def programSimulation(self, currentTime: datetime, targetAmount: int, endProduct: str):
-        productionTime = 5 #benutzt um productionTime von einem Stück zu berechnen, unterschiedliche productionTime für unterschiedliche Endprodukte
-        if endProduct == "dreieck":
-            productionTime = 3
-        elif endProduct == "kreis":
-            productionTime = 5
-        elif endProduct == "viereck":
-            productionTime = 6
-
-        simLength = self.calculateSimLength(targetAmount, productionTime) #simLength von Pogramm für Berechnung von Verbrauchen
-        powerConsumptionApiece = self.calculatePowerConsumption(productionTime)
-        powerConsumptionProgram = 0
-
+    # implemenation of OPCUA into the simulator
+    def updateOPCUA(self) -> None:
         try:
-            #Schleife um Produktion von gegebener quantity zu simulieren
-            for i in range(targetAmount):
-                time.sleep(productionTime) #Zeit für die Produktion
-                self.quantity += 1 
+            self.ouaClient = OPCUAClient()
+            logging.info("OPCUA Client started")
+            self.ouaClient.changeParam("Runtime", int(self.times.getRuntime()))
+            self.ouaClient.changeParam("Coolant_Level", int(self.metrics.getCoolantLevelPercent()))
+            self.ouaClient.changeParam("Power_Consumption", int(self.metrics.getPowerConsumptionKWH()))
+            self.ouaClient.changeParam("Power_Laser", int(self.metrics.getLaserModulePowerWeardown()))
+            self.ouaClient.changeParam("Idle_Time", int(self.times.getIdleTime()))
+            self.ouaClient.getParam()
+        except:
+            self.ouaClient.client.disconnect()
 
-                powerConsumptionProgram += powerConsumptionApiece #Berechnung Stromverbrauch von Programm
+    # implemenation of Modbus into the simulator
+    def updateModbus(self) -> None:
+        try:
+            self.modbusClient = ModbusTCPClient()
+            logging.info("ModbusTCP Client started")
+            self.modbusClient.writeSingleRegister(0, int(self.times.getRuntime()))
+            self.modbusClient.writeSingleRegister(1, int(self.metrics.getCoolantLevelPercent()))
+            self.modbusClient.writeSingleRegister(2, int(self.metrics.getPowerConsumptionKWH()))
+            self.modbusClient.writeSingleRegister(3, int(self.metrics.getLaserModulePowerWeardown()))
+            self.modbusClient.writeSingleRegister(4, int(self.times.getIdleTime()))
+            self.modbusClient.readHoldingRegisters(0, 10)
+        except:
+            self.modbusClient.client.close()
 
-                self.laserModuleWearDown(simLength, 30) #simulier die Abnutzung vom Laser Module je nachdem wie lange das Programm ist und der Teiler gewählt wird
-                self.reduceCoolantConsumption(simLength, 60) #coolantConsumption, teiler flexibel(evtl variabel?)
-                
-                print("LaserModulePower: ", round(self.laserModulePower, 2))
-                print("CoolantLevel: ", round(self.coolantLevel, 2))
-                print("Quantity: ", self.quantity)
 
-                #falls Kühlwasser leer wird, errors message -> log und maschine stoppt aufgerufen
-                if self.coolantLevel < 20:
-                    self.coolantWarning()
-                    self.stopMachine()
-                    break
-                
-                #falls Laser Modul zu abgenutzt ist, errors message -> log und maschine stoppt aufgerufen
-                if self.laserModulePower < 20:
-                    self.laserModuleWarning()
-                    self.stopMachine()
-                    break
+    def checkErrors(self) -> None:
+        #check if metrics are above or below a certain 'amount' to throw errors
+        if self.metrics.getCoolantLevelPercent() <= 0:
+            self.warnings.coolantLvlError()
+            self.stopSimulator()
+        if self.metrics.getPowerConsumptionKWH() >= 1000:
+            self.warnings.powerConsumptionError()
+            self.stopSimulator()
+        if self.metrics.getLaserModulePowerWeardown() <= 0:
+            self.warnings.laserModuleError()
+            self.stopSimulator()
 
-                #Prüfung ob Programm abgeschlossen ist
-                if i == targetAmount - 1:
-                    #self.powerConsumption = self.calculatePowerConsumption(productionTime) #Stromverbrauch Berechnung 
-                    self.powerConsumption = powerConsumptionProgram
-                    print("Programm erfolgreich abgeschlossen")
-                    self.stopMachine() 
-        except Exception as e:
-            print("Fehler bei der Programmsimulation: ", str(e))
-
-    def calculatePowerConsumption(self, simLength: float):
-        powerConsumption = simLength / 10
-        self.powerConsumption += powerConsumption
-        if self.powerConsumption > 70000:
-            print("Warning! High Level of use. Strongly advice to take a break")
+    def checkWarnings(self) -> None: 
+        #check if metrics are above or below a certain 'amount' to throw warnings
+        if self.metrics.getCoolantLevelPercent() <= 10:
+            self.warnings.coolantLvlWarning()
+        if self.metrics.getPowerConsumptionKWH() >= 900:
+            self.warnings.powerConsumptionWarning()
+        if self.metrics.getLaserModulePowerWeardown() <= 10:
+            self.warnings.laserModuleWarning()
+   
+    #return of JSON
+    def getMachineStateJson(self):
+        return self.getMachineState()
     
-    def __json__(self):
-        return {
-            "parameters": [   
-                {
-                    "id": "0",
-                    "description": "runTime",
-                    "value": round(self.runTime, 2)
-                },
-                {
-                    "id": "1",
-                    "description": "coolant_level",
-                    "value": round(self.coolantLevel, 2)
-                },
-                {
-                    "id": "2",
-                    "description": "power_consumption",
-                    "value": round(self.powerConsumption, 2)
-                },
-                {
-                    "id": "3",
-                    "description": "power_laser_module",
-                    "value": round(self.laserModulePower, 2),
-                },
-                {
-                    "id": "4",
-                    "description": "Standstill_time",
-                    "value": self.standstillTime
-                },
-                {
-                    "id": "5",
-                    "description": "error_state",
-                    "value": self.errorState
-                },
-                {
-                    "id": "6",
-                    "description": "privilage_state",
-                    "value": self.privilegeState
-                }
-            ],
+    def getProgramStateJson(self):
+        return self.getProgramState()
+    
+    def getPrograms(self):
+        return DatabaseHandler.selectAllMachinePrograms()
+    
+    #here is TotalItemsProduced implemeted instead CurrentAmount
+    def saveSimulation(self, simName: str ):
+        activeProgram = 1#self.simulationMode.getProgramId()
+        programState = ProgramState(0,activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
+        stateId = DatabaseHandler.storeProgramState(programState)
+        machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        DatabaseHandler.storeMachineState(machineState)
+
+
+    #return on programStateParametes in JSON format
+    def getProgramState(self):
+        programParameterList = [{"description": "Program runtime", "value":self.times.getRuntime()},
+                           {"description": "Target amount", "value": self.metrics.getTargetAmount()},
+                           {"description": "Current amount", "value": self.metrics.getTotalItemsProduced()},
+                           {"description": "Coolant consumption", "value": self.metrics.getCoolantConsumption()},
+                           {"description": "Power consumption", "value": self.metrics.getPowerConsumptionKWH()},
+                           {"description": "Laser module power", "value": self.metrics.getLaserModulePowerWeardown()},
+                           {"description": "Items per s", "value": self.metrics.getTimePerItem()},
+                           ]
+
+        data = {
+            "description": "Triangle",
+            "parameters": []
+        }
+        for index, param in enumerate(programParameterList):
+            parameter = {
+                "id": index,
+                "description": param["description"],
+                "value": param["value"]
+            }
+            data["parameters"].append(parameter)
+        return data
+        
+    #build machineStateParameters JSON
+    def getMachineState(self):
+        machineParametersList = [{"description": "Runtime", "Value": self.times.getRuntime()},
+                             {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
+                             {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
+                             {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
+                             {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
+                             {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
+                             ]
+        
+        data = {
+            "parameters": [],
             "error_state": {
-                "errors": [
-                    {
-                        "error_id": 0
-                    }
-                ],
-                "warnings": [
-                    {
-                        "error_id": 0
-                    }
-                ]
+                "errors": [],
+                "warnings": [],
             }
         }
 
-    
+        for index, param in enumerate(machineParametersList):
+            parameter = {
+                "id:": str(index),
+                "description": param["description"],
+                "value": param["Value"]
+            }
+            data["parameters"].append(parameter)
+        
+        currentErrors = self.warnings.getErrors()
+        for index, error in enumerate(currentErrors):
+            tempError = {
+                "id": str(index),
+                "name": error
+            }
+            data["error_state"]["errors"].append(tempError)
+            print("here")
+            print(index)
+            print(error)
+            print(data["error_state"]["errors"])
+        
+        currentWarnings = self.warnings.getWarnings()
+        for index, warning in enumerate(currentWarnings):
+            tempWarning = {
+                "id": str(index),
+                "name": warning
+            }
+            data["error_state"]["warnings"].append(tempWarning)
+        return data
 
 
-if __name__ == "__main__":
-    machineSimu = Simulator()
-    machineSimu.startMachine()
-    time.sleep(3)
-    now = time.time()
-    machineSimu.programSimulation(now, 6, "dreieck")
-    print("Laufzeit des Programmes: ", machineSimu.getRunTime())
-    print("Power Consumption of Program in kW: ", machineSimu.getPowerConsumption())
-
-
-    #machineSimu.simulateSafetyDoorError()
-    #time.sleep(20)
-    #machineSimu.stopMachine()
-    #print("Machine runTime: " + str(machineSimu.getRuntime()) + " seconds.")
+""" if __name__ == "__main__":
+    machine = Simulator(Triangle())
+    #while True:
+    for i in range(5):
+        time.sleep(3)
+        machine.updateSimulation(datetime.now())
+    machine.resetSimulator()
+    print(machine.getMachineState())
+        
+ """

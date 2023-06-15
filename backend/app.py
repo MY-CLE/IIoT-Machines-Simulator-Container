@@ -2,15 +2,21 @@
 
 
 from datetime import datetime
+from venv import logger
 from flask import Flask, jsonify, request, make_response
 import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
+from triangle import Triangle
+from circle import Circle
+from database.handler.databaseHandler import DatabaseHandler
 
 app = Flask(__name__)
+
 CORS(app) #For local testing
 
 simulator = Simulator()
+
 
 #/time to test the API
 
@@ -32,32 +38,36 @@ def getLine():
 @app.route('/api/simulations', methods=['GET', 'POST', 'DELETE'])
 def simulations():
     if request.method == 'GET':
-        return jsonify({
-  "simulations": [
-    {
-      "id": "0",
-      "description": "Simulation LCM Rechteck",
-      "last_edited": "1984-06-09:12:18:33"
-    },
-    {
-      "id": "1",
-      "description": "Simulation LCM Dreieck",
-      "last_edited": "1984-06-09:12:18:33"
-    },
-    {
-      "id": "0",
-      "description": "Simulation LCM Kreis",
-      "last_edited": "1984-06-09:12:18:33"
-    }
-  ]
-})  #list of all sims
+        sims = DatabaseHandler.selectMachineStates()
+        json = {
+          "simulations": []
+        }
+        for sim in sims:
+            json["simulations"].append({
+              "id": sim.getID(),
+              "description": sim.getName(),
+              "last_edited": "Jabba",
+            })
+        return jsonify(json)  #list of all sims
     elif request.method == 'POST':
+        if(request.form.get('action') == 'save'):
+          simulator.saveSimulation(request.form.get("name"))
+        elif(request.form.get('action') == 'start'):
+          simulator.startSimulator()
+        elif(request.form.get('action') == 'load'):
+          simulator.loadSimulator(request.form['simulation_id'])
         return jsonify({
-                            "simulation_id": 1
-                        })
+                  "simulation_id": 1
+                })
     elif request.method == 'DELETE':
         return #delete all stored sims
 
+
+@app.route('/api/simulations/protocol', methods=['PUT'])
+def simultaionsProtocol():
+  if request.method == 'PUT':
+    simulator.setProtocol(request.form['protocol']);
+    return "Protocol set successfully"
 
 @app.route('/api/simulations/<int:simulations_id>', methods=['GET', 'DELETE'])
 def simulationsId(simulations_id):
@@ -70,7 +80,7 @@ def simulationsId(simulations_id):
     "parameters": [
       {
         "id": "1",
-        "description": "runtime",
+        "description": "run_time",
         "value": "0"
       },
       {
@@ -151,57 +161,47 @@ def simulationsId(simulations_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachineState()
+        return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
+        simulator.updateMachineStateParameters(data)
         print(data)
-        simulator.setParameter(int(data["id"]), int(data["value"]))
-        response = make_response("<h1>Success</h1>")
-        response.status_code = 200
-        return response #change parameter(s) in the machine state
 
-@app.route('/api/simulations/<int:simulations_id>/machine/auth')
+        return jsonify({'message': 'Success'})#change parameter(s) in the machine state
+
+@app.route('/api/simulations/<int:simulations_id>/machine/auth', methods=['PUT'])
 def auth(simulations_id):
-    response = make_response("<h1>Success</h1>")
-    response.status_code = 200
+    if request.method == 'PUT':
+      pw = request.form['password']
+      for admin in DatabaseHandler.selectAdminUsers():
+        if(admin.getPassword() == pw):
+          simulator.warnings.errors = []
+          simulator.warnings.warnings = []
+          response = jsonify({'message': 'Success'})
+          response.status_code = 200
+          return response
+        response = jsonify({'message': 'Wrong password'})
+        response.status_code = 401
     return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
 def error(simulations_id):
     if request.method == 'GET':
-        return jsonify({
-    "errors": [
-        {
-            "id":"0",
-            "name":"Sicherheitstüre offen"
-        },
-        {
-            "id":"1",
-            "name":"Leistung Lasermodul unzureichend"
-        },
-        {
-            "id":"2",
-            "name":"Programmfehler"
-        }
-    ],
-    "warnings": [
-        {
-            "id":"0",
-            "name":"Kühlwasser zu sauer"
-        },
-        {
-            "id":"1",
-            "name":"Hohe Laufzeit"
-        },
-        {
-            "id":"2",
-            "name":"Kühlwasserstand niedrig"
-        }
-    ]
-    }) #list of all errors and warnings
+        data = simulator.warnings.getNotificationsJSON()
+        return data #list of all errors and warnings
     elif request.method == 'POST':
-        error_id = request.args.get('error_id')
-        return #creates the given error (via id) on the machine
+        error_id = request.form.get('error_id')
+        warning_id = request.form.get('warning_id')
+
+        if error_id is None and warning_id is None:
+            return jsonify({'error': 'No error_id or warning_id provided.'})
+        if error_id:
+            simulator.warnings.setSelectedError(error_id)
+            simulator.stopProgram()
+        elif warning_id:
+            simulator.warnings.setSelectedWarning(warning_id)
+
+        return jsonify({'message': 'Success'})
 
 
 #Programs
@@ -232,45 +232,20 @@ def programs(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
 def currentProgram(simulations_id):
     if request.method == 'GET':
-         return jsonify({
-    "description": "Zahnrad",
-    "parameters": [
-        {
-            "id": "1",
-            "description": "current_amount",
-            "value": "50"
-        },
-        {
-            "id": "2",
-            "description": "target_amount",
-            "value": "100"
-        },
-        {
-            "id": "3",
-            "description": "uptime_in_s",
-            "value": "50"
-        },
-        {
-            "id": "4",
-            "description": "power_consumption_in_Wh",
-            "value": "5000"
-        },
-        {
-            "id": "5",
-            "description": "coolant_consumption_in_percent",
-            "value": "10"
-        },
-        {
-            "id": "6",
-            "description": "time_per_item_in_s",
-            "value": "1"
-        }
-    ]
-})#current program state
+         return simulator.getProgramState()#current program state
     elif request.method == 'POST':
-        program_id = request.args.get('program_id')
+        programId = request.args.get('program_id')
+        simulator.setMode(programId)
         return #set this program to be the current one
     elif request.method == 'PATCH':
+        json = request.get_json()
+        for parameter in json["parameters"]:
+            if(parameter['value'] == "start"):
+                simulator.startProgram()
+            elif(parameter['value'] == "stop"):
+                simulator.stopProgram()
+            elif(parameter['value'] == "restart"):
+                simulator.resetSimulator()
         return jsonify({
         "parameters": [
         {
@@ -281,3 +256,8 @@ def currentProgram(simulations_id):
     ]
     }) #change parameter(s) in the current program state
 
+
+#debuggin purposes
+#if __name__ == '__main__':
+  
+    
