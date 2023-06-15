@@ -83,7 +83,7 @@ class Metrics(object):
     def updateLaserModule(self, runtimeInSeconds: int) -> None:
     # Calculate laserModuleWeardown based on runtimeInSeconds and coolantLevel
         self.laserModuleWeardownPercent -= runtimeInSeconds * (self.coolantLevelPercent / 100) * 0.05  
-    def updateTotalItemsProduced(self, runtimeInSeconds: int, timePerItem: int) -> None:
+    def updateTotalItemsProduced(self, runtimeInSeconds: int, timePerItem: int) ->None:
     # Calculate totalItemsProduced based on runtimeInSeconds, timePerItem, and powerConsumption
         self.totalItemsProduced = int(runtimeInSeconds / timePerItem) * (1 + self.powerConsumptionKWH / 100) 
 
