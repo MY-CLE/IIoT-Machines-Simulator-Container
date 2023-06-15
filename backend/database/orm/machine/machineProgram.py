@@ -32,12 +32,3 @@ class MachineProgram(object):
     def __str__(self) -> str:
         return f"stateID: {self.ID}, ID: {self.description}, targetAmount: {self.laserModuleWeardown}, currentAmount: {self.coolantConsumptionMl}, runtime: {self.timePerItem }"
         
-    def toJSON(self) -> dict:
-        return {
-            "id": self.ID,
-            "description": self.description,
-            "laserModuleWeardown": self.laserModuleWeardown,
-            "coolantConsumptionMl": self.coolantConsumptionMl,
-            "powerConsumptionKwH": self.powerConsumptionKwH,
-            "timePerItem": self.timePerItem
-        }

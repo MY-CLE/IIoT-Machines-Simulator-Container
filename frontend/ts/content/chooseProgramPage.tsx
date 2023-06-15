@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import StatusBar from "./statusbar/statusBar";
 import SelectionBar from "./machineOrProgramBar/selectionBar";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getMachine, getPrograms, setCurrentProgram } from "../api-service";
+import { getMachine, getPrograms } from "../api-service";
 import { Machine, Program, StatusBarValues } from "../interfaces";
 
 function ChooseProgramPage(props: {
@@ -81,20 +81,11 @@ function ChooseProgramPage(props: {
     navigation("/machine");
   }
 
-  async function navigateToProgramStatePage(id: number) {
-    console.log(id);
-    const response = await setCurrentProgram(props.state.simulation_id, id);
-    if (response !== 200) {
-      alert("Programm konnte nicht gesetzt werden");
-      return;
-    } else {
-      alert("Programm wurde gesetzt");
-    }
+  function navigateToProgramStatePage(id: number) {
     props.setState({
       program_id: id,
       simulation_id: props.state.simulation_id,
     });
-
     navigation("/program/current");
   }
 
@@ -141,7 +132,7 @@ function ProgramCard(props: any) {
   return (
     <button
       className="flex items-center justify-center w-1/4 m-6 bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
-      onClick={() => props.func(props.id)}
+      onClick={() => props.func(props.key)}
     >
       <span className="text-4xl ">{props.name}</span>
     </button>
