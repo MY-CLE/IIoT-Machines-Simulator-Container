@@ -88,14 +88,13 @@ function ChooseProgramPage(props: {
       alert("Programm konnte nicht gesetzt werden");
       return;
     } else {
-      alert("Programm wurde gesetzt");
-    }
-    props.setState({
-      program_id: id,
-      simulation_id: props.state.simulation_id,
-    });
+      props.setState({
+        program_id: id,
+        simulation_id: props.state.simulation_id,
+      });
 
-    navigation("/program/current");
+      navigation("/program/current");
+    }
   }
 
   return (

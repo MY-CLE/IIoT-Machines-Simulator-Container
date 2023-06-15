@@ -10,6 +10,7 @@ from database.orm.notification.error import Error
 from database.orm.user.admin import Admin
 from database.orm.machine.machineState import MachineState
 from database.orm.program.programState import ProgramState
+from database.orm.machine.protocol import Protocol
 
 class DatabaseHandler:
 
@@ -104,13 +105,24 @@ class DatabaseHandler:
         return ProgramState(*listOfParameters)
     
     @staticmethod
+    def selectProtocol(id: int) -> Protocol:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE machine_protocol_id= ?", (id,))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+
+    @staticmethod
+    def selectProtocol(description: str) -> Protocol:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+    
+    @staticmethod
     def storeMachineState(machineState: MachineState) -> None:
         query = "INSERT INTO machine_state " + \
-            "(machine_state_name, error_state, warning_state, program_state, machine_start_time, machine_stop_time, machine_down_time, all_items, energy_consumption_watt, capacity_lasermodule, coolant_level) " + \
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-        values = (machineState.getName(), machineState.getErrorState(), machineState.getWarningState(), machineState.getProgramState(), 
-              machineState.getMachineStartTime(), machineState.getMachineStopTime(), machineState.getMachineDownTime(), machineState.getAllItems(), 
-              machineState.getEnergyConsumptionWatt(), machineState.getCapacityLaserModule(), machineState.getCoolantLevelMl())
+            "(last_edited, machine_protocol, machine_state_name, error_state, warning_state, program_state, machine_start_time, machine_stop_time," + \
+            "machine_down_time, machine_runtime, total_items, energy_consumption_watt, capacity_lasermodule, coolant_level) " + \
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        values = (machineState.getLastEdited(), machineState.getMachineProtocol(), machineState.getName(), machineState.getErrorState(), machineState.getWarningState(), 
+                  machineState.getProgramState(), machineState.getMachineStartTime(), machineState.getMachineStopTime(), machineState.getMachineDownTime(), 
+                  machineState.getMachineRuntime(), machineState.getAllItems(), machineState.getEnergyConsumptionWatt(), machineState.getCapacityLaserModule(), machineState.getCoolantLevelMl())
         DatabaseHandler.save(query, values)
         
 

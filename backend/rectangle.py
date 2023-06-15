@@ -14,4 +14,4 @@ class Rectangle(Mode):
           super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription())
           
      def getProgramId(self) -> int:
-         return 1
+         return self.program.getID()

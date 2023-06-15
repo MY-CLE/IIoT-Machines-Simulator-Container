@@ -11,7 +11,7 @@ class Times(object):
     def getStartTime(self) -> datetime:
         return self.startTime
         
-    def getStopTime(self) -> int:
+    def getStopTime(self) -> datetime:
         return self.stopTime
         
     def getRuntime(self) -> int:

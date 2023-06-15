@@ -19,7 +19,7 @@ print(machine_state)
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state;")
 dbObj = DatabaseObject(result[0])
-program_state = ProgramState(dbObj)
+program_state = ProgramState(*dbObj.getResultRow())
 print(program_state)    
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM warning;")

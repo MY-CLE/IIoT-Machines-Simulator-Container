@@ -3,12 +3,15 @@ INSERT INTO admin (admin_password)
 VALUES ('admin123');
 
 -- Populating machine_state table
-INSERT INTO machine_state (machine_state_name, error_state, warning_state, program_state, machine_start_time, machine_stop_time, machine_down_time, all_items, energy_consumption_watt, capacity_lasermodule, coolant_level)
-VALUES ('Machine 1', 0, 0, 1, '2023-05-20 09:00:00', '2023-05-20 18:00:00', 20, 100, 5000, 80.5, 70.2),
-       ('Machine 2', 1, 1, 0, '2023-05-20 10:30:00', '2023-05-20 19:30:00', 30, 200, 8000, 100.0, 60.7);
+INSERT INTO machine_state (last_edited, machine_protocol, machine_state_name, error_state, warning_state, program_state, machine_start_time, machine_stop_time, machine_down_time, machine_runtime, total_items, energy_consumption_watt, capacity_lasermodule, coolant_level)
+VALUES 
+	('2023-06-15 09:00:00', 1, 'State 1', 2, 3, 4, '2023-06-15 08:30:00', '2023-06-15 10:30:00', 60, 7200, 100, 5000, 200, 80),
+	('2023-06-15 10:30:00', 2, 'State 2', 3, 4, 5, '2023-06-15 10:00:00', '2023-06-15 12:00:00', 120, 10800, 150, 6000, 250, 70),
+	('2023-06-15 12:30:00', 3, 'State 3', 4, 5, 6, '2023-06-15 12:00:00', '2023-06-15 14:00:00', 90, 14400, 200, 7000, 300, 60);
+
 
 -- Populating machine_program table
-INSERT INTO machine_program (machine_program_description, laser_module_weardown, coolant_consumption_ml, power_consumption_kwh, program_time_per_item)
+INSERT INTO machine_program (machine_program_description, program_laser_module_weardown, program_coolant_consumption_ml, program_power_consumption_kwh, program_time_per_item)
 VALUES ('Circle', 2000, 50.5, 0.5, 10),
        ('Triangle', 3000, 75.2, 0.7, 15),
        ('Rectangle', 4000, 100.0, 0.9, 12);
@@ -24,12 +27,18 @@ INSERT INTO program_state (program_id, program_target_amount, program_current_am
 VALUES (1, 50, 25, 5),
        (2, 100, 75, 6),
        (3, 200, 150, 7);
-VALUES (1, 50, 25, '04:30:00'),
-       (2, 100, 75, '06:15:00'),
-       (3, 200, 150, '09:45:00');
+VALUES (1, 50, 25, 8),
+       (2, 100, 75, 9),
+       (3, 200, 150, 10);
 
 -- Populating warning table
 INSERT INTO warning (warning_type)
 VALUES ('Coolant Level below 10%. Please refill!'),
        ('Laser module power below 10%. Please swap module!'),
        ('Power Consumption is getting high. Please take a break!');
+
+INSERT INTO machine_protocol (protocol_description)
+VALUES ('Modbus/TCP'),
+        ('OPC-UA')
+
+

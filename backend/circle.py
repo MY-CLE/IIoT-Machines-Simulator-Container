@@ -14,4 +14,4 @@ class Circle(Mode):
         super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription())
         
     def getProgramId(self) -> int:
-         return 3
+         return self.program.getID()
