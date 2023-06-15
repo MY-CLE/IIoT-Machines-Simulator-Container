@@ -735,6 +735,10 @@ video {
   width: 0px;
 }
 
+.w-1\/10 {
+  width: 10%;
+}
+
 .w-1\/2 {
   width: 50%;
 }

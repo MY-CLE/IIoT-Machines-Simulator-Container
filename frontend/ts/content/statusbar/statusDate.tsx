@@ -15,7 +15,7 @@ export function StatusDate(props: { value: Date }) {
   const date = parseDateTime(props.value);
   return (
     <>
-      <div className="flex items-center justify-center flex-grow w-auto h-32 border border-l-0 border-black border-1">
+      <div className="flex items-center justify-center w-1/5 h-32 border border-l-0 border-black border-1">
         <div className="px-5">{date}</div>
       </div>
     </>
