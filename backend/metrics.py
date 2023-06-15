@@ -60,7 +60,7 @@ class Metrics(object):
         return self.targetAmount
 
     def updateMetrics(self, runtimeInSeconds: int) -> None:
-        self.updateCoolantLevel()
+        self.updateCoolantLevel(runtimeInSeconds)
         self.updatePowerConsumption(runtimeInSeconds)
         self.updateLaserModule(runtimeInSeconds)
         self.updateTotalItemsProduced(runtimeInSeconds, self.timePerItem)
@@ -70,21 +70,23 @@ class Metrics(object):
         print("Time per item:", self.timePerItem)
         print("Total items produced:", self.totalItemsProduced)
 
-    def updateCoolantLevel(self) -> None:
-        #substract coolantConsumption from coolantLevel
-        self.coolantLevelPercent -= self.coolantCoolantConsumption
+    def updateCoolantLevel(self, runtimeInSeconds: int) -> None:
+    # Subtract coolantConsumption from coolantLevel
+        self.coolantLevelPercent -= self.coolantCoolantConsumption * (runtimeInSeconds / 60)
+    # Update powerConsumption based on coolantLevel
+        self.powerConsumptionKWH += self.coolantLevelPercent * 0.01  
 
     def updatePowerConsumption(self, runtimeInSeconds: int) -> None:
-        #add powerConsumption up depending on how long the machine is running
-        self.powerConsumptionKWH += (runtimeInSeconds / 60)
+    # Calculate powerConsumption based on runtimeInSeconds and laserModuleWeardown
+        self.powerConsumptionKWH += runtimeInSeconds * (1 + self.laserModuleWeardownPercent / 100) * 0.02  
 
     def updateLaserModule(self, runtimeInSeconds: int) -> None:
-        #substract laserModuleWeardown depending on how long the machine is running
-        self.laserModuleWeardownPercent -= (runtimeInSeconds / 60)
+    # Calculate laserModuleWeardown based on runtimeInSeconds and coolantLevel
+        self.laserModuleWeardownPercent -= runtimeInSeconds * (self.coolantLevelPercent / 100) * 0.05  
+    def updateTotalItemsProduced(self, runtimeInSeconds: int, timePerItem: int) -> None:
+    # Calculate totalItemsProduced based on runtimeInSeconds, timePerItem, and powerConsumption
+        self.totalItemsProduced = int(runtimeInSeconds / timePerItem) * (1 + self.powerConsumptionKWH / 100) 
 
-    def updateTotalItemsProduced(self, runTimeInSeconds: int, timePerItem: int) -> None:
-        #we calculate totalItemsProduced by dividing the runTime with timePerItem which we both get as parameters
-        self.totalItemsProduced = int(runTimeInSeconds / timePerItem)
 
 """ if __name__ == "__main__":
     metrics = Metrics(100, Triangle())
