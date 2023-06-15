@@ -3,19 +3,6 @@ from datetime import datetime
 
 class MachineState(object):
 
-    #def __init__(self, databaseObject: DatabaseObject) -> None:
-    #    self.ID: int = databaseObject.getResultRow()[0]
-    #    self.name: str = databaseObject.getResultRow()[1]
-    #    self.errorState: int = databaseObject.getResultRow()[2]
-    #    self.warningState: int = databaseObject.getResultRow()[3]
-    #    self.programState: int = databaseObject.getResultRow()[4]
-    #    self.machineStartTime: int = databaseObject.getResultRow()[5]
-    #    self.machineStopTime: int = databaseObject.getResultRow()[6]
-    #    self.machineDownTime: int = databaseObject.getResultRow()[7]
-    #    self.allItems: int = databaseObject.getResultRow()[8]
-    #    self.energyConsumptionWatt: int = databaseObject.getResultRow()[9]
-    #    self.capacityLaserModule: float = databaseObject.getResultRow()[10]
-    #    self.coolantLevelMl: float = databaseObject.getResultRow()[11]
     
     from datetime import datetime
     
@@ -42,11 +29,17 @@ class MachineState(object):
     def getID(self) -> int:
         return self.machineStateID
     
+    def getLastEdited(self) -> datetime:
+        return self.lastEdited
+    
+    def getMachineProtocol(self) -> int:
+        return self.machineProtocol
+        
     def getName(self) -> str:
         return self.machineStateName
     
     def getErrorState(self) -> int:
-        return self.erroState
+        return self.errorState
     
     def getWarningState(self) -> int:
         return self.warningState
@@ -54,14 +47,17 @@ class MachineState(object):
     def getProgramState(self) -> int:
         return self.programState
     
-    def getMachineStartTime(self) -> int:
+    def getMachineStartTime(self) -> datetime:
         return self.machineStartTime
     
-    def getMachineStopTime(self) -> int:
+    def getMachineStopTime(self) -> datetime:
         return self.machineStopTime
     
     def getMachineDownTime(self) -> int:
         return self.machineDownTime
+    
+    def getMachineRuntime(self) -> int:
+        return self.machineRunTime
     
     def getAllItems(self) -> int:
         return self.totalItems
@@ -76,18 +72,22 @@ class MachineState(object):
         return self.coolantLevel
     
     def __str__(self):
-        return f"ID: {self.ID}\n" \
-               f"Name: {self.name}\n" \
-               f"Error state: {self.errorState}\n" \
-               f"Warning state: {self.warningState}\n" \
-               f"Program state: {self.programState}\n" \
-               f"Machine start time: {self.machineStartTime}\n" \
-               f"Machine stop time: {self.machineStopTime}\n" \
-               f"Machine down time: {self.machineDownTime}\n" \
-               f"All items: {self.totalItems}\n" \
-               f"Energy consumption (Watt): {self.energyConsumptionWatt}\n" \
-               f"Capacity of laser module: {self.capacityLasermodule}\n" \
-               f"Coolant level (mL): {self.coolantLevel}"
+        return f"Machine State ID: {self.machineStateID}\n" \
+           f"Last Edited: {self.lastEdited}\n" \
+           f"Machine Protocol: {self.machineProtocol}\n" \
+           f"Machine State Name: {self.machineStateName}\n" \
+           f"Error State: {self.errorState}\n" \
+           f"Warning State: {self.warningState}\n" \
+           f"Program State: {self.programState}\n" \
+           f"Machine Start Time: {self.machineStartTime}\n" \
+           f"Machine Stop Time: {self.machineStopTime}\n" \
+           f"Machine Down Time: {self.machineDownTime}\n" \
+           f"Machine Run Time: {self.machineRunTime}\n" \
+           f"Total Items: {self.totalItems}\n" \
+           f"Energy Consumption (Watt): {self.energyConsumptionWatt}\n" \
+           f"Capacity of Laser Module: {self.capacityLasermodule}\n" \
+           f"Coolant Level (mL): {self.coolantLevel}"
+
     
     def getJson(self):
         return {

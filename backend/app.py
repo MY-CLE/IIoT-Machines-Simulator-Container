@@ -50,8 +50,8 @@ def simulations():
             })
         return jsonify(json)  #list of all sims
     elif request.method == 'POST':
+        print(request.form.get('action'))
         if(request.form.get('action') == 'save'):
-          print("TEST")
           simulator.saveSimulation(request.form.get("name"))
         elif(request.form.get('action') == 'start'):
           simulator.startSimulator()
