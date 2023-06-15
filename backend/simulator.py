@@ -232,7 +232,6 @@ class Simulator:
     def loadSimulation(self, simulation_id):
         print(f'load Sim {simulation_id}')
 
-
     #return on programStateParametes in JSON format
     def getProgramState(self):
         programParameterList = [{"description": "Program runtime", "value":self.times.getRuntime()},
@@ -245,7 +244,7 @@ class Simulator:
                            ]
 
         data = {
-            "description": "Triangle",
+            "description": self.simulationMode.getDescription(),
             "parameters": []
         }
         for index, param in enumerate(programParameterList):
