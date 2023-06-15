@@ -4,6 +4,7 @@ import os
 import time
 import logging
 import threading
+from database.orm.machine.machineState import MachineState
 
 from mode import Mode
 from times import Times
@@ -11,6 +12,7 @@ from metrics import Metrics
 from triangle import Triangle
 from notifications import Warnings
 from database.handler.databaseHandler import DatabaseHandler
+from database.orm.program.programState import ProgramState
 
 from opcuaIRF.opcuaServer import OPCUAServer
 from opcuaIRF.opcuaClient import OPCUAClient
@@ -25,7 +27,7 @@ class Simulator:
 
     def __init__(self):
         self.simulatorState = False
-        self.programState = False
+        self.isProgramOn = False
         self.protocol = "None"
         self.privilegeState: bool = False
         self.simulationMode = Triangle()
@@ -52,17 +54,17 @@ class Simulator:
     # if protocol is changed, stop the current server and start the new one
     def setProtocol(self, protocol: str) -> None:
         if self.protocol == protocol:
-            logging.info("No protocol selected")
+            logging.info(f"Protocol '{self.protocol}' already selected")
             return
         
         self.protocol = protocol
 
-        if self.protocol == "Modbus/TCP" and self.opcuaServerThread != None:
+        if (self.protocol == "Modbus/TCP" or self.protocol == "None") and self.opcuaServerThread != None:
             self.opcuaServerThread.join(timeout=1)
             self.opcuaServerThread = None
             logging.info("OPCUA Server stopped")
 
-        if self.protocol == "OPCUA" and self.modbusServerThread != None:
+        if (self.protocol == "OPCUA" or self.protocol == "None") and self.modbusServerThread != None:
             self.modbusServerThread.join(timeout=1)
             self.modbusServerThread = None
             logging.info("Modbus/TCP Server stopped")
@@ -74,7 +76,31 @@ class Simulator:
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
 
+    #get parameters from frontend and overwrite backend parameters
+    def updateMachineStateParameters(self, data):
+        attributeMapTimes = {
+            'Runtime': 'RunTime',
+            'Standstill_time': 'IdleTime',
+        }
+        attributeMapMetrics = {
+            'Coolant_level': 'CoolantLevelPercent',
+            'Power_consumption': 'PowerConsumptionKWH',
+            'Time_per_item': 'TimePerItem',
+            'Items_produced': 'TotalItemsProduced',
+            'Power_laser_module': 'LaserModulePowerWeardown'
+        }
 
+        for key, value in data.items():
+            if key == 'value':
+                description = data.get('description')
+                if description in attributeMapTimes:
+                    attribute = attributeMapTimes.get(description)
+                    setMethod = getattr(self.times, 'set' + attribute)
+                    setMethod(value)
+                elif description in attributeMapMetrics:
+                    attribute = attributeMapMetrics.get(description)
+                    setMethod = getattr(self.metrics, 'set' + attribute)
+                    setMethod(value)
 
     def setMode(self, modeId: str) -> None:
         self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
@@ -86,11 +112,11 @@ class Simulator:
         self.simulatorState = True
     
     def startProgram(self) -> None:
-        self.programState = True
+        self.isProgramOn = True
         self.times.setStartTime(datetime.now())
 
     def stopProgram(self) -> None:
-        self.programState = False
+        self.isProgramOn = False
         self.times.setStopTime()
         logging.info("Machine stopped!")
 
@@ -110,14 +136,17 @@ class Simulator:
         self.simulatorState = False
         self.times.setRunTime(0)
         self.times.setStopTime()
+        self.times.setIdleTime(0)
+        #state of times to be set True so idleTime stops counting
+        self.times.setState(True)
 
         self.metrics.setCoolantLevelPercent(100)
-        self.metrics.setPowerConsumptionKWH(self.simulationMode)
-        self.metrics.setLaserModulePowerWeardown(self.simulationMode)
+        self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
+        self.metrics.setLaserModulePowerWeardownMode(self.simulationMode)
         self.metrics.setTotalItemsProduced(0)
 
     def updateSimulation(self, time: datetime) -> None:
-        if(self.programState == True):
+        if(self.isProgramOn == True):
             #calculate runtime with curret time
             self.times.calculateRunTime(time)
             runtime = self.times.getRuntime()
@@ -188,6 +217,18 @@ class Simulator:
     
     def getProgramStateJson(self):
         return self.getProgramState()
+    
+    def getPrograms(self):
+        return DatabaseHandler.selectAllMachinePrograms()
+    
+    #here is TotalItemsProduced implemeted instead CurrentAmount
+    def saveSimulation(self, simName: str ):
+        activeProgram = 1#self.simulationMode.getProgramId()
+        programState = ProgramState(0,activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
+        stateId = DatabaseHandler.storeProgramState(programState)
+        machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        DatabaseHandler.storeMachineState(machineState)
+
 
     #return on programStateParametes in JSON format
     def getProgramState(self):
@@ -219,8 +260,6 @@ class Simulator:
                              {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
                              {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
                              {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
-                             {"description": "Privilege_state", "Value": self.getPrivilegeState()},
-                             {"description": "Time_per_item", "Value": self.metrics.getTimePerItem()},
                              {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
                              {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
                              ]

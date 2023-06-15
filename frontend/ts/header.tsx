@@ -3,7 +3,7 @@ import IconSettings from "./icons/iconSettings";
 import IconArrowBack from "./icons/iconBackArrow";
 import IconSave from "./icons/iconSave";
 import Modal from "react-modal";
-import { setProtocol } from "./api-service";
+import { saveSimulation, setProtocol } from "./api-service";
 
 Modal.setAppElement("#root");
 const customStyles = {
@@ -23,12 +23,22 @@ export function Header() {
   const [openSettingsModal, setOpenSettingsModal] = React.useState(false);
   const [selectedProtocol, setSelectedProtocol] =
     React.useState<string>("None");
+  const [openSaveSimulationModal, setOpenSaveSimulationModal] =
+    React.useState(false);
+
   function handleOpenSettingsModal() {
     setOpenSettingsModal(true);
   }
   function handleCloseSettingsModal() {
     setOpenSettingsModal(false);
   }
+  function handleOpenSaveSimulationModal() {
+    setOpenSaveSimulationModal(true);
+  }
+  function handleCloseSaveSimulationModal() {
+    setOpenSaveSimulationModal(false);
+  }
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -37,6 +47,15 @@ export function Header() {
     setProtocol(data);
     setSelectedProtocol(protocol as string);
     handleCloseSettingsModal();
+  }
+  async function handleSaveSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const saveName = data.get("Simname");
+    console.log("save simulation");
+    const response = await saveSimulation(saveName as string);
+    console.log(response);
+    handleCloseSaveSimulationModal();
   }
 
   return (
@@ -53,9 +72,32 @@ export function Header() {
         >
           <IconArrowBack />
         </button>
-        <button className="mx-3 w-10 h-10" onClick={() => {}}>
+        <button
+          className="mx-3 w-10 h-10"
+          onClick={handleOpenSaveSimulationModal}
+        >
           <IconSave />
         </button>
+        <Modal
+          isOpen={openSaveSimulationModal}
+          onRequestClose={handleCloseSaveSimulationModal}
+          style={customStyles}
+        >
+          <h1 className="text-2xl font-semibold">Settings</h1>
+          <h4 className="mt-4 text-xl font-semibold mb-2">Protocol</h4>
+          <form onSubmit={handleSaveSubmit}>
+            <input
+              type="text"
+              name="Simname"
+              placeholder="Save Name"
+              className="w-full px-2 py-1 mb-2 border-2 border-gray-400 rounded-lg"
+            />
+            <div>
+              <button onClick={handleCloseSaveSimulationModal}>Cancel</button>
+              <button type="submit">Save</button>
+            </div>
+          </form>
+        </Modal>
         <button onClick={handleOpenSettingsModal}>
           <IconSettings className="mx-3" />
         </button>

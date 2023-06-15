@@ -2,14 +2,17 @@
 
 
 from datetime import datetime
+from venv import logger
 from flask import Flask, jsonify, request, make_response
 import sqlite3
 from flask_cors import CORS
 from simulator import Simulator
 from triangle import Triangle
 from circle import Circle
+from database.handler.databaseHandler import DatabaseHandler
 
 app = Flask(__name__)
+
 CORS(app) #For local testing
 
 simulator = Simulator()
@@ -35,30 +38,27 @@ def getLine():
 @app.route('/api/simulations', methods=['GET', 'POST', 'DELETE'])
 def simulations():
     if request.method == 'GET':
-        return jsonify({
-  "simulations": [
-    {
-      "id": "0",
-      "description": "Simulation LCM Rechteck",
-      "last_edited": "1984-06-09:12:18:33"
-    },
-    {
-      "id": "1",
-      "description": "Simulation LCM Dreieck",
-      "last_edited": "1984-06-09:12:18:33"
-    },
-    {
-      "id": "0",
-      "description": "Simulation LCM Kreis",
-      "last_edited": "1984-06-09:12:18:33"
-    }
-  ]
-})  #list of all sims
+        sims = DatabaseHandler.selectMachineStates()
+        json = {
+          "simulations": []
+        }
+        for sim in sims:
+            json["simulations"].append({
+              "id": sim.getID(),
+              "description": sim.getName(),
+              "last_edited": "Jabba",
+            })
+        return jsonify(json)  #list of all sims
     elif request.method == 'POST':
-        simulator.startSimulator()
+        if(request.form.get('action') == 'save'):
+          simulator.saveSimulation(request.form.get("name"))
+        elif(request.form.get('action') == 'start'):
+          simulator.startSimulator()
+        elif(request.form.get('action') == 'load'):
+          simulator.loadSimulator(request.form['simulation_id'])
         return jsonify({
-                            "simulation_id": 1
-                        })
+                  "simulation_id": 1
+                })
     elif request.method == 'DELETE':
         return #delete all stored sims
 
@@ -164,14 +164,24 @@ def machines(simulations_id):
         return simulator.getMachineStateJson()
     elif request.method == 'PATCH':
         data = request.get_json()
+        simulator.updateMachineStateParameters(data)
         print(data)
 
         return jsonify({'message': 'Success'})#change parameter(s) in the machine state
 
-@app.route('/api/simulations/<int:simulations_id>/machine/auth')
+@app.route('/api/simulations/<int:simulations_id>/machine/auth', methods=['PUT'])
 def auth(simulations_id):
-    response = make_response("<h1>Success</h1>")
-    response.status_code = 200
+    if request.method == 'PUT':
+      pw = request.form['password']
+      for admin in DatabaseHandler.selectAdminUsers():
+        if(admin.getPassword() == pw):
+          simulator.warnings.errors = []
+          simulator.warnings.warnings = []
+          response = jsonify({'message': 'Success'})
+          response.status_code = 200
+          return response
+        response = jsonify({'message': 'Wrong password'})
+        response.status_code = 401
     return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
@@ -187,6 +197,7 @@ def error(simulations_id):
             return jsonify({'error': 'No error_id or warning_id provided.'})
         if error_id:
             simulator.warnings.setSelectedError(error_id)
+            simulator.stopProgram()
         elif warning_id:
             simulator.warnings.setSelectedWarning(warning_id)
 
@@ -247,5 +258,6 @@ def currentProgram(simulations_id):
 
 
 #debuggin purposes
-if __name__ == '__main__':
-  print(jsonify(simulator.warnings.getNotificationsJSON()))
+#if __name__ == '__main__':
+  
+    
