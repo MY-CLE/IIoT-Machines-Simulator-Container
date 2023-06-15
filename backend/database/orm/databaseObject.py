@@ -1,4 +1,4 @@
-
+    
 class DatabaseObject(object):
 
     def __init__(self, resultRow: tuple) -> None:
