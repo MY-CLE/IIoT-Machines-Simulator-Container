@@ -4,6 +4,7 @@ import Modal, { Styles } from "react-modal";
 import {
   createSimulation,
   getSimultions,
+  loadSimulation,
   postSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
@@ -53,7 +54,6 @@ function LandingPage(props: {
       console.log("no simulations found");
     }
   }
-  function afterOpenModal() {}
   function closeModal() {
     setModalIsOpen(false);
   }
@@ -88,13 +88,18 @@ function LandingPage(props: {
         </button>
         <Modal
           isOpen={modalIsOpen}
-          onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
           style={customStyles}
         >
-          <div className="flex flex-col flex-grow flex-nowrap w-full h-full">
+          <div className="flex flex-col flex-grow w-full h-full flex-nowrap">
             {simulations.map((item: Simulation) => {
-              return <SimulationListElement key={item.id} simulation={item} />;
+              return (
+                <SimulationListElement
+                  key={item.id}
+                  simulation={item}
+                  setState={props.setState}
+                />
+              );
             })}
             <button onClick={closeModal}>close</button>
           </div>
@@ -106,12 +111,26 @@ function LandingPage(props: {
 }
 export default LandingPage;
 
-function SimulationListElement(params: any) {
-  let sim = params.simulation;
+function SimulationListElement(props: any) {
+  const navigate = useNavigate();
+  let sim = props.simulation;
+  async function handleLoadSimulation() {
+    const response = await loadSimulation(sim.id);
+    if (response.simulation_id) {
+      props.setState({
+        simulation_id: response.simulation_id,
+        program_id: 0,
+      });
+      navigate(`/machine`);
+    }
+  }
   return (
-    <div className="w-full h-fit border rounded-lg m-2 p-2">
+    <button
+      className="w-full p-2 m-2 border rounded-lg h-fit"
+      onClick={handleLoadSimulation}
+    >
       <span>{sim.description} </span>
       <span>{sim.last_edited}</span>
-    </div>
+    </button>
   );
 }

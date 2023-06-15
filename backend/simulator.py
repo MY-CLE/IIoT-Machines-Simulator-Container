@@ -235,7 +235,9 @@ class Simulator:
                                     self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(), 
                                     self.metrics.getCoolantLevelPercent())
         DatabaseHandler.storeMachineState(machineState)
-
+        
+    def loadSimulation(self, simulation_id):
+        print(f'load Sim {simulation_id}')
 
     #return on programStateParametes in JSON format
     def getProgramState(self):
@@ -249,7 +251,7 @@ class Simulator:
                            ]
 
         data = {
-            "description": "Triangle",
+            "description": self.simulationMode.getDescription(),
             "parameters": []
         }
         for index, param in enumerate(programParameterList):

@@ -9,9 +9,9 @@ from mode import Mode
 class Circle(Mode):
 
     def __init__(self) -> None:
-        self.program: MachineProgram = DatabaseHandler.selectMachineProgram('Circle')
-        self.programState: ProgramState = DatabaseHandler.selectProgramState(3)
-        super().__init__(self.program.getPowerComsumptionKwH(), self.program.getLaserModuleWeardown(), self.program.getTimePerItem(), self.programState.getTargetAmount())        
-
+        program: MachineProgram = DatabaseHandler.selectMachineProgram('Circle')
+        programState: ProgramState = DatabaseHandler.selectProgramState(3)
+        super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription())
+        
     def getProgramId(self) -> int:
          return self.program.getID()

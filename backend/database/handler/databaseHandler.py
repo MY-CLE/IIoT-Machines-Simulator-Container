@@ -40,10 +40,20 @@ class DatabaseHandler:
     def selectMachineProgram(name: str) -> MachineProgram:
        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
        return MachineProgram(DatabaseObject(resultSet[0]))
+   
+    @staticmethod
+    def selectAllMachinePrograms() -> list[MachineProgram]:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program")
+        print(resultSet)
+        allProgramslist: list[MachineProgram] = []
+        for result in resultSet:
+            allProgramslist.append(MachineProgram(DatabaseObject(result)))
+        return allProgramslist
     
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_prorgram_id = '{id}'")
+        print(id)
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
         return MachineProgram(DatabaseObject(resultSet[0]))
     
     #get all possible warning messages within the Database
