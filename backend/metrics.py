@@ -40,15 +40,15 @@ class Metrics(object):
     
     def getTotalItemsProduced(self) -> int:
         return self.totalItemsProduced
-
-    def getCoolantLevelPercent(self) -> int:
-        return (int)(round(self.coolantLevelPercent))
-    
-    def getPowerConsumptionKWH(self) -> int:
-        return (int)(round(self.powerConsumptionKWH))
-
-    def getLaserModulePowerWeardown(self) -> int:
-        return (int)(round(self.laserModuleWeardownPercent))
+    #Removed cast to int
+    def getCoolantLevelPercent(self) -> float:
+        return self.coolantLevelPercent
+    #Removed cast to int
+    def getPowerConsumptionKWH(self) -> float:
+        return self.powerConsumptionKWH
+    #Removed cast to int
+    def getLaserModulePowerWeardown(self) -> float:
+        return self.laserModuleWeardownPercent
     
     def getTimePerItem(self) -> int:
         return self.timePerItem

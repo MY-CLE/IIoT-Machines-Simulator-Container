@@ -52,7 +52,7 @@ def simulations():
         return jsonify(json)  #list of all sims
     elif request.method == 'POST':
         if(request.form.get('action') == 'save'):
-          simulator.saveSimulation("Peter")
+          simulator.saveSimulation(request.form.get("name"))
         elif(request.form.get('action') == 'start'):
           simulator.startSimulator()
         elif(request.form.get('action') == 'load'):

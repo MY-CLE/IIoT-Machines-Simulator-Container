@@ -14,7 +14,7 @@ print(machine_program)
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_state;")
 dbObj = DatabaseObject(result[0])
-machine_state = MachineState(dbObj)
+machine_state = MachineState(*dbObj.getResultRow())
 print(machine_state)    
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state;")
