@@ -3,7 +3,7 @@ import IconSettings from "./icons/iconSettings";
 import IconArrowBack from "./icons/iconBackArrow";
 import IconSave from "./icons/iconSave";
 import Modal from "react-modal";
-import { setProtocol } from "./api-service";
+import { saveSimulation, setProtocol } from "./api-service";
 
 Modal.setAppElement("#root");
 const customStyles = {
@@ -38,6 +38,11 @@ export function Header() {
     setSelectedProtocol(protocol as string);
     handleCloseSettingsModal();
   }
+  function handleSaveSimulation() {
+    console.log("save simulation");
+    const response = saveSimulation();
+    console.log(response);
+  }
 
   return (
     <header className="flex flex-row items-center justify-between w-screen h-20 text-white bg-header-red">
@@ -53,7 +58,7 @@ export function Header() {
         >
           <IconArrowBack />
         </button>
-        <button className="mx-3 w-10 h-10" onClick={() => {}}>
+        <button className="mx-3 w-10 h-10" onClick={handleSaveSimulation}>
           <IconSave />
         </button>
         <button onClick={handleOpenSettingsModal}>

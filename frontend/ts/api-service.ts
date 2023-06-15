@@ -25,6 +25,46 @@ export async function getSimulationById(
     .catch((error) => console.log("error", error));
 }
 
+export async function createSimulation(): Promise<{ simulation_id: number }> {
+  let formdata = new FormData();
+  formdata.append("action", "start");
+  console.log(`POST Request auf ${url}/simulations`);
+  return await fetch(`${url}/simulations`, {
+    method: "POST",
+    redirect: "follow",
+    body: formdata,
+  })
+    .then((response) => response.json())
+    .catch((error) => console.log("error", error));
+}
+
+export async function saveSimulation(): Promise<{ simulation_id: number }> {
+  let formdata = new FormData();
+  formdata.append("action", "save");
+  console.log(`POST Request auf ${url}/simulations`);
+  return await fetch(`${url}/simulations`, {
+    method: "POST",
+    redirect: "follow",
+    body: formdata,
+  })
+    .then((response) => response.json())
+    .catch((error) => console.log("error", error));
+}
+
+export async function loadSimulation(): Promise<{ simulation_id: number }> {
+  let formdata = new FormData();
+  formdata.append("action", "load");
+  formdata.append("simulation_id", "1");
+  console.log(`POST Request auf ${url}/simulations`);
+  return await fetch(`${url}/simulations`, {
+    method: "POST",
+    redirect: "follow",
+    body: formdata,
+  })
+    .then((response) => response.json())
+    .catch((error) => console.log("error", error));
+}
+
 export async function postSimulation(
   simulation?: Simulation
 ): Promise<{ simulation_id: number }> {

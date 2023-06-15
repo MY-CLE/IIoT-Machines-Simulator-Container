@@ -1,4 +1,4 @@
-from orm.databaseObject import DatabaseObject
+from database.orm.databaseObject import DatabaseObject
 from datetime import datetime
 
 class MachineState(object):
@@ -66,5 +66,20 @@ class MachineState(object):
                f"Energy consumption (Watt): {self.energyConsumptionWatt}\n" \
                f"Capacity of laser module: {self.capacityLaserModule}\n" \
                f"Coolant level (mL): {self.coolantLevelMl}"
+    def getJson(self):
+        return {
+            "id": self.ID,
+            "name": self.name,
+            "errorState": self.errorState,
+            "waringState": self.warningState,
+            "programState": self.programState,
+            "machineStartTime": self.machineStartTime,
+            "machineStopTime": self.machineStopTime,
+            "machineDownTime": self.machineDownTime,
+            "allItems": self.allItems,
+            "energyConsumptionWatt": self.energyConsumptionWatt,
+            "capacityLaserModule": self.capacityLaserModule,
+            "coolantLevelMl": self.coolantLevelMl
+        }
 
         

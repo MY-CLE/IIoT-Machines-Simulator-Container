@@ -1,7 +1,11 @@
 import React from "react";
 import { useState } from "react";
 import Modal, { Styles } from "react-modal";
-import { getSimultions, postSimulation } from "../api-service";
+import {
+  createSimulation,
+  getSimultions,
+  postSimulation,
+} from "../api-service";
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 
@@ -54,9 +58,9 @@ function LandingPage(props: {
     setModalIsOpen(false);
   }
 
-  async function createSimulation() {
+  async function startSimulation() {
     console.log("create simulation");
-    let simulation_id = await postSimulation();
+    let simulation_id = await createSimulation();
     console.log(simulation_id);
 
     if (simulation_id.simulation_id) {
@@ -72,7 +76,7 @@ function LandingPage(props: {
       <div className="flex flex-row items-center justify-around flex-grow basis-2/5">
         <button
           className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue"
-          onClick={createSimulation}
+          onClick={startSimulation}
         >
           Simulation erzeugen
         </button>
