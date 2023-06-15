@@ -19,7 +19,7 @@ class MachineProgram(object):
     def getLaserModuleWeardown(self) -> int:
         return self.laserModuleWeardown
     
-    def getPowerComsumptionKwH(self) -> int:
+    def getPowerConsumptionKWH(self) -> int:
         return self.powerConsumptionKwH
     
 
