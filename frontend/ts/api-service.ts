@@ -38,9 +38,12 @@ export async function createSimulation(): Promise<{ simulation_id: number }> {
     .catch((error) => console.log("error", error));
 }
 
-export async function saveSimulation(): Promise<{ simulation_id: number }> {
+export async function saveSimulation(
+  name: string
+): Promise<{ simulation_id: number }> {
   let formdata = new FormData();
   formdata.append("action", "save");
+  formdata.append("name", name);
   console.log(`POST Request auf ${url}/simulations`);
   return await fetch(`${url}/simulations`, {
     method: "POST",

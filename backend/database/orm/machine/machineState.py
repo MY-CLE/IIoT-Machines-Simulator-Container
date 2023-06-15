@@ -3,19 +3,34 @@ from datetime import datetime
 
 class MachineState(object):
 
-    def __init__(self, databaseObject: DatabaseObject) -> None:
-        self.ID: int = databaseObject.getResultRow()[0]
-        self.name: str = databaseObject.getResultRow()[1]
-        self.errorState: int = databaseObject.getResultRow()[2]
-        self.warningState: int = databaseObject.getResultRow()[3]
-        self.programState: int = databaseObject.getResultRow()[4]
-        self.machineStartTime: int = databaseObject.getResultRow()[5]
-        self.machineStopTime: int = databaseObject.getResultRow()[6]
-        self.machineDownTime: int = databaseObject.getResultRow()[7]
-        self.allItems: int = databaseObject.getResultRow()[8]
-        self.energyConsumptionWatt: int = databaseObject.getResultRow()[9]
-        self.capacityLaserModule: float = databaseObject.getResultRow()[10]
-        self.coolantLevelMl: float = databaseObject.getResultRow()[11]
+    #def __init__(self, databaseObject: DatabaseObject) -> None:
+    #    self.ID: int = databaseObject.getResultRow()[0]
+    #    self.name: str = databaseObject.getResultRow()[1]
+    #    self.errorState: int = databaseObject.getResultRow()[2]
+    #    self.warningState: int = databaseObject.getResultRow()[3]
+    #    self.programState: int = databaseObject.getResultRow()[4]
+    #    self.machineStartTime: int = databaseObject.getResultRow()[5]
+    #    self.machineStopTime: int = databaseObject.getResultRow()[6]
+    #    self.machineDownTime: int = databaseObject.getResultRow()[7]
+    #    self.allItems: int = databaseObject.getResultRow()[8]
+    #    self.energyConsumptionWatt: int = databaseObject.getResultRow()[9]
+    #    self.capacityLaserModule: float = databaseObject.getResultRow()[10]
+    #    self.coolantLevelMl: float = databaseObject.getResultRow()[11]
+    
+    def __init__(self, id: int, name: str, errorState: int, warningState: int, programState: int, machineStartTime: int, machineStopTime: int, machineDownTime: int, allItems: int, energyConsumptionWatt: float, capacityLaserModule: float, coolantLevelMl: float) -> None:
+        self.ID: int = id
+        self.name: str = name
+        self.errorState: int = errorState
+        self.warningState: int = warningState
+        self.programState: int = programState
+        self.machineStartTime: int = machineStartTime
+        self.machineStopTime: int = machineStopTime
+        self.machineDownTime: int = machineDownTime
+        self.allItems: int = allItems
+        self.energyConsumptionWatt: float = energyConsumptionWatt
+        self.capacityLaserModule: float = capacityLaserModule
+        self.coolantLevelMl: float= coolantLevelMl
+        
 
     def getID(self) -> int:
         return self.ID
@@ -66,12 +81,13 @@ class MachineState(object):
                f"Energy consumption (Watt): {self.energyConsumptionWatt}\n" \
                f"Capacity of laser module: {self.capacityLaserModule}\n" \
                f"Coolant level (mL): {self.coolantLevelMl}"
+    
     def getJson(self):
         return {
             "id": self.ID,
             "name": self.name,
             "errorState": self.errorState,
-            "waringState": self.warningState,
+            "warningState": self.warningState,  # Corrected typo here
             "programState": self.programState,
             "machineStartTime": self.machineStartTime,
             "machineStopTime": self.machineStopTime,

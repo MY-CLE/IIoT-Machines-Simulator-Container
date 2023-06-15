@@ -4,6 +4,7 @@ import os
 import time
 import logging
 import threading
+from database.orm.machine.machineState import MachineState
 
 from mode import Mode
 from times import Times
@@ -222,9 +223,11 @@ class Simulator:
     
     #here is TotalItemsProduced implemeted instead CurrentAmount
     def saveSimulation(self, simName: str ):
-        activeProgram = self.simulationMode.getProgramId()
-        stateId = DatabaseHandler.storeProgramState( activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
-        DatabaseHandler.storeMachineState(0, simName, self.warnings.getErrors()[0], self.warnings.getWarnings()[0], stateId, self.times.startTime, self.times.stopTime, self.times.idleTime, self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.coolantLevelPercent())
+        activeProgram = 1#self.simulationMode.getProgramId()
+        programState = ProgramState(0,activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
+        stateId = DatabaseHandler.storeProgramState(programState)
+        machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
+        DatabaseHandler.storeMachineState(machineState)
 
     #return on programStateParametes in JSON format
     def getProgramState(self):

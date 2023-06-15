@@ -88,19 +88,20 @@ class DatabaseHandler:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state")
         machineStates: list[MachineState] = []
         for result in resultSet:
-            machineState: MachineState = MachineState(DatabaseObject(result))
+            machineState: MachineState = MachineState(*DatabaseObject(result).getResultRow())
             machineStates.append(machineState)
         return machineStates
     
     @staticmethod
     def selectMachineState(id: int) -> MachineState:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state WHERE machine_state_id = ?", (id,))
-        return MachineState(DatabaseObject(resultSet[0]))
+        return MachineState(*DatabaseObject(resultSet[0]).getResultRow())
     
     @staticmethod
     def selectProgramState(id: int) -> ProgramState:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id = ?", (id,))
-        return ProgramState(DatabaseObject(resultSet[0]))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+        return ProgramState(*listOfParameters)
     
     @staticmethod
     def storeMachineState(machineState: MachineState) -> None:
@@ -114,18 +115,17 @@ class DatabaseHandler:
         
 
     @staticmethod
-    def storeProgramState(program_id, program_target_amount,program_current_amount,program_runtime) -> None:
+    def storeProgramState(programState: ProgramState) -> None:
         query = "INSERT INTO program_state " + \
             "(program_id, program_target_amount, program_current_amount, program_runtime) " + \
             "VALUES (?, ?, ?, ?)"
-        values = (program_id , program_target_amount, program_current_amount, program_runtime)
-        DatabaseHandler.save(query, values)
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM program_state WHERE program_id = ?", (programState.getID(),))
-        return ProgramState(DatabaseObject(resultSet[0])).getStateID()
+        values = (programState.getID() , programState.getTargetAmount(), programState.getCurrentAmount(), programState.getRuntime())
+        DatabaseHandler.save(query, values) 
+        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state ORDER BY program_state_id DESC LIMIT 1")
+        return DatabaseObject(resultSet[0]).getResultRow()[0]
 
 
 
-    
 
 
     
