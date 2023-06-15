@@ -228,6 +228,9 @@ class Simulator:
         stateId = DatabaseHandler.storeProgramState(programState)
         machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
         DatabaseHandler.storeMachineState(machineState)
+        
+    def loadSimulation(self, simulation_id):
+        print(f'load Sim {simulation_id}')
 
 
     #return on programStateParametes in JSON format

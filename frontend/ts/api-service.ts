@@ -54,11 +54,15 @@ export async function saveSimulation(
     .catch((error) => console.log("error", error));
 }
 
-export async function loadSimulation(): Promise<{ simulation_id: number }> {
+export async function loadSimulation(
+  simulation_id: number
+): Promise<{ simulation_id: number }> {
   let formdata = new FormData();
   formdata.append("action", "load");
-  formdata.append("simulation_id", "1");
-  console.log(`POST Request auf ${url}/simulations`);
+  formdata.append("simulation_id", simulation_id.toString());
+  console.log(
+    `POST Request auf ${url}/simulations with ${formdata.get("simulation_id")}`
+  );
   return await fetch(`${url}/simulations`, {
     method: "POST",
     redirect: "follow",

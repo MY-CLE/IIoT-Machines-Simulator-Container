@@ -55,7 +55,7 @@ def simulations():
         elif(request.form.get('action') == 'start'):
           simulator.startSimulator()
         elif(request.form.get('action') == 'load'):
-          simulator.loadSimulator(request.form['simulation_id'])
+          simulator.loadSimulation(request.form.get('simulation_id'))
         return jsonify({
                   "simulation_id": 1
                 })

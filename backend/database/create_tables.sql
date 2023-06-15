@@ -7,6 +7,8 @@ CREATE TABLE machine_state (
 	machine_state_id integer PRIMARY KEY AUTOINCREMENT,
 	machine_state_name text,
 	program_state integer,
+	error_state integer,
+	warning_state integer,
 	machine_start_time timestamp,
 	machine_stop_time timestamp,
 	machine_down_time integer,

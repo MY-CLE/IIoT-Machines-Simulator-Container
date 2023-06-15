@@ -13,24 +13,43 @@ function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <LandingPage state={state} setState={setState} />,
+      element: (
+        <>
+          <Header isLandingPage={true} />
+          <LandingPage state={state} setState={setState} />
+        </>
+      ),
     },
     {
       path: "/machine",
-      element: <MachineStatePage state={state} setState={setState} />,
+      element: (
+        <>
+          <Header isLandingPage={false} />
+          <MachineStatePage state={state} setState={setState} />
+        </>
+      ),
     },
     {
       path: "/programs",
-      element: <ChooseProgramPage state={state} setState={setState} />,
+      element: (
+        <>
+          <Header isLandingPage={false} />
+          <ChooseProgramPage state={state} setState={setState} />
+        </>
+      ),
     },
     {
       path: "/program/current",
-      element: <ProgramStatePage state={state} setState={setState} />,
+      element: (
+        <>
+          <Header isLandingPage={false} />
+          <ProgramStatePage state={state} setState={setState} />
+        </>
+      ),
     },
   ]);
   return (
     <div className="flex flex-col flex-grow w-screen h-screen">
-      <Header />
       <RouterProvider router={router}></RouterProvider>
     </div>
   );

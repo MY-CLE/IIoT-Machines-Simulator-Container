@@ -19,7 +19,7 @@ const customStyles = {
   },
 };
 
-export function Header() {
+export function Header(props: { isLandingPage: boolean }) {
   const [openSettingsModal, setOpenSettingsModal] = React.useState(false);
   const [selectedProtocol, setSelectedProtocol] =
     React.useState<string>("None");
@@ -63,104 +63,110 @@ export function Header() {
       <h1 className="justify-center pl-8 text-3xl font-semibold text-center">
         Lasercutter HMI
       </h1>
-      <div className="flex flex-row justify-end basis-1/6">
-        <button
-          className="mx-3 w-10 h-10"
-          onClick={() => {
-            window.location.href = "/";
-          }}
-        >
-          <IconArrowBack />
-        </button>
-        <button
-          className="mx-3 w-10 h-10"
-          onClick={handleOpenSaveSimulationModal}
-        >
-          <IconSave />
-        </button>
-        <Modal
-          isOpen={openSaveSimulationModal}
-          onRequestClose={handleCloseSaveSimulationModal}
-          style={customStyles}
-        >
-          <h1 className="text-2xl font-semibold">Settings</h1>
-          <h4 className="mt-4 text-xl font-semibold mb-2">Protocol</h4>
-          <form onSubmit={handleSaveSubmit}>
-            <input
-              type="text"
-              name="Simname"
-              placeholder="Save Name"
-              className="w-full px-2 py-1 mb-2 border-2 border-gray-400 rounded-lg"
-            />
-            <div>
-              <button onClick={handleCloseSaveSimulationModal}>Cancel</button>
-              <button type="submit">Save</button>
-            </div>
-          </form>
-        </Modal>
-        <button onClick={handleOpenSettingsModal}>
-          <IconSettings className="mx-3" />
-        </button>
-        <Modal
-          isOpen={openSettingsModal}
-          onRequestClose={handleCloseSettingsModal}
-          style={customStyles}
-        >
-          <h1 className="text-2xl font-semibold">Settings</h1>
-          <h4 className="mt-4 text-xl font-semibold mb-2">Protocol</h4>
-          <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-start justify-start">
-              <div className="flex flex-row items-center justify-start">
+      {props.isLandingPage ? null : (
+        <div className="flex flex-row justify-end basis-1/6">
+          <button
+            className="w-10 h-10 mx-3"
+            onClick={() => {
+              window.location.href = "/";
+            }}
+          >
+            <IconArrowBack />
+          </button>
+          <>
+            <button
+              className="w-10 h-10 mx-3"
+              onClick={handleOpenSaveSimulationModal}
+            >
+              <IconSave />
+            </button>
+            <Modal
+              isOpen={openSaveSimulationModal}
+              onRequestClose={handleCloseSaveSimulationModal}
+              style={customStyles}
+            >
+              <h1 className="text-2xl font-semibold">Settings</h1>
+              <h4 className="mt-4 mb-2 text-xl font-semibold">Protocol</h4>
+              <form onSubmit={handleSaveSubmit}>
                 <input
-                  type="radio"
-                  value="None"
-                  name="protocol"
-                  checked={selectedProtocol === "None"}
-                  onChange={(e) => {
-                    setSelectedProtocol(e.target.value);
-                  }}
+                  type="text"
+                  name="Simname"
+                  placeholder="Save Name"
+                  className="w-full px-2 py-1 mb-2 border-2 border-gray-400 rounded-lg"
                 />
-                <span className="mx-2">None</span>
-              </div>
-              <div className="flex flex-row items-center justify-start">
-                <input
-                  type="radio"
-                  value="Modbus/TCP"
-                  name="protocol"
-                  checked={selectedProtocol === "Modbus/TCP"}
-                  onChange={(e) => {
-                    setSelectedProtocol(e.target.value);
-                  }}
-                />
-                <span className="mx-2">Modbus/TCP</span>
-              </div>
-              <div className="flex flex-row items-center justify-start">
-                <input
-                  type="radio"
-                  value="OPCUA"
-                  name="protocol"
-                  checked={selectedProtocol === "OPCUA"}
-                  onChange={(e) => {
-                    setSelectedProtocol(e.target.value);
-                  }}
-                />
-                <span className="mx-2">OPCUA</span>
-              </div>
-            </div>
-            <div className="flex flex-row items-center justify-end">
-              <button
-                className="px-4 py-2 mt-4  rounded-md border-2 border-black "
-                onClick={handleCloseSettingsModal}
-              >
-                Close
-              </button>
-              <button className="px-4 py-2 ml-1 mt-4 rounded-md border-2 border-black">
-                Anwenden
-              </button>
-            </div>
-          </form>
-        </Modal>
-      </div>
+                <div>
+                  <button onClick={handleCloseSaveSimulationModal}>
+                    Cancel
+                  </button>
+                  <button type="submit">Save</button>
+                </div>
+              </form>
+            </Modal>
+            <button onClick={handleOpenSettingsModal}>
+              <IconSettings className="mx-3" />
+            </button>
+            <Modal
+              isOpen={openSettingsModal}
+              onRequestClose={handleCloseSettingsModal}
+              style={customStyles}
+            >
+              <h1 className="text-2xl font-semibold">Settings</h1>
+              <h4 className="mt-4 mb-2 text-xl font-semibold">Protocol</h4>
+              <form onSubmit={handleSubmit}>
+                <div className="flex flex-col items-start justify-start">
+                  <div className="flex flex-row items-center justify-start">
+                    <input
+                      type="radio"
+                      value="None"
+                      name="protocol"
+                      checked={selectedProtocol === "None"}
+                      onChange={(e) => {
+                        setSelectedProtocol(e.target.value);
+                      }}
+                    />
+                    <span className="mx-2">None</span>
+                  </div>
+                  <div className="flex flex-row items-center justify-start">
+                    <input
+                      type="radio"
+                      value="Modbus/TCP"
+                      name="protocol"
+                      checked={selectedProtocol === "Modbus/TCP"}
+                      onChange={(e) => {
+                        setSelectedProtocol(e.target.value);
+                      }}
+                    />
+                    <span className="mx-2">Modbus/TCP</span>
+                  </div>
+                  <div className="flex flex-row items-center justify-start">
+                    <input
+                      type="radio"
+                      value="OPCUA"
+                      name="protocol"
+                      checked={selectedProtocol === "OPCUA"}
+                      onChange={(e) => {
+                        setSelectedProtocol(e.target.value);
+                      }}
+                    />
+                    <span className="mx-2">OPCUA</span>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center justify-end">
+                  <button
+                    className="px-4 py-2 mt-4 border-2 border-black rounded-md "
+                    onClick={handleCloseSettingsModal}
+                  >
+                    Close
+                  </button>
+                  <button className="px-4 py-2 mt-4 ml-1 border-2 border-black rounded-md">
+                    Anwenden
+                  </button>
+                </div>
+              </form>
+            </Modal>
+          </>
+        </div>
+      )}
     </header>
   );
 }
