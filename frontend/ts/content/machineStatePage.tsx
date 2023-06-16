@@ -176,7 +176,7 @@ function MachineStatePage(props: {
         </div>
       </div>
       <div>
-        <SelectionBar program={navigateToProgram} machine={null} />
+        <SelectionBar whichPage={"machine"} />
       </div>
       <div className="flex flex-col justify-start w-full h-full p-4 text-2xl bg-gray-200 border border-t-0 border-black border-1">
         {listPopup && (
@@ -260,7 +260,7 @@ function MachineStatePage(props: {
             </div>
           </div>
         )}
-        <div className="w-full h-auto text-left text-lg sm:text-base lg:text-xl xl:text2xl 2xl:text3xl 3xl:text4xl">Maschinenzustand</div>
+        <div className="w-full h-auto text-left text-4xl sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl">Maschinenzustand</div>
         <div className="flex flex-row w-full h-full py-5 justify-between">
           <div className="flex flex-col items-center justify-between w-1/3 h-full text-center">
             {parameters.map((item, index) => {

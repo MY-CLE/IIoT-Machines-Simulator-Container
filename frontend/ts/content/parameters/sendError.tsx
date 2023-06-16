@@ -38,7 +38,7 @@ function SendError(props: sendErrorProps) {
     console.log(`${errorID} selected`);
   }
   return (
-    <div className="flex flex-col bg-white h-full w-full border justify-start items-center border-black rounded-lg drop-shadow-sm space-y-7 pb-5">
+    <div className="flex flex-col bg-white h-full w-full border justify-start items-center border-black rounded-lg drop-shadow-sm space-y-7 py-5">
       <div className="mt-5 font-medium text-xs sm:text-base lg:text-xl xl:text2xl">Send {props.name}</div>
       <select
         className="w-3/4 h-1/5 border border-black rounded-lg bg-gray-400 text-center text-xs sm:text-base lg:text-xl xl:text2xl"

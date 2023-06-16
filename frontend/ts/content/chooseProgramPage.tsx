@@ -112,7 +112,7 @@ function ChooseProgramPage(props: {
         </div>
       </div>
       <div>
-        <SelectionBar program={() => {}} machine={navigateToMachineStatePage} />
+        <SelectionBar whichPage={"program"} />
       </div>
       <div className="flex flex-col justify-start w-full h-full text-2xl border border-t-0 border-black border-1 bg-program-choose-grey">
         <div className="w-full h-auto p-4 text-5xl text-center text-white ">
