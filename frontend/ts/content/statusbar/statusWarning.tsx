@@ -8,7 +8,7 @@ export function StatusWarning(props: { value: number }) {
         <div className="mb-3">
           <IconWarning />
         </div>
-        <div>{props.value}</div>
+        <div className="text-xs sm:text-base lg:text-xl xl:text2xl">{props.value}</div>
       </div>
     </>
   );

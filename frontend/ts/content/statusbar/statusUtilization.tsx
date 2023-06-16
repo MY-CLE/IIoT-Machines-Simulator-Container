@@ -8,7 +8,7 @@ export function StatusUtil(prop: { value: number }) {
         <div className="mb-3">
           <IconUtil />
         </div>
-        <div>{prop.value}</div>
+        <div className="text-xs sm:text-base lg:text-xl xl:text2xl">{prop.value}</div>
       </div>
     </>
   );
