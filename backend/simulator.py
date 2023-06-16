@@ -4,6 +4,7 @@ import os
 import time
 import logging
 import threading
+from backend.program import Program
 from database.orm.machine.machineState import MachineState
 
 from mode import Mode
@@ -33,6 +34,7 @@ class Simulator:
         self.protocol = "None"
         self.privilegeState: bool = False
         self.simulationMode = Triangle()
+        self.simulatedProgram = Program()
       
         
         #call constructor with coolantLevelPercent and simulationMode
@@ -161,6 +163,9 @@ class Simulator:
         if(self.isProgramOn == True):
             #calculate runtime with curret time
             self.times.calculateRunTime(time)
+            self.simulatedProgram.updateProgram(time)
+            
+            
             runtime = self.times.getRuntime()
             #call of updateMetrics function with the runtime
             self.metrics.updateMetrics(runtime)
