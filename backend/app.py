@@ -163,7 +163,7 @@ def simulationsId(simulations_id):
 def machines(simulations_id):
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return simulator.getMachineStateJson()
+        return jsonify(simulator.simulatedMachine.getMachineStateSnapshot())
     elif request.method == 'PATCH':
         data = request.get_json()
         simulator.updateMachineStateParameters(data)
@@ -177,13 +177,13 @@ def auth(simulations_id):
       pw = request.form['password']
       for admin in DatabaseHandler.selectAdminUsers():
         if(admin.getPassword() == pw):
-          simulator.warnings.errors = []
-          simulator.warnings.warnings = []
-          response = jsonify({'message': 'Success'})
-          response.status_code = 200
-          return response
-        response = jsonify({'message': 'Wrong password'})
-        response.status_code = 401
+            simulator.warnings.errors = []
+            simulator.warnings.warnings = []
+            response = jsonify({'message': 'Success'})
+            response.status_code = 200
+            return response
+            response = jsonify({'message': 'Wrong password'})
+            response.status_code = 401
     return response #pw in http body sets auth in machine
 
 @app.route('/api/simulations/<int:simulations_id>/machine/errors', methods=['GET', 'POST'])
@@ -221,11 +221,11 @@ def allPrograms(simulations_id):
 @app.route('/api/simulations/<int:simulations_id>/machine/programs/current', methods=['GET', 'POST', 'PATCH'])
 def currentProgram(simulations_id):
     if request.method == 'GET':
-         return simulator.getProgramState()#current program state
+         return jsonify(simulator.simulatedProgram.getProgramStateSnapshot())#current program state
     elif request.method == 'POST':
         programId = request.form.get('program_id')
-        print(programId)
-        simulator.setMode(programId)
+        machineProgram = DatabaseHandler().selectMachineProgramById(programId)
+        simulator.simulatedProgram.setProgram(machineProgram)
         return "Success"#set this program to be the current one
     elif request.method == 'PATCH':
         json = request.get_json()

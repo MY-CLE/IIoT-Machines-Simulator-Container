@@ -11,10 +11,10 @@ VALUES
 
 
 -- Populating machine_program table
-INSERT INTO machine_program (machine_program_description, program_laser_module_weardown, program_coolant_consumption_ml, program_power_consumption_kwh, program_time_per_item)
-VALUES ('Circle', 2000, 50.5, 0.5, 10),
-       ('Triangle', 3000, 75.2, 0.7, 15),
-       ('Rectangle', 4000, 100.0, 0.9, 12);
+INSERT INTO machine_program (machine_program_description, program_laser_module_weardown, program_coolant_consumption_ml, program_laser_power_consumption_watt, program_time_per_item)
+VALUES ('Circle', 1, 5, 3000, 10),
+       ('Triangle', 3, 10, 3500, 15),
+       ('Rectangle', 2, 2, 2000, 5);
 
 -- Populating error table
 INSERT INTO error (error_type)
@@ -38,7 +38,8 @@ VALUES ('Coolant Level below 10%. Please refill!'),
        ('Power Consumption is getting high. Please take a break!');
 
 INSERT INTO machine_protocol (protocol_description)
-VALUES ('Modbus/TCP'),
-        ('OPC-UA')
+VALUES ('None'), 
+       ('Modbus/TCP'),
+       ('OPCUA')
 
 

@@ -2,9 +2,9 @@ from database.orm.databaseObject import DatabaseObject
 
 class Protocol(object):
 
-    def __init__(self, databaseObject: DatabaseObject):
-        self.protocolID: int = databaseObject.getResultRow()[0]
-        self.protocolDescription: str = databaseObject.getResultRow()[1]
+    def __init__(self, protocolID: int, protocolDescription: str) -> None:
+        self.protocolID: int = protocolID
+        self.protocolDescription: str = protocolDescription
 
     def getProtocolID(self) -> int:
         return self.protocolID

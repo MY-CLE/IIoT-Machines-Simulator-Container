@@ -4,9 +4,10 @@ import os
 import time
 import logging
 import threading
-from backend.program import Program
 from database.orm.machine.machineState import MachineState
 
+from machine import Machine
+from program import Program
 from mode import Mode
 from times import Times
 from metrics import Metrics
@@ -30,20 +31,11 @@ class Simulator:
 
     def __init__(self):
         self.simulatorState = False
-        self.isProgramOn = False
         self.protocol = "None"
         self.privilegeState: bool = False
-        self.simulationMode = Triangle()
         self.simulatedProgram = Program()
-      
-        
-        #call constructor with coolantLevelPercent and simulationMode
-        self.metrics: Metrics = Metrics(100, self.simulationMode)
-        
+        self.simulatedMachine = Machine()	
         self.warnings: Warnings = Warnings()
-
-        self.times: Times = Times(datetime.now(), 0)
-
         
         self.opcuaServerThread = None
         self.modbusServerThread = None
@@ -105,33 +97,21 @@ class Simulator:
                     attribute = attributeMapMetrics.get(description)
                     setMethod = getattr(self.metrics, 'set' + attribute)
                     setMethod(value)
-
-    def setMode(self, modeId: str) -> None:
-        mode = DatabaseHandler().selectMachineProgramById(modeId)
-        print(mode.getDescription())
-
-        if (mode.getDescription() == "Triangle"):
-            self.simulationMode = Triangle()
-        elif (mode.getDescription() == "Circle"):
-            self.simulationMode = Circle()
-        elif (mode.getDescription() == "Rectangle"):
-            self.simulationMode = Rectangle()   
-
-        print(self.simulationMode)
-
     def stopSimulator(self) -> None:
         self.simulatorState = False
     
     def startSimulator(self) -> None:
         self.simulatorState = True
+        self.simulatedMachine.startMachine(datetime.now())
     
     def startProgram(self) -> None:
-        self.isProgramOn = True
-        self.times.setStartTime(datetime.now())
+        date = datetime.now()
+        self.simulatedProgram.startProgram(date) 
+        self.simulatedMachine.setIsProgramRunning(True)
 
     def stopProgram(self) -> None:
-        self.isProgramOn = False
-        self.times.setStopTime()
+        self.simulatedProgram.setIsProgramRunning(False)
+        self.simulatedMachine.setIsProgramRunning(False)
         logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
@@ -147,30 +127,17 @@ class Simulator:
     
     #function to reset Simulator to default metrics, times and simulatorState
     def resetSimulator(self):
-        self.simulatorState = False
-        self.times.setRunTime(0)
-        self.times.setStopTime()
-        self.times.setIdleTime(0)
-        #state of times to be set True so idleTime stops counting
-        self.times.setState(True)
-
-        self.metrics.setCoolantLevelPercent(100)
-        self.metrics.setPowerConsumptionKWHMode(self.simulationMode)
-        self.metrics.setLaserModulePowerWeardownMode(self.simulationMode)
-        self.metrics.setTotalItemsProduced(0)
+        self.simulatedMachine.resetMachine()
+        self.simulatedProgram.resetProgram()
 
     def updateSimulation(self, time: datetime) -> None:
-        if(self.isProgramOn == True):
+        if(self.simulatedMachine.isProgramRunning):
             #calculate runtime with curret time
-            self.times.calculateRunTime(time)
-            self.simulatedProgram.updateProgram(time)
-            
-            
-            runtime = self.times.getRuntime()
-            #call of updateMetrics function with the runtime
-            self.metrics.updateMetrics(runtime)
-            
-            #each time we check for errors and warnings
+            #self.times.calculateRunTime(time)
+            self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
+            updatedParameter:list = self.simulatedProgram.updateProgram(time)
+            self.simulatedMachine.updateMachine(time, *updatedParameter)
+
             self.checkErrors()
             self.checkWarnings()
             if(self.protocol == "Modbus/TCP"):
@@ -209,132 +176,39 @@ class Simulator:
 
     def checkErrors(self) -> None:
         #check if metrics are above or below a certain 'amount' to throw errors
-        if self.metrics.getCoolantLevelPercent() <= 0:
+        if self.simulatedMachine.getCoolantLevel() <= 0:
             self.warnings.coolantLvlError()
             self.stopSimulator()
-        if self.metrics.getPowerConsumptionKWH() >= 1000:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 100000:
             self.warnings.powerConsumptionError()
             self.stopSimulator()
-        if self.metrics.getLaserModulePowerWeardown() <= 0:
+        if self.simulatedProgram.getProgramLaserModulePowerConsumption() <= 1000:
             self.warnings.laserModuleError()
             self.stopSimulator()
 
     def checkWarnings(self) -> None: 
         #check if metrics are above or below a certain 'amount' to throw warnings
-        if self.metrics.getCoolantLevelPercent() <= 10:
+        if self.simulatedMachine.getCoolantLevel() <= 10:
             self.warnings.coolantLvlWarning()
-        if self.metrics.getPowerConsumptionKWH() >= 900:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 90000:
             self.warnings.powerConsumptionWarning()
-        if self.metrics.getLaserModulePowerWeardown() <= 10:
+        if self.simulatedProgram.getProgramLaserModulePowerConsumption() <= 1200:
             self.warnings.laserModuleWarning()
    
-    #return of JSON
-    def getMachineStateJson(self):
-        return self.getMachineState()
-    
-    def getProgramStateJson(self):
-        return self.getProgramState()
-    
     def getPrograms(self):
         return DatabaseHandler.selectAllMachinePrograms()
     
     #here is TotalItemsProduced implemeted instead CurrentAmount
     def saveSimulation(self, simName: str ):
-        if self.times.getStopTime() == None:
-            self.stopProgram()
-            self.startProgram()
-        activeProgram = 1#self.simulationMode.getProgramId()
-        programState = ProgramState(0,activeProgram, self.metrics.getTargetAmount(), self.metrics.getTotalItemsProduced(), self.times.getRuntime())
-        stateId = DatabaseHandler.storeProgramState(programState)
-        #machineState = MachineState(0, simName, 0, 0, stateId, self.times.getStartTime(), self.times.getStopTime(), self.times.getIdleTime(), self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(),self.metrics.getCoolantLevelPercent())
-        machineState = MachineState(0, datetime.now(), 0, simName, 0, 0, programState.getID(), self.times.getStartTime(), 
-                                    self.times.getStopTime(), self.times.getIdleTime(), self.times.getRuntime(),  
-                                    self.metrics.getTotalItemsProduced(), self.metrics.getPowerConsumptionKWH(), self.metrics.getLaserModulePowerWeardown(), 
-                                    self.metrics.getCoolantLevelPercent())
-        DatabaseHandler.storeMachineState(machineState)
+        stateId = DatabaseHandler.storeProgramState(self.simulatedProgram.getAsProgramState())
+        protocol = DatabaseHandler.selectProtocolByName(self.protocol)
+        self.simulatedMachine.prepareForDB(datetime.now(), simName, protocol.getProtocolID(), stateId)
+        DatabaseHandler.storeMachineState(self.simulatedMachine.getAsMachineState())
         
     def loadSimulation(self, simulation_id):
-        print(f'load Sim {simulation_id}')
-
-    #return on programStateParametes in JSON format
-    def getProgramState(self):
-        programParameterList = [{"description": "Program runtime", "value":self.times.getRuntime()},
-                           {"description": "Target amount", "value": self.metrics.getTargetAmount()},
-                           {"description": "Current amount", "value": self.metrics.getTotalItemsProduced()},
-                           {"description": "Coolant consumption", "value": self.metrics.getCoolantConsumption()},
-                           {"description": "Power consumption", "value": self.metrics.getPowerConsumptionKWH()},
-                           {"description": "Laser module power", "value": self.metrics.getLaserModulePowerWeardown()},
-                           {"description": "Items per s", "value": self.metrics.getTimePerItem()},
-                           ]
-
-        data = {
-            "description": self.simulationMode.getDescription(),
-            "parameters": []
-        }
-        for index, param in enumerate(programParameterList):
-            parameter = {
-                "id": index,
-                "description": param["description"],
-                "value": param["value"]
-            }
-            data["parameters"].append(parameter)
-        return data
-        
-    #build machineStateParameters JSON
-    def getMachineState(self):
-        machineParametersList = [{"description": "Runtime", "Value": self.times.getRuntime()},
-                             {"description": "Coolant_level", "Value": self.metrics.getCoolantLevelPercent()},
-                             {"description": "Power_consumption", "Value": self.metrics.getPowerConsumptionKWH()},
-                             {"description": "Standstill_time", "Value": int(self.times.calculateIdleTime(datetime.now()))},
-                             {"description": "Items_produced", "Value": self.metrics.getTotalItemsProduced()},
-                             {"description": "Power_laser_module", "Value": self.metrics.getLaserModulePowerWeardown()},
-                             ]
-        
-        data = {
-            "parameters": [],
-            "error_state": {
-                "errors": [],
-                "warnings": [],
-            }
-        }
-
-        for index, param in enumerate(machineParametersList):
-            parameter = {
-                "id:": str(index),
-                "description": param["description"],
-                "value": param["Value"]
-            }
-            data["parameters"].append(parameter)
-        
-        currentErrors = self.warnings.getErrors()
-        for index, error in enumerate(currentErrors):
-            tempError = {
-                "id": str(index),
-                "name": error
-            }
-            data["error_state"]["errors"].append(tempError)
-            print("here")
-            print(index)
-            print(error)
-            print(data["error_state"]["errors"])
-        
-        currentWarnings = self.warnings.getWarnings()
-        for index, warning in enumerate(currentWarnings):
-            tempWarning = {
-                "id": str(index),
-                "name": warning
-            }
-            data["error_state"]["warnings"].append(tempWarning)
-        return data
-
-
-""" if __name__ == "__main__":
-    machine = Simulator(Triangle())
-    #while True:
-    for i in range(5):
-        time.sleep(3)
-        machine.updateSimulation(datetime.now())
-    machine.resetSimulator()
-    print(machine.getMachineState())
-        
- """
+        machineState = DatabaseHandler.selectMachineState(simulation_id)
+        programState = DatabaseHandler.selectProgramState(machineState.getProgramState())
+        self.protocol = DatabaseHandler.selectProtocolById(machineState.getMachineProtocol()).getProtocolDescription()
+        self.simulatedMachine.loadMachineState(machineState)
+        self.simulatedProgram.loadProgramState(programState)
+        self.startSimulator()

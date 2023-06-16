@@ -24,8 +24,6 @@ class MachineState(object):
         self.capacityLasermodule: int = capacityLasermodule
         self.coolantLevel: int = coolantLevel
 
-        
-
     def getID(self) -> int:
         return self.machineStateID
     

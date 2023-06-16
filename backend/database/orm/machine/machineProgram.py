@@ -32,7 +32,7 @@ class MachineProgram(object):
     
 
     def getCoolantConsumption(self) -> int:
-        return self.coolantConsumptionMl
+        return self.coolantConsumption
     
     def getTimePerItem(self) -> int:
         return self.timePerItem
@@ -45,7 +45,7 @@ class MachineProgram(object):
             "id": self.ID,
             "description": self.description,
             "laserModuleWeardown": self.laserModuleWeardown,
-            "coolantConsumptionMl": self.coolantConsumptionMl,
+            "coolantConsumption": self.coolantConsumption,
             "powerConsumptionLaserModule": self.powerConsumptionLaserModule,
             "timePerItem": self.timePerItem
         }
