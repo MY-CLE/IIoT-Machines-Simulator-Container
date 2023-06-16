@@ -9,9 +9,9 @@ from mode import Mode
 class Triangle(Mode):
      
    def __init__(self) -> None:
-      program: MachineProgram = DatabaseHandler.selectMachineProgram('Triangle')
-      programState: ProgramState = DatabaseHandler.selectProgramState(2)
-      super().__init__(program.getPowerComsumptionKwH(), program.getLaserModuleWeardown(), program.getTimePerItem(), programState.getTargetAmount(), program.getDescription()) 
-      
+         self.program: MachineProgram = DatabaseHandler.selectMachineProgram('Triangle')
+         self.programState: ProgramState = DatabaseHandler.selectProgramState(2)
+         super().__init__(self.program.getPowerConsumptionKWH(), self.program.getLaserModuleWeardown(), self.program.getTimePerItem(), self.programState.getTargetAmount(), self.program.getDescription())   
+
    def getProgramId(self) -> int:
          return self.program.getID()

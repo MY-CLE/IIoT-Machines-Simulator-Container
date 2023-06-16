@@ -10,6 +10,8 @@ from mode import Mode
 from times import Times
 from metrics import Metrics
 from triangle import Triangle
+from rectangle import Rectangle
+from circle import Circle
 from notifications import Warnings
 from database.handler.databaseHandler import DatabaseHandler
 from database.orm.program.programState import ProgramState
@@ -103,7 +105,17 @@ class Simulator:
                     setMethod(value)
 
     def setMode(self, modeId: str) -> None:
-        self.simulationMode = DatabaseHandler().selectMachineProgramById(modeId)
+        mode = DatabaseHandler().selectMachineProgramById(modeId)
+        print(mode.getDescription())
+
+        if (mode.getDescription() == "Triangle"):
+            self.simulationMode = Triangle()
+        elif (mode.getDescription() == "Circle"):
+            self.simulationMode = Circle()
+        elif (mode.getDescription() == "Rectangle"):
+            self.simulationMode = Rectangle()   
+
+        print(self.simulationMode)
 
     def stopSimulator(self) -> None:
         self.simulatorState = False
