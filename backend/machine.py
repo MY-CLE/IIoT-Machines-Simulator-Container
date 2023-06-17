@@ -43,10 +43,15 @@ class Machine():
         
         self.timeSinceLastUpdate = (nowTime - self.lastUpdate).total_seconds()
         self.machineRuntime += self.timeSinceLastUpdate
-        if not self.isProgramRunning:
-            self.machineIdleTime = self.machineIdleTime + self.timeSinceLastUpdate
         self.lastUpdate = nowTime
     
+    def calculateIdleTime(self, nowTime: datetime) -> None:
+        if self.isProgramRunning == True:
+            self.machineIdleTime = 0
+        else:
+            self.machineIdleTime = self.machineIdleTime + (nowTime - self.getMachineStopTime()).total_seconds()
+            self.setMachineStopTime(nowTime)
+
     def startMachine(self, nowTime: datetime) -> None:
         self.machineStartTime = nowTime
     
@@ -116,9 +121,9 @@ class Machine():
             }
             
     def getMachineStateSnapshot(self) -> dict:
-        parameters = [{"id": "1","description": "RunTime", "value": int(self.machineRuntime)},
-                {"id":"2", "description": "Machine Idle Time", "value": int(self.machineIdleTime)},
-                {"id":"3","description": "Coolant level", "value": int(self.coolantLevel)},
+        parameters = [{"id": "1","description": "Runtime", "value": int(self.machineRuntime)},
+                {"id":"2", "description": "Idle Time", "value": int(self.machineIdleTime)},
+                {"id":"3","description": "Coolant Level", "value": int(self.coolantLevel)},
                 {"id":"4", "description": "Power Consumption", "value": int(self.totalEnergyConsumption)},
                 {"id":"5", "description": "Capacity Laser Module", "value": int(self.capacityLaserModule)},
                 {"id":"6", "description": "Total Items", "value": int(self.totalItems)}]
@@ -276,3 +281,5 @@ class Machine():
         
     def setIsProgramRunning(self, isProgramRunning: bool) -> None:
         self.isProgramRunning = isProgramRunning
+
+

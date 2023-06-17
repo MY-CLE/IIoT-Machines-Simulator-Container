@@ -109,6 +109,7 @@ class Simulator:
 
     def stopSimulator(self) -> None:
         self.simulatorState = False
+        self.stopProgram()
     
     def startMachine(self) -> None:
         self.simulatorState = True
@@ -120,8 +121,10 @@ class Simulator:
         self.simulatedMachine.setIsProgramRunning(True)
 
     def stopProgram(self) -> None:
+        date = datetime.now()
         self.simulatedProgram.setIsProgramRunning(False)
         self.simulatedMachine.setIsProgramRunning(False)
+        self.simulatedMachine.setMachineStopTime(date)
         logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
@@ -154,6 +157,12 @@ class Simulator:
                 self.updateModbus()
             if(self.protocol == "OPCUA"):
                 self.updateOPCUA()
+
+        if self.simulatedMachine.isProgramRunning == False:
+            if self.simulatedMachine.getMachineStopTime() == None:
+                self.simulatedMachine.setMachineIdleTime(0)
+            else: 
+                self.simulatedMachine.calculateIdleTime(time)
 
     # implemenation of OPCUA into the simulator
     def updateOPCUA(self) -> None:
@@ -189,12 +198,12 @@ class Simulator:
         if self.simulatedMachine.getCoolantLevel() <= 0:
             self.warnings.coolantLvlError()
             self.stopSimulator()
-        if self.simulatedMachine.getTotalEnegeryConsumption() >= 100000:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 1000000:
             self.warnings.powerConsumptionError()
             self.stopSimulator()
-        if self.simulatedProgram.getProgramLaserModulePowerConsumption() <= 1000:
+        if self.simulatedProgram.getProgramLaserModuleWeardown() <= 0:
             self.warnings.laserModuleError()
-            self.stopSimulator()
+            self.stopSimulator() 
 
     def checkWarnings(self) -> None: 
         #check if metrics are above or below a certain 'amount' to throw warnings
@@ -222,3 +231,4 @@ class Simulator:
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
         self.startMachine()
+

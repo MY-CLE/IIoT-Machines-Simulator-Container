@@ -28,9 +28,15 @@ class Program:
         self.machineProgram = None
         
         self.programStartTime: datetime = None
+        self.programStopTime: datetime = None
         self.programTimeSinceLastUpdate: datetime = None
         self.lastUpdate: datetime = None
         
+    def getProgramStopTime(self) -> datetime:
+        return self.programStopTime
+    
+    def setProgramStopTime(self, stopTime: datetime) -> None:
+        self.programStopTime = stopTime
     
     def getIsProgramRunning(self) -> bool:
         return self.isProgramRunning
@@ -153,13 +159,13 @@ class Program:
         self.programStartTime = startTime
         
     def getProgramStateSnapshot(self) -> dict:
-        parameters = [{"description": "Program runtime", "value": int(self.getProgramRuntime())},
-                           {"description": "Target amount", "value": int(self.getProgramTargetAmount())},
-                           {"description": "Current amount", "value": int(self.getProgramCurrentAmount())},
-                           {"description": "Coolant consumption per s", "value": self.getProgramCoolantConsumption()},
+        parameters = [{"description": "Program Runtime", "value": int(self.getProgramRuntime())},
+                           {"description": "Target Amount", "value": int(self.getProgramTargetAmount())},
+                           {"description": "Current Amount", "value": int(self.getProgramCurrentAmount())},
+                           {"description": "Coolant Consumption per S", "value": self.getProgramCoolantConsumption()},
                            {"description": "Laser Module Wear Down", "value": self.getProgramLaserModuleWeardown()},
                            {"description": "Laser Power Consumption", "value": int(self.getProgramLaserModulePowerConsumption())},
-                           {"description": "Sec per Item", "value": self.getProgramTimePerItem()},
+                           {"description": "Time per Item", "value": self.getProgramTimePerItem()},
                            ]
         data = {
             "description": self.getProgramProgramDescription(),
