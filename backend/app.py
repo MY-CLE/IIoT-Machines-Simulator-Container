@@ -55,7 +55,7 @@ def simulations():
         if(request.form.get('action') == 'save'):
           simulator.saveSimulation(request.form.get("name"))
         elif(request.form.get('action') == 'start'):
-          simulator.startSimulator()
+          simulator.startMachine()
         elif(request.form.get('action') == 'load'):
           simulator.loadSimulation(request.form.get('simulation_id'))
         return jsonify({
@@ -225,7 +225,8 @@ def currentProgram(simulations_id):
     elif request.method == 'POST':
         programId = request.form.get('program_id')
         machineProgram = DatabaseHandler().selectMachineProgramById(programId)
-        simulator.simulatedProgram.setProgram(machineProgram)
+        simulator.simulatedProgram.setMachineProgram(machineProgram)
+        simulator.simulatedMachine.isProgramRunning = False
         return "Success"#set this program to be the current one
     elif request.method == 'PATCH':
         json = request.get_json()

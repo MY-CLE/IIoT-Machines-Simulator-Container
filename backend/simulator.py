@@ -33,8 +33,8 @@ class Simulator:
         self.simulatorState = False
         self.protocol = "None"
         self.privilegeState: bool = False
-        self.simulatedProgram = Program()
-        self.simulatedMachine = Machine()	
+        self.simulatedProgram: Program = Program()
+        self.simulatedMachine: Machine = Machine()	
         self.warnings: Warnings = Warnings()
         
         self.opcuaServerThread = None
@@ -72,35 +72,45 @@ class Simulator:
             self.modbusServerThread = threading.Thread(target=self.startModbusServer)
             self.modbusServerThread.start()
 
+    def updateProgramParameters(self, data):
+        self.simulatedProgram.setProgramParameters()
+
     #get parameters from frontend and overwrite backend parameters
     def updateMachineStateParameters(self, data):
-        attributeMapTimes = {
-            'Runtime': 'RunTime',
-            'Standstill_time': 'IdleTime',
+        machineAttributesMap = {
+            'RunTime': 'MachineRuntime',
+            'Machine Idle Time': 'MachineIdleTime',
+            'Coolant level': 'CoolantLevel',
+            'Power Consumption': 'TotalEnegeryConsumption',
+            'Capacity Laser Module': 'CapacityLaserModule',
+            'Total Items': 'TotalItems'
         }
-        attributeMapMetrics = {
-            'Coolant_level': 'CoolantLevelPercent',
-            'Power_consumption': 'PowerConsumptionKWH',
-            'Time_per_item': 'TimePerItem',
-            'Items_produced': 'TotalItemsProduced',
-            'Power_laser_module': 'LaserModulePowerWeardown'
+        programAttributeMap = {
+            'Program runtime': 'ProgramRuntime',
+            'Target amount': 'ProgramTargetAmount',
+            'Current Amount': 'ProgramCurrentAmount',
+            'Coolant consumption per s': 'ProgramCoolantConsumption',
+            'Laser Module Wear Down': 'ProgramLaserModuleWeardown',
+            'Laser Power Consumption': 'ProgramLaserModulePowerConsumption',
+            'Sec per Item': 'ProgramTimePerItem'
         }
 
         for key, value in data.items():
             if key == 'value':
                 description = data.get('description')
-                if description in attributeMapTimes:
-                    attribute = attributeMapTimes.get(description)
-                    setMethod = getattr(self.times, 'set' + attribute)
+                if description in machineAttributesMap:
+                    attribute = machineAttributesMap.get(description)
+                    setMethod = getattr(self.simulatedMachine, 'set' + attribute)
                     setMethod(value)
-                elif description in attributeMapMetrics:
-                    attribute = attributeMapMetrics.get(description)
-                    setMethod = getattr(self.metrics, 'set' + attribute)
+                elif description in programAttributeMap:
+                    attribute = programAttributeMap.get(description)
+                    setMethod = getattr(self.simulatedProgram, 'set' + attribute)
                     setMethod(value)
+
     def stopSimulator(self) -> None:
         self.simulatorState = False
     
-    def startSimulator(self) -> None:
+    def startMachine(self) -> None:
         self.simulatorState = True
         self.simulatedMachine.startMachine(datetime.now())
     
@@ -130,7 +140,7 @@ class Simulator:
         self.simulatedMachine.resetMachine()
         self.simulatedProgram.resetProgram()
 
-    def updateSimulation(self, time: datetime) -> None:
+    def updateSimulation(self, time: datetime) -> None:        
         if(self.simulatedMachine.isProgramRunning):
             #calculate runtime with curret time
             #self.times.calculateRunTime(time)
@@ -211,4 +221,4 @@ class Simulator:
         self.protocol = DatabaseHandler.selectProtocolById(machineState.getMachineProtocol()).getProtocolDescription()
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
-        self.startSimulator()
+        self.startMachine()

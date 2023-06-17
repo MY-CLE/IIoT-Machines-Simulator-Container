@@ -17,12 +17,12 @@ class Program:
         #Static Parameters
         self.programId: int = None
         self.isProgramRunning: bool = False
-        self.programTargetAmount: int = 0
+        self.programTargetAmount: int = 100
         self.programMachineProgramId: int = None
         self.programProgramDescription: str = ""
         self.programLaserModuleWeardown: int = 0
         self.programCoolantConsumption: int = 0
-        self.programTimePerItem: int = 0
+        self.programTimePerItem: int = 0 #had to be not null otherwise error when dividing
         self.newItems: int = 0
         
         self.machineProgram = None
@@ -107,7 +107,6 @@ class Program:
         self.programRuntime = programState.getRuntime()
         self.lastUpdate = None
         
-        
     def loadMachineProgram(self) -> None:
         self.setIsProgramRunning(False)
         self.setProgramId(self.machineProgram.getID())
@@ -124,7 +123,7 @@ class Program:
             #    self.setIsProgramRunning(False)
             self.updateProgramCurrentAmount()
             self.updateProgramLaserModulePowerConsumption()
-        return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning]
+        return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown]
         
     def calculateProgramRuntime(self, nowTime: datetime) -> None:
         if(self.lastUpdate == None):
@@ -142,20 +141,24 @@ class Program:
         self.programLaserModulePowerConsumption = self.programLaserModulePowerConsumption + self.programTimeSinceLastUpdate / self.programTimePerItem
     
     def resetProgram(self) -> None:
-        self.setProgram(self.machineProgram)
-    
+        self.isProgramRunning = False
+        self.loadMachineProgram()
+
+    def setMachineProgram(self, machineProgram: MachineProgram) -> None:
+        self.machineProgram = machineProgram
+        self.loadMachineProgram()
+
     def startProgram(self, startTime: datetime) -> None:
         self.isProgramRunning = True
         self.programStartTime = startTime
-        
         
     def getProgramStateSnapshot(self) -> dict:
         parameters = [{"description": "Program runtime", "value": int(self.getProgramRuntime())},
                            {"description": "Target amount", "value": int(self.getProgramTargetAmount())},
                            {"description": "Current amount", "value": int(self.getProgramCurrentAmount())},
-                           {"description": "Coolant consumption per s", "value": int(self.getProgramCoolantConsumption())},
+                           {"description": "Coolant consumption per s", "value": self.getProgramCoolantConsumption()},
                            {"description": "Laser Module Wear Down", "value": self.getProgramLaserModuleWeardown()},
-                           {"description": "Laser Power Consumption", "value": self.getProgramLaserModulePowerConsumption()},
+                           {"description": "Laser Power Consumption", "value": int(self.getProgramLaserModulePowerConsumption())},
                            {"description": "Sec per Item", "value": self.getProgramTimePerItem()},
                            ]
         data = {

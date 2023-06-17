@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 from venv import logger
 from database.orm.machine.machineState import MachineState
+
 class Machine():
     
     def __init__(self):
@@ -18,7 +19,6 @@ class Machine():
         #Errors & Warnings
         self.activeErrors: list = []
         self.activeWarnings: list = []
-        
 
         #Active
         self.isProgramRunning: bool = False
@@ -34,7 +34,7 @@ class Machine():
         #Parameter
         self.totalItems: int= 0
         self.totalEnergyConsumption: int = 0
-        self.capacityLaserModule: int = 0
+        self.capacityLaserModule: int = 100
         self.coolantLevel: int = 100
         
     def calculateTimes(self, nowTime:datetime):
@@ -47,14 +47,15 @@ class Machine():
             self.machineIdleTime = self.machineIdleTime + self.timeSinceLastUpdate
         self.lastUpdate = nowTime
     
-    def startMachine(self, nowTime: datetime):
+    def startMachine(self, nowTime: datetime) -> None:
         self.machineStartTime = nowTime
     
     def resetMachine(self):
         self.isProgramRunning = False
         self.setMachineRuntime(0)
         self.setTotalItems(0)
-        self.setCapacityLaserModule(0)
+        self.setCapacityLaserModule(100)
+        self.setTotalEnegeryConsumption(0)
         self.setCoolantLevel(100)
         self.setMachineStartTime(datetime.now())
         
@@ -64,13 +65,14 @@ class Machine():
         logging.info("Errors: " + str(self.activeErrors))
         logging.info("Warnings: " + str(self.activeWarnings))
         
-    def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool ):
+    def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float):
         self.isProgramRunning = isProgramRunning
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)
             self.totalItems =  self.totalItems + newItems
             self.totalEnergyConsumption = self.totalEnergyConsumption + powerConsumptionPerS*self.timeSinceLastUpdate
-            self.coolantLevel = self.coolantLevel + coolantConsumptionPerS*self.timeSinceLastUpdate
+            self.coolantLevel = self.coolantLevel - coolantConsumptionPerS*self.timeSinceLastUpdate
+            self.capacityLaserModule = self.capacityLaserModule - laserModuleWeardown*self.timeSinceLastUpdate
 
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
