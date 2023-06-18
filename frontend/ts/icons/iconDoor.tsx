@@ -1,30 +1,77 @@
 //icon sensor_door from nucleo app
 
-import * as React from "react";
+import React, { useState } from "react";
 
-function IconDoor(props: React.SVGProps<SVGSVGElement>) {
+function IconDoor() {
+  const [isDoorOpen, setDoorOpen] = useState<boolean>(true);
+  const [text, setText] = useState<String>("closed");
+
+
+
+  const handleClick = () => {
+    setDoorOpen(!isDoorOpen);
+    if(text === "closed"){
+      setText("open");
+    }
+    else{
+      setText("closed")
+    }
+  };
+  const doorStyles: React.CSSProperties = {
+    width: "40px",
+    height: "60px",
+    cursor: "pointer",
+    transition: "transform 0.5s ease",
+    transformOrigin: "right center",
+    perspective: "1000px",
+    position: "relative",
+  };
+
+  const doorFrameStyles: React.CSSProperties = {
+    width: "100%",
+    height: "100%",
+    border: "2px solid black",
+    boxSizing: "border-box",
+    backgroundColor: isDoorOpen ? "green" : "red",
+    position: "relative",
+    transformStyle: "preserve-3d",
+    borderRadius: "5px",
+    overflow: "hidden",
+  };
+
+  const knobStyles: React.CSSProperties = {
+    width: "8px",
+    height: "8px",
+    borderRadius: "50%",
+    backgroundColor: "silver",
+    position: "absolute",
+    top: "50%",
+    left: "3px",
+    transform: "translateY(-50%)",
+    zIndex: 1,
+  };
+
+  if (isDoorOpen) {
+    doorStyles.transform = "rotateY(0)";
+  } else {
+    doorStyles.transform = "rotateY(-70deg)";
+  }
+
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="48"
-      height="48"
-      viewBox="0 0 24 24"
-    >
-      <title>sensor_door</title>
-      <g fill="none">
-        <path
-          opacity=".3"
-          d="M18 4v16H6V4h12zm-2.5 6.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5S17 12.83 17 12s-.67-1.5-1.5-1.5z"
-          fill="none"
-        ></path>
-        <path
-          stroke-width={2}
-          d="M18 4v16H6V4h12zm0-2H6c-1.1 0-2 .9-2 2v18h16V4c0-1.1-.9-2-2-2zm-2.5 8.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5S17 12.83 17 12s-.67-1.5-1.5-1.5z"
-          fill="#000000"
-        ></path>
-      </g>
-    </svg>
+    <div className="flex flex-col justify-between text-center items-center w-full h-full p-4">
+      <div>
+        <div style={{ perspective: "1000px" }}>
+          <div style={doorStyles} onClick={handleClick}>
+            <div style={doorFrameStyles}>
+              <div style={knobStyles}></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>{text}</p>
+    </div>
   );
 }
 
 export default IconDoor;
+

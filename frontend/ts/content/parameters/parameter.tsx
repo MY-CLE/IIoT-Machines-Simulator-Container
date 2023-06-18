@@ -49,11 +49,11 @@ function ParameterComponent(props: ParameterProps) {
   }
 
   return (
-    <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl m-2">
-      <div className=" ml-1 justify-start items-center flex flex-grow w-1/4 flex-wrap mr-20 font-medium">
+    <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl">
+      <div className=" ml-1 justify-start items-center flex flex-grow w-1/4 flex-wrap mr-20 font-medium text-xs sm:text-base lg:text-xl xl:text2xl">
         {props.name}
       </div>
-      <div className="justify-center items-center flex flex-grow flex-wrap bg-gray-400 h-3/4 w-1/6 rounded-lg border border-black mr-2 drop-shadow">
+      <div className="justify-center items-center flex flex-grow flex-wrap bg-gray-400 h-3/4 w-1/6 rounded-lg border border-black mr-2 drop-shadow text-xs sm:text-base lg:text-xl xl:text2xl">
         {props.value}
       </div>
       <button

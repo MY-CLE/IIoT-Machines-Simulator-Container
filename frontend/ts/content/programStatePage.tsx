@@ -102,31 +102,29 @@ function ProgramStatePage(props: {
       </div>
       <div>
         <SelectionBar
-          program={() => {}}
-          machine={() => {
-            navigation("/machine");
-          }}
+          whichPage={"program"}
         />
       </div>
-      <div className="flex flex-col w-full h-full p-4 text-2xl bg-white border border-t-0 border-black border-1">
-        <div className="flex flex-row items-center w-full h-auto mb-4 ">
+      <div className="flex flex-col w-full h-full p-4 text-2xl bg-white border border-t-0 border-black border-1 ">
+        <div className="w-1/2 flex flex-row items-center justify-between h-auto mb-4">
           <button
             onClick={() => {
               navigation("/programs");
             }}
+            className="w-1/8"
           >
-            <IconArrowBack width={50}></IconArrowBack>
+            <IconArrowBack width={45} color={'#000'}></IconArrowBack>
           </button>
-          <span className="text-4xl text-left">
-            Programm Übersicht: {program.description}
+          <span className="flex flex-grow text-4xl text-left sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl ">
+            Programmübersicht: {program.description}
           </span>
         </div>
-        <div className="flex flex-row justify-between w-full h-full mb-4">
-          <div className="flex flex-row flex-wrap w-2/3 h-full justify-evenly">
+        <div className="flex flex-row justify-between w-full h-full mb-4 ">
+          <div className="flex flex-row flex-wrap w-1/2 h-full justify-evenly ">
             {program.parameters!.map(
               (item: { id: number; description: string; value: number }) => {
                 return (
-                  <div key={item.id} className="w-3/5 m-2">
+                  <div key={item.id} className="w-3/4">
                     <ParameterComponent
                       simulation_id={props.state.simulation_id}
                       key={item.id}
@@ -139,21 +137,21 @@ function ProgramStatePage(props: {
               }
             )}
           </div>
-          <div className="flex flex-col items-center justify-evenly w-1/3 h-full mt-4">
+          <div className="flex flex-col items-center justify-evenly w-1/2 h-full">
             <button
-              className="w-1/2 h-14 text-2xl text-white bg-green-400 rounded-md border-2 border-black shadow "
+              className="w-1/3 h-14 text-2xl text-white bg-green-400 rounded-md border-2 border-black shadow "
               onClick={() => startProgram(props.state.simulation_id | 0)}
             >
               Start
             </button>
             <button
-              className="w-1/2 h-14 text-2xl text-white bg-red-400 rounded-md border-2 border-black shadow"
+              className="w-1/3 h-14 text-2xl text-white bg-red-400 rounded-md border-2 border-black shadow"
               onClick={() => stopProgram(props.state.simulation_id | 0)}
             >
               Stop
             </button>
             <button
-              className="w-1/2 h-14 text-2xl text-white bg-yellow-400 rounded-md border-2 border-black"
+              className="w-1/3 h-14 text-2xl text-white bg-yellow-400 rounded-md border-2 border-black"
               onClick={() => restartProgram(props.state.simulation_id | 0)}
             >
               Restart
