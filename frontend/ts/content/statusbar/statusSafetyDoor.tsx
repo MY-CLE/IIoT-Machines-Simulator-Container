@@ -6,7 +6,7 @@ export function StatusSafetyDoor(props: { value: boolean }) {
     <>
       <div className="flex flex-col flex-wrap items-center justify-center w-1/10 h-32 border border-l-0 border-black border-1">
         <div className=" w-full h-full">
-          <IconDoor />
+          <IconDoor isOpen={props.value}/>
         </div>
         <div>{props.value}</div>
       </div>

@@ -1,26 +1,27 @@
 //icon sensor_door from nucleo app
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-function IconDoor() {
-  const [isDoorOpen, setDoorOpen] = useState<boolean>(true);
+function IconDoor(props: {isOpen:boolean}) {
   const [text, setText] = useState<String>("closed");
 
 
-
-  const handleClick = () => {
-    setDoorOpen(!isDoorOpen);
-    if(text === "closed"){
-      setText("open");
+  useEffect(()=>{
+    if(props.isOpen){
+      setText("opened")
     }
     else{
       setText("closed")
     }
-  };
+
+
+  }, [props.isOpen])
+
+
+
   const doorStyles: React.CSSProperties = {
     width: "40px",
     height: "60px",
-    cursor: "pointer",
     transition: "transform 0.5s ease",
     transformOrigin: "right center",
     perspective: "1000px",
@@ -32,7 +33,7 @@ function IconDoor() {
     height: "100%",
     border: "2px solid black",
     boxSizing: "border-box",
-    backgroundColor: isDoorOpen ? "green" : "red",
+    backgroundColor: !props.isOpen ? "green" : "red",
     position: "relative",
     transformStyle: "preserve-3d",
     borderRadius: "5px",
@@ -51,7 +52,7 @@ function IconDoor() {
     zIndex: 1,
   };
 
-  if (isDoorOpen) {
+  if (!props.isOpen) {
     doorStyles.transform = "rotateY(0)";
   } else {
     doorStyles.transform = "rotateY(-70deg)";
@@ -61,7 +62,7 @@ function IconDoor() {
     <div className="flex flex-col justify-between text-center items-center w-full h-full p-4">
       <div>
         <div style={{ perspective: "1000px" }}>
-          <div style={doorStyles} onClick={handleClick}>
+          <div style={doorStyles}>
             <div style={doorFrameStyles}>
               <div style={knobStyles}></div>
             </div>

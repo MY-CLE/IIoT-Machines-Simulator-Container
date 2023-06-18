@@ -7,26 +7,26 @@ function SelectionBar(props: { whichPage: any }) {
   const navigation = useNavigate();
 
   useEffect(() => {
-    if(props.whichPage === "program"){
+    if (props.whichPage === "program") {
       setMachineColor("bg-unselectedbar-green");
       setProgramColor("bg-selectedbar-green");
-    }
-    else{
+    } else {
       setMachineColor("bg-selectedbar-green");
       setProgramColor("bg-unselectedbar-green");
     }
-  },[])
-
+  }, []);
 
   const handleMachineClick = () => {
-    navigation("/machine");
-  
+    if (props.whichPage !== "machine") {
+      navigation("/machine");
+    }
   };
 
   const handleProgramClick = () => {
-    navigation("/program/current");
+    if (props.whichPage !== "program") {
+      navigation("/program/current");
+    }
   };
-
 
   return (
     <div className="flex flex-row w-full h-10">
