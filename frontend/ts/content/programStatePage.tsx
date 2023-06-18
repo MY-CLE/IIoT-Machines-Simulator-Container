@@ -58,6 +58,13 @@ function ProgramStatePage(props: {
     })();
 
     const id = setInterval(async () => {
+      let program = await getProgram(props.state.simulation_id | 0);
+      if(program.description === ""){
+        navigation("/programs");
+      }
+      if (program.parameters) {
+        setProgram(program);
+      }
       let machineState = await getMachine(
         props.state.simulation_id ? props.state.simulation_id : 0
       );

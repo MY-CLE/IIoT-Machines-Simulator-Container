@@ -78,21 +78,21 @@ class Simulator:
     #get parameters from frontend and overwrite backend parameters
     def updateMachineStateParameters(self, data):
         machineAttributesMap = {
-            'Runtime': 'MachineRuntime',
-            'Idle Time': 'MachineIdleTime',
-            'Coolant Level': 'CoolantLevel',
-            'Power Consumption': 'TotalEnegeryConsumption',
-            'Capacity Laser Module': 'CapacityLaserModule',
+            'Runtime (s)': 'MachineRuntime',
+            'Idle Time (s)': 'MachineIdleTime',
+            'Coolant Level (%)': 'CoolantLevel',
+            'Power Consumption (Wh)': 'TotalEnegeryConsumption',
+            'Capacity Laser Module (%)': 'CapacityLaserModule',
             'Total Items': 'TotalItems'
         }
         programAttributeMap = {
-            'Program Runtime': 'ProgramRuntime',
+            'Program Runtime (s)': 'ProgramRuntime',
             'Target Amount': 'ProgramTargetAmount',
             'Current Amount': 'ProgramCurrentAmount',
-            'Coolant Consumption per S': 'ProgramCoolantConsumption',
-            'Laser Module Wear Down': 'ProgramLaserModuleWeardown',
-            'Laser Power Consumption': 'ProgramLaserModulePowerConsumption',
-            'Time per Item': 'ProgramTimePerItem'
+            'Coolant Consumption (% / s)': 'ProgramCoolantConsumption',
+            'Laser Module Weardown (% / s)': 'ProgramLaserModuleWeardown',
+            'Laser Power Consumption (W)': 'ProgramLaserModulePowerConsumption',
+            'Time per Item (s)': 'ProgramTimePerItem'
         }
 
         for key, value in data.items():
@@ -114,6 +114,8 @@ class Simulator:
         self.simulatedMachine.stopMachine(date)
     
     def startMachine(self) -> None:
+        self.simulatedMachine.resetMachine()
+        self.simulatedProgram.resetToDefaultState()
         self.simulatorState = True
         self.simulatedMachine.startMachine(datetime.now())
     
@@ -146,26 +148,24 @@ class Simulator:
         self.simulatedProgram.resetProgram()
 
     def updateSimulation(self, time: datetime) -> None:        
+        self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
+        self.checkErrors()
+        self.checkWarnings()
         if(self.simulatedMachine.isProgramRunning):
             #calculate runtime with curret time
             #self.times.calculateRunTime(time)
-            self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
             updatedParameter:list = self.simulatedProgram.updateProgram(time)
-            self.simulatedMachine.updateMachine(time, *updatedParameter)
+            machineRuntime = self.simulatedMachine.updateMachine(time, *updatedParameter)
+            self.simulatedProgram.checkMachineRuntimeValue(machineRuntime)
 
-            self.checkErrors()
-            self.checkWarnings()
             if(self.protocol == "Modbus/TCP"):
                 self.updateModbus()
             if(self.protocol == "OPCUA"):
                 self.updateOPCUA()
 
         #if clause to check wether or not idleTime needs to be calculated
-        if self.simulatedMachine.isProgramRunning == False:
-            if self.simulatedMachine.getMachineStopTime() == None:
-                self.simulatedMachine.setMachineIdleTime(0)
-            else: 
-                self.simulatedMachine.calculateIdleTime(time)
+        else:
+            self.simulatedMachine.calculateIdleTime(time)
 
     # implemenation of OPCUA into the simulator
     def updateOPCUA(self) -> None:
@@ -201,7 +201,7 @@ class Simulator:
         if self.simulatedMachine.getCoolantLevel() <= 5:
             self.warnings.coolantLvlError()
             self.stopMachine()
-        if self.simulatedMachine.getTotalEnegeryConsumption() >= 1000000:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 100000000:
             self.warnings.powerConsumptionError()
             self.stopMachine()
         if self.simulatedMachine.getCapacityLaserModule() <= 5:
@@ -212,7 +212,7 @@ class Simulator:
         #check if metrics are above or below a certain 'amount' to throw warnings
         if self.simulatedMachine.getCoolantLevel() <= 10:
             self.warnings.coolantLvlWarning()
-        if self.simulatedMachine.getTotalEnegeryConsumption() >= 900000:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 90000000:
             self.warnings.powerConsumptionWarning()
         if self.simulatedMachine.getCapacityLaserModule() <= 10:
             self.warnings.laserModuleWarning()
