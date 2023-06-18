@@ -125,6 +125,7 @@ class Simulator:
     def stopProgram(self) -> None:
         date = datetime.now()
         self.simulatedProgram.stopProgram(date)
+        self.simulatedMachine.setMachineStopTime(date) #needed to calculate idleTime cos idleTime is machine parameter
         self.simulatedMachine.setIsProgramRunning(False)
         logging.info("Machine stopped!")
 
