@@ -39,7 +39,7 @@ CREATE TABLE machine_program (
 	machine_program_description text,
 	program_laser_module_weardown integer, 
 	program_coolant_consumption_ml integer,
-	program_power_consumption_kwh integer,
+	program_laser_power_consumption_watt integer,
 	program_time_per_item integer
 );
 

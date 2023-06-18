@@ -47,14 +47,14 @@ class DatabaseHandler:
         print(resultSet)
         allProgramslist: list[MachineProgram] = []
         for result in resultSet:
-            allProgramslist.append(MachineProgram(DatabaseObject(result)))
+            allProgramslist.append(MachineProgram(*DatabaseObject(result).getResultRow()))
         return allProgramslist
     
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
         print(id)
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
-        return MachineProgram(DatabaseObject(resultSet[0]))
+        return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
     
     #get all possible warning messages within the Database
     @staticmethod
@@ -105,14 +105,16 @@ class DatabaseHandler:
         return ProgramState(*listOfParameters)
     
     @staticmethod
-    def selectProtocol(id: int) -> Protocol:
+    def selectProtocolById(id: int) -> Protocol:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE machine_protocol_id= ?", (id,))
         listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+        return Protocol(*listOfParameters)
 
     @staticmethod
-    def selectProtocol(description: str) -> Protocol:
+    def selectProtocolByName(description: str) -> Protocol:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
         listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+        return Protocol(*listOfParameters)
     
     @staticmethod
     def storeMachineState(machineState: MachineState) -> None:
