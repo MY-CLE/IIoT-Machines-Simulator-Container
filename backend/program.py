@@ -22,7 +22,7 @@ class Program:
         self.programProgramDescription: str = ""
         self.programLaserModuleWeardown: int = 0
         self.programCoolantConsumption: int = 0
-        self.programTimePerItem: int = 0 
+        self.programTimePerItem: int = 1 
         self.newItems: int = 0
         
         self.machineProgram = None

@@ -42,6 +42,9 @@ function ProgramStatePage(props: {
   useEffect(() => {
     (async () => {
       let program = await getProgram(props.state.simulation_id | 0);
+      if(program.description === ""){
+        navigation("/programs");
+      }
       if (program.parameters) {
         setProgram(program);
       }
