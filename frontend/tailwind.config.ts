@@ -13,6 +13,10 @@ module.exports = {
       backgroundImage: {
         "lasercuter-img": "url('../images/ventis_AJ_amada_Lasercutter.png')",
       },
+      spacing: {
+        '10p': '10%',
+        '4p': '4%',
+      }
     },
   },
   plugins: [],

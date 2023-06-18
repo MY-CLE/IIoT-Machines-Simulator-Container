@@ -114,21 +114,25 @@ function ChooseProgramPage(props: {
       <div>
         <SelectionBar program={() => {}} machine={navigateToMachineStatePage} />
       </div>
-      <div className="flex flex-col justify-start w-full h-full text-2xl border border-t-0 border-black border-1 bg-program-choose-grey">
-        <div className="w-full h-auto p-4 text-5xl text-center text-white ">
-          Programauswahl
+      <div className="flex flex-col justify-start w-full h-full text-2xl border border-t-0 border-black border-1 bg-white">
+        {" "}
+        {/*bg-program-choose-grey*/}
+        <div className="w-full h-auto p-4 text-5xl text-center text-black ">
+          Programm Auswahl
         </div>
-        <div className="flex flex-row flex-wrap justify-between w-full h-full">
-          {programs.map((item: any) => {
-            return (
-              <ProgramCard
-                key={item.id}
-                name={item.description}
-                id={item.id}
-                func={navigateToProgramStatePage}
-              />
-            );
-          })}
+        <div className=" flex flex-grow justify-center items-center">
+          <div className="flex flex-row flex-wrap justify-between w-full h-full mb-4p items-center">
+            {programs.map((item: any) => {
+              return (
+                <ProgramCard
+                  key={item.id}
+                  name={item.description}
+                  id={item.id}
+                  func={navigateToProgramStatePage}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -139,7 +143,7 @@ export default ChooseProgramPage;
 function ProgramCard(props: any) {
   return (
     <button
-      className="flex items-center justify-center w-1/4 m-6 bg-slate-100 rounded-2xl h-1/3 drop-shadow-sm"
+      className="flex items-center justify-center w-1/4 mx-6 bg-unselectedbar-green hover:bg-selectedbar-green rounded-2xl h-1/3 drop-shadow-sm border border-black"
       onClick={() => props.func(props.id)}
     >
       <span className="text-4xl ">{props.name}</span>
