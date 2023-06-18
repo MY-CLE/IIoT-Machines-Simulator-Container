@@ -22,7 +22,7 @@ class Program:
         self.programProgramDescription: str = ""
         self.programLaserModuleWeardown: int = 0
         self.programCoolantConsumption: int = 0
-        self.programTimePerItem: int = 0 #had to be not null otherwise error when dividing
+        self.programTimePerItem: int = 0 
         self.newItems: int = 0
         
         self.machineProgram = None
@@ -66,7 +66,7 @@ class Program:
         return self.programTargetAmount
     
     def setProgramTargetAmount(self, programTargetAmount: int) -> None:
-        self.programCurrentAmount = programTargetAmount
+        self.programTargetAmount = programTargetAmount
     
     def getProgramMachineProgramId(self) -> int:
         return self.programMachineProgramId
@@ -121,14 +121,26 @@ class Program:
         self.setProgramCoolantConsumption(self.machineProgram.getCoolantConsumption()*0.01)
         self.setProgramLaserModulePowerConsumption(self.machineProgram.getLaserModulePowerConsumption())
         self.setProgramTimePerItem(self.machineProgram.getTimePerItem())
-        
+
+    def checkAmount(self) -> bool:
+        if self.programCurrentAmount >= self.programTargetAmount:
+            return False
+        else:
+            return True
+
     def updateProgram(self, newTime: datetime):
-        if(self.isProgramRunning == True and self.programStartTime is not None):
-            self.calculateProgramRuntime(newTime)
-            #if(self.programCurrentAmount >= self.programTargetAmount):
-            #    self.setIsProgramRunning(False)
-            self.updateProgramCurrentAmount()
-            self.updateProgramLaserModulePowerConsumption()
+        checker: bool = self.checkAmount()
+        while checker == True:    
+            if(self.isProgramRunning == True and self.programStartTime is not None):
+                self.calculateProgramRuntime(newTime)
+                #if(self.programCurrentAmount >= self.programTargetAmount):
+                #    self.setIsProgramRunning(False)
+                self.updateProgramCurrentAmount()
+                self.updateProgramLaserModulePowerConsumption()
+                return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown]
+            if checker == False:
+                self.stopProgram(datetime.now())
+                # break
         return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown]
         
     def calculateProgramRuntime(self, nowTime: datetime) -> None:
