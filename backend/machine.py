@@ -31,6 +31,7 @@ class Machine():
         self.machineRuntime: int = 0
         self.timeSinceLastUpdate: int = None
         self.lastUpdate: datetime = None
+        self.additionalTime: int = 0
         
         #Parameter
         self.totalItems: int= 0
@@ -41,12 +42,16 @@ class Machine():
     def calculateTimes(self, nowTime:datetime):
         if(self.lastUpdate == None):
             self.lastUpdate = self.machineStartTime
-        
-        self.timeSinceLastUpdate = (nowTime - self.lastUpdate).total_seconds()
-        self.machineRuntime += self.timeSinceLastUpdate
+        if(self.additionalTime != 0):
+            self.timeSinceLastUpdate = self.additionalTime
+            self.additionalTime = 0
+        else:
+            self.timeSinceLastUpdate = (nowTime - self.lastUpdate).total_seconds()
+            self.machineRuntime += self.timeSinceLastUpdate
         self.lastUpdate = nowTime
     
     def calculateIdleTime(self, nowTime: datetime) -> None:
+        self.lastUpdate = nowTime
         if self.isProgramRunning == True:
             self.machineIdleTime = 0
         else:
@@ -55,6 +60,7 @@ class Machine():
 
     def startMachine(self, startTime: datetime) -> None:
         self.machineStartTime = startTime
+        self.machineStopTime = startTime
         self.isMachineRunning = True
     
     def stopMachine(self, stopTime: datetime) -> None:
@@ -76,14 +82,17 @@ class Machine():
         logging.info("Errors: " + str(self.activeErrors))
         logging.info("Warnings: " + str(self.activeWarnings))
         
-    def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float):
+    def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float, programAdditionalTime: int):
         self.isProgramRunning = isProgramRunning
+        self.additionalTime = programAdditionalTime
+        self.machineRuntime += programAdditionalTime
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)
             self.totalItems =  self.totalItems + newItems
-            self.totalEnergyConsumption = self.totalEnergyConsumption + powerConsumptionPerS*self.timeSinceLastUpdate
-            self.coolantLevel = self.coolantLevel - coolantConsumptionPerS*self.timeSinceLastUpdate
+            self.totalEnergyConsumption = self.totalEnergyConsumption + powerConsumptionPerS * self.timeSinceLastUpdate
+            self.coolantLevel = self.coolantLevel - coolantConsumptionPerS * self.timeSinceLastUpdate
             self.capacityLaserModule = self.capacityLaserModule - laserModuleWeardown*self.timeSinceLastUpdate
+        return self.machineRuntime
 
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
@@ -127,11 +136,11 @@ class Machine():
             }
             
     def getMachineStateSnapshot(self) -> dict:
-        parameters = [{"id": "1","description": "Runtime", "value": int(self.machineRuntime)},
-                {"id":"2", "description": "Idle Time", "value": int(self.machineIdleTime)},
-                {"id":"3","description": "Coolant Level", "value": int(self.coolantLevel)},
-                {"id":"4", "description": "Power Consumption", "value": int(self.totalEnergyConsumption)},
-                {"id":"5", "description": "Capacity Laser Module", "value": int(self.capacityLaserModule)},
+        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime)},
+                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime)},
+                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel)},
+                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption)},
+                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule)},
                 {"id":"6", "description": "Total Items", "value": int(self.totalItems)}]
         
         errors = []
@@ -247,6 +256,7 @@ class Machine():
         return self.machineRuntime
     
     def setMachineRuntime(self, machineRuntime: int) -> None:
+        self.additionalTime = machineRuntime - self.machineRuntime
         self.machineRuntime = machineRuntime
 
     def getTotalItems(self) -> int:

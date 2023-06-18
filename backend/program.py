@@ -27,10 +27,12 @@ class Program:
         
         self.machineProgram = None
         
+        #Times
         self.programStartTime: datetime = None
         self.programStopTime: datetime = None
         self.programTimeSinceLastUpdate: datetime = None
         self.lastUpdate: datetime = None
+        self.additionalTime: int = 0
         
     def getProgramStopTime(self) -> datetime:
         return self.programStopTime
@@ -60,6 +62,7 @@ class Program:
         return self.programRuntime
     
     def setProgramRuntime(self, programRuntime: int) -> None:
+        self.additionalTime = programRuntime - self.programRuntime
         self.programRuntime = programRuntime
 
     def getProgramTargetAmount(self) -> int:
@@ -115,6 +118,7 @@ class Program:
         
     def loadMachineProgram(self) -> None:
         self.setIsProgramRunning(False)
+        self.setProgramRuntime(0)
         self.setProgramId(self.machineProgram.getID())
         self.setProgramProgramDescription(self.machineProgram.getDescription())
         self.setProgramLaserModuleWeardown(self.machineProgram.getLaserModuleWeardown()*0.01)
@@ -122,33 +126,33 @@ class Program:
         self.setProgramLaserModulePowerConsumption(self.machineProgram.getLaserModulePowerConsumption())
         self.setProgramTimePerItem(self.machineProgram.getTimePerItem())
 
-    def checkAmount(self) -> bool:
-        if self.programCurrentAmount >= self.programTargetAmount:
-            return False
-        else:
-            return True
 
     def updateProgram(self, newTime: datetime):
-        checker: bool = self.checkAmount()
-        while checker == True:    
-            if(self.isProgramRunning == True and self.programStartTime is not None):
-                self.calculateProgramRuntime(newTime)
-                #if(self.programCurrentAmount >= self.programTargetAmount):
-                #    self.setIsProgramRunning(False)
-                self.updateProgramCurrentAmount()
-                self.updateProgramLaserModulePowerConsumption()
-                return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown]
-            if checker == False:
+        
+        if(self.isProgramRunning and self.programStartTime is not None):
+            self.calculateProgramRuntime(newTime)
+            #if(self.programCurrentAmount >= self.programTargetAmount):
+            #    self.setIsProgramRunning(False)
+            self.updateProgramCurrentAmount()
+            self.updateProgramLaserModulePowerConsumption()
+            if (self.programCurrentAmount > self.programTargetAmount):    
+                self.programCurrentAmount = self.programTargetAmount
                 self.stopProgram(datetime.now())
-                # break
-        return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown]
+            
+        passAdditionalTime = self.additionalTime  
+        self.additionalTime = 0
+        return [ self.programLaserModulePowerConsumption,self.programCoolantConsumption, self.newItems, self.isProgramRunning, self.programLaserModuleWeardown, passAdditionalTime]
         
     def calculateProgramRuntime(self, nowTime: datetime) -> None:
         if(self.lastUpdate == None):
             self.lastUpdate = self.programStartTime
             
-        self.programTimeSinceLastUpdate = (nowTime - self.lastUpdate).total_seconds()
-        self.programRuntime = self.programRuntime + self.programTimeSinceLastUpdate
+        if(self.additionalTime != 0):
+            self.programTimeSinceLastUpdate = self.additionalTime
+            
+        else:
+            self.programTimeSinceLastUpdate = (nowTime - self.lastUpdate).total_seconds()
+            self.programRuntime = self.programRuntime + self.programTimeSinceLastUpdate
         self.lastUpdate = nowTime
         
     def updateProgramCurrentAmount(self) -> None:
@@ -161,6 +165,32 @@ class Program:
     def resetProgram(self) -> None:
         self.isProgramRunning = False
         self.loadMachineProgram()
+        
+    def resetToDefaultState(self) -> None:
+         #Active Changing Parameters
+        self.programCurrentAmount: int = 0
+        self.programRuntime: int = 0
+        self.programLaserModulePowerConsumption: int = 0
+        
+        #Static Parameters
+        self.programId: int = None
+        self.isProgramRunning: bool = False
+        self.programTargetAmount: int = 100
+        self.programMachineProgramId: int = None
+        self.programProgramDescription: str = ""
+        self.programLaserModuleWeardown: int = 0
+        self.programCoolantConsumption: int = 0
+        self.programTimePerItem: int = 1 
+        self.newItems: int = 0
+        
+        self.machineProgram = None
+        
+        #Times
+        self.programStartTime: datetime = None
+        self.programStopTime: datetime = None
+        self.programTimeSinceLastUpdate: datetime = None
+        self.lastUpdate: datetime = None
+        self.additionalTime: int = 0
 
     def setMachineProgram(self, machineProgram: MachineProgram) -> None:
         self.machineProgram = machineProgram
@@ -173,15 +203,20 @@ class Program:
     def stopProgram(self, stopTime: datetime) -> None:
         self.isProgramRunning = False
         self.programStopTime = stopTime
+        self.lastUpdate = None
+        
+    def checkMachineRuntimeValue(self, machineRuntime: int) -> None:
+        if self.programRuntime > machineRuntime:
+            self.programRuntime = machineRuntime 
         
     def getProgramStateSnapshot(self) -> dict:
-        parameters = [{"description": "Program Runtime", "value": int(self.getProgramRuntime())},
+        parameters = [{"description": "Program Runtime (s)", "value": int(self.getProgramRuntime())},
                            {"description": "Target Amount", "value": int(self.getProgramTargetAmount())},
                            {"description": "Current Amount", "value": int(self.getProgramCurrentAmount())},
-                           {"description": "Coolant Consumption per S", "value": self.getProgramCoolantConsumption()},
-                           {"description": "Laser Module Wear Down", "value": self.getProgramLaserModuleWeardown()},
-                           {"description": "Laser Power Consumption", "value": int(self.getProgramLaserModulePowerConsumption())},
-                           {"description": "Time per Item", "value": self.getProgramTimePerItem()},
+                           {"description": "Coolant Consumption (% / s)", "value": self.getProgramCoolantConsumption()},
+                           {"description": "Laser Module Weardown (% / s)", "value": self.getProgramLaserModuleWeardown()},
+                           {"description": "Laser Power Consumption (W)", "value": int(self.getProgramLaserModulePowerConsumption())},
+                           {"description": "Time per Item (s)", "value": self.getProgramTimePerItem()},
                            ]
         data = {
             "description": self.getProgramProgramDescription(),

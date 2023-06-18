@@ -177,6 +177,8 @@ def auth(simulations_id):
       pw = request.form['password']
       for admin in DatabaseHandler.selectAdminUsers():
         if(admin.getPassword() == pw):
+            print(admin.getPassword())
+            print(pw)
             simulator.warnings.errors = []
             simulator.warnings.warnings = []
             response = jsonify({'message': 'Success'})
