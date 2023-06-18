@@ -176,9 +176,9 @@ function MachineStatePage(props: {
         </div>
       </div>
       <div>
-        <SelectionBar program={navigateToProgram} machine={null} />
+        <SelectionBar whichPage={"machine"} />
       </div>
-      <div className="flex flex-col justify-start w-full h-full p-2 text-2xl bg-gray-200 border border-t-0 border-black border-1">
+      <div className="flex flex-col justify-start w-full h-full p-4 text-2xl bg-gray-200 border border-t-0 border-black border-1">
         {listPopup && (
           <div className="fixed top-0 left-0 z-50 w-full h-full bg-gray-800 bg-opacity-50 flex items-center justify-center">
             <div className="bg-white w-1/2 h-full p-4 flex flex-col justify-between items-center border border-gray-500">
@@ -260,9 +260,9 @@ function MachineStatePage(props: {
             </div>
           </div>
         )}
-        <div className="w-full h-auto text-4xl text-left">Maschinenzustand</div>
-        <div className="flex flex-row flex-grow w-full h-full">
-          <div className="flex flex-col items-center justify-center flex-grow w-2/5 h-full p-2 text-center">
+        <div className="w-full h-auto text-left text-4xl sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl">Maschinenzustand</div>
+        <div className="flex flex-row w-full h-full py-5 justify-between">
+          <div className="flex flex-col items-center justify-between w-1/3 h-full text-center">
             {parameters.map((item, index) => {
               return (
                 <ParameterComponent
@@ -275,36 +275,21 @@ function MachineStatePage(props: {
               );
             })}
           </div>
-          <div className="flex flex-col w-2/5 p-2 text-2xl text-center justify-evenly">
-            <div className="flex flex-grow w-full mb-5 text-2xl">
-              <SendError
-                simulationID={props.state.simulation_id}
-                name={"Error"}
-                messages={errors.errors}
-                color={"bg-red-500"}
-              />
-            </div>
-            <div className="flex flex-grow w-full mt-5 text-2xl">
-              <SendError
-                simulationID={props.state.simulation_id}
-                name={"Warning"}
-                messages={errors.warnings}
-                color={"bg-orange-500"}
-              />
-            </div>
-          </div>
-          <div className="flex flex-grow w-1/5 p-2">
-            <div className="flex items-center justify-center w-full h-full ml-10 mr-10">
-              <div className="flex flex-col items-center justify-between w-full align-middle bg-white border border-black rounded-lg h-3/4">
+          <div className="flex w-3/20 h-full justify-center">
+            <div className="flex items-center justify-center w-full h-full">
+              <div className="flex flex-col items-center justify-between w-full h-full align-middle bg-white border border-black rounded-lg">
                 <div className="mt-5">
                   <IconQuitLock />
                 </div>
+              
                 <button
-                  className={`w-52 h-52 border border-black rounded-full mb-5 text-center pt-20 bg-red-500 font-medium`}
+                  className={`flex items-center justify-center border border-black rounded-full mb-5 bg-red-500 text-black font-medium`}
+                  style={{ width: "10vw", height: "10vw", minWidth: "50px", minHeight: "50px" }}
                   onClick={openListPopup}
                 >
-                  <span> Quittieren</span>
+                  <span className="text-xs sm:text-base lg:text-xl"> Quittieren</span>
                 </button>
+  
                 <Modal
                   isOpen={modalIsOpen}
                   onAfterOpen={afterOpenModal}
@@ -330,6 +315,24 @@ function MachineStatePage(props: {
                   </button>
                 </Modal>
               </div>
+            </div>
+          </div>
+          <div className="flex flex-col w-1/3 h-full text-2xl text-center justify-between">
+            <div className="flex flex-grow w-full mb-5 text-2xl">
+              <SendError
+                simulationID={props.state.simulation_id}
+                name={"Error"}
+                messages={errors.errors}
+                color={"bg-red-500"}
+              />
+            </div>
+            <div className="flex flex-grow w-full mt-5 text-2xl">
+              <SendError
+                simulationID={props.state.simulation_id}
+                name={"Warning"}
+                messages={errors.warnings}
+                color={"bg-orange-500"}
+              />
             </div>
           </div>
         </div>

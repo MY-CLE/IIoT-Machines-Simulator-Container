@@ -1,9 +1,9 @@
 import React from "react";
 export function StatusStatus() {
   return (
-    <div className="flex-grow w-auto justify-center h-32 border flex items-center border-black border-1">
+    <div className="w-1/10 justify-center h-32 border flex items-center border-black border-1">
       <div>
-        <p>Status</p>
+        <p className="text-xs sm:text-base lg:text-xl xl:text2xl">Status</p>
       </div>
     </div>
   );

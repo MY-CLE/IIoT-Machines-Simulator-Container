@@ -66,7 +66,7 @@ export function Header(props: { isLandingPage: boolean }) {
       {props.isLandingPage ? null : (
         <div className="flex flex-row justify-end basis-1/6">
           <button
-            className="w-10 h-10 mx-3"
+            className="w-10 h-10 mx-5"
             onClick={() => {
               window.location.href = "/";
             }}
@@ -75,7 +75,7 @@ export function Header(props: { isLandingPage: boolean }) {
           </button>
           <>
             <button
-              className="w-10 h-10 mx-3"
+              className="w-10 h-10 mx-5"
               onClick={handleOpenSaveSimulationModal}
             >
               <IconSave />
@@ -103,7 +103,7 @@ export function Header(props: { isLandingPage: boolean }) {
               </form>
             </Modal>
             <button onClick={handleOpenSettingsModal}>
-              <IconSettings className="mx-3" />
+              <IconSettings className="mx-5" />
             </button>
             <Modal
               isOpen={openSettingsModal}
