@@ -157,6 +157,10 @@ class Program:
     def startProgram(self, startTime: datetime) -> None:
         self.isProgramRunning = True
         self.programStartTime = startTime
+
+    def stopProgram(self, stopTime: datetime) -> None:
+        self.isProgramRunning = False
+        self.programStopTime = stopTime
         
     def getProgramStateSnapshot(self) -> dict:
         parameters = [{"description": "Program Runtime", "value": int(self.getProgramRuntime())},

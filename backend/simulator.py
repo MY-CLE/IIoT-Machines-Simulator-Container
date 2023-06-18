@@ -78,21 +78,21 @@ class Simulator:
     #get parameters from frontend and overwrite backend parameters
     def updateMachineStateParameters(self, data):
         machineAttributesMap = {
-            'RunTime': 'MachineRuntime',
-            'Machine Idle Time': 'MachineIdleTime',
-            'Coolant level': 'CoolantLevel',
+            'Runtime': 'MachineRuntime',
+            'Idle Time': 'MachineIdleTime',
+            'Coolant Level': 'CoolantLevel',
             'Power Consumption': 'TotalEnegeryConsumption',
             'Capacity Laser Module': 'CapacityLaserModule',
             'Total Items': 'TotalItems'
         }
         programAttributeMap = {
-            'Program runtime': 'ProgramRuntime',
-            'Target amount': 'ProgramTargetAmount',
+            'Program Runtime': 'ProgramRuntime',
+            'Target Amount': 'ProgramTargetAmount',
             'Current Amount': 'ProgramCurrentAmount',
-            'Coolant consumption per s': 'ProgramCoolantConsumption',
+            'Coolant Consumption per S': 'ProgramCoolantConsumption',
             'Laser Module Wear Down': 'ProgramLaserModuleWeardown',
             'Laser Power Consumption': 'ProgramLaserModulePowerConsumption',
-            'Sec per Item': 'ProgramTimePerItem'
+            'Time per Item': 'ProgramTimePerItem'
         }
 
         for key, value in data.items():
@@ -107,9 +107,11 @@ class Simulator:
                     setMethod = getattr(self.simulatedProgram, 'set' + attribute)
                     setMethod(value)
 
-    def stopSimulator(self) -> None:
+    def stopMachine(self) -> None:
+        date = datetime.now()
         self.simulatorState = False
         self.stopProgram()
+        self.simulatedMachine.stopMachine(date)
     
     def startMachine(self) -> None:
         self.simulatorState = True
@@ -122,9 +124,8 @@ class Simulator:
 
     def stopProgram(self) -> None:
         date = datetime.now()
-        self.simulatedProgram.setIsProgramRunning(False)
+        self.simulatedProgram.stopProgram(date)
         self.simulatedMachine.setIsProgramRunning(False)
-        self.simulatedMachine.setMachineStopTime(date)
         logging.info("Machine stopped!")
 
     def startOPCUAServer(self):
@@ -158,6 +159,7 @@ class Simulator:
             if(self.protocol == "OPCUA"):
                 self.updateOPCUA()
 
+        #if clause to check wether or not idleTime needs to be calculated
         if self.simulatedMachine.isProgramRunning == False:
             if self.simulatedMachine.getMachineStopTime() == None:
                 self.simulatedMachine.setMachineIdleTime(0)
@@ -195,23 +197,23 @@ class Simulator:
 
     def checkErrors(self) -> None:
         #check if metrics are above or below a certain 'amount' to throw errors
-        if self.simulatedMachine.getCoolantLevel() <= 0:
+        if self.simulatedMachine.getCoolantLevel() <= 5:
             self.warnings.coolantLvlError()
-            self.stopSimulator()
+            self.stopMachine()
         if self.simulatedMachine.getTotalEnegeryConsumption() >= 1000000:
             self.warnings.powerConsumptionError()
-            self.stopSimulator()
-        if self.simulatedProgram.getProgramLaserModuleWeardown() <= 0:
+            self.stopMachine()
+        if self.simulatedMachine.getCapacityLaserModule() <= 5:
             self.warnings.laserModuleError()
-            self.stopSimulator() 
+            self.stopMachine()
 
     def checkWarnings(self) -> None: 
         #check if metrics are above or below a certain 'amount' to throw warnings
         if self.simulatedMachine.getCoolantLevel() <= 10:
             self.warnings.coolantLvlWarning()
-        if self.simulatedMachine.getTotalEnegeryConsumption() >= 90000:
+        if self.simulatedMachine.getTotalEnegeryConsumption() >= 900000:
             self.warnings.powerConsumptionWarning()
-        if self.simulatedProgram.getProgramLaserModulePowerConsumption() <= 1200:
+        if self.simulatedMachine.getCapacityLaserModule() <= 10:
             self.warnings.laserModuleWarning()
    
     def getPrograms(self):

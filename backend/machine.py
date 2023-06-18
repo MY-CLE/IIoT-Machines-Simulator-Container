@@ -22,6 +22,7 @@ class Machine():
 
         #Active
         self.isProgramRunning: bool = False
+        self.isMachineRunning: bool = False
         
         #Times
         self.machineStartTime: datetime = None
@@ -36,7 +37,7 @@ class Machine():
         self.totalEnergyConsumption: int = 0
         self.capacityLaserModule: int = 100
         self.coolantLevel: int = 100
-        
+
     def calculateTimes(self, nowTime:datetime):
         if(self.lastUpdate == None):
             self.lastUpdate = self.machineStartTime
@@ -52,9 +53,14 @@ class Machine():
             self.machineIdleTime = self.machineIdleTime + (nowTime - self.getMachineStopTime()).total_seconds()
             self.setMachineStopTime(nowTime)
 
-    def startMachine(self, nowTime: datetime) -> None:
-        self.machineStartTime = nowTime
+    def startMachine(self, startTime: datetime) -> None:
+        self.machineStartTime = startTime
+        self.isMachineRunning = True
     
+    def stopMachine(self, stopTime: datetime) -> None:
+        self.machineStopTime = stopTime
+        self.isMachineRunning = False
+
     def resetMachine(self):
         self.isProgramRunning = False
         self.setMachineRuntime(0)
