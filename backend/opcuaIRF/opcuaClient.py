@@ -25,13 +25,18 @@ class OPCUAClient:
 
     # Get the parameters from the server and loop through the variables to get the values and log them
     def getParam(self):
-        for i in range(len(self.data_variables)):
-            self.param = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{self.data_variables[i]}"])
-            self.infoParam = str(self.param.nodeid) + " - " + self.param.get_browse_name().Name + ": " + str(self.param.get_value())
-            logging.info(self.infoParam)
-            print("test")
+        for i, data_variable in enumerate(self.data_variables):
+            try:
+                self.param = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{data_variable}"])
+                self.infoParam = str(self.param.nodeid) + " - " + self.param.get_browse_name().Name + ": " + str(self.param.get_value())
+                logging.info(self.infoParam)
+            except Exception as e:
+                logging.error(f"Exception occurred: {e}")
 
     # Change the parameters on the server
     def changeParam(self, param, value):
-        self.newParam = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{param}"])
-        self.newParam.set_value(value)
+        try:
+            self.newParam = self.node.get_child(["0:Objects", f"{self.nameIndex}:Parameters", f"{self.nameIndex}:{param}"])
+            self.newParam.set_value(value)
+        except Exception as e:
+            logging.error(f"Exception occurred: {e}")

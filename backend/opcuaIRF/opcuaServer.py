@@ -38,7 +38,15 @@ class OPCUAServer:
     # Set the variables for the client to read and write the parameters
     def setParameter(self) -> None:
         self.param.add_variable(self.regName, "Runtime", 0).set_writable()
+        self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
         self.param.add_variable(self.regName, "Coolant_Level", 0).set_writable()
         self.param.add_variable(self.regName, "Power_Consumption", 0).set_writable()
-        self.param.add_variable(self.regName, "Power_Laser", 0).set_writable()
-        self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
+        self.param.add_variable(self.regName, "Capacity_Laser_Module", 0).set_writable()
+        self.param.add_variable(self.regName, "Total_Items", 0).set_writable()
+        self.param.add_variable(self.regName, "Program_Runtime", 0).set_writable()
+        self.param.add_variable(self.regName, "Target_Amount", 0).set_writable()
+        self.param.add_variable(self.regName, "Current_Amount", 0).set_writable()
+        self.param.add_variable(self.regName, "Coolant_Consumption", 0).set_writable()
+        self.param.add_variable(self.regName, "Laser_Module_Weardown", 0).set_writable()
+        self.param.add_variable(self.regName, "Laser_Power_Consumption", 0).set_writable()
+        self.param.add_variable(self.regName, "Time_Per_Item", 0).set_writable()
