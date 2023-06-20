@@ -103,17 +103,23 @@ function MachineStatePage(props: {
   function getStatusbarValues(machineState: Machine): StatusBarValues {
     let runtime = machineState.parameters[0].value;
     let errors = 0,
-      warnings = 0;
+      warnings = 0,
+      safetyDoorStatus = false;
     if (machineState.error_state) {
       errors = machineState.error_state.errors.length;
       warnings = machineState.error_state.warnings.length;
+      for(const err of machineState.error_state.errors){
+        if(err.name[1] === 'Safety door is open! Close it.'){
+          safetyDoorStatus = true;
+        }
+      }
     }
     return {
       runtime: runtime,
       utilization: 5,
       warning: warnings,
       error: errors,
-      safety_door: false,
+      safety_door: safetyDoorStatus,
       lock: false,
     };
   }

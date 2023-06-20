@@ -20,7 +20,7 @@ VALUES ('Circle', 1, 5, 3000, 10),
 INSERT INTO error (error_type)
 VALUES ('Coolant empty. Machine is stopping!'),
        ('Laser module burnt out. Machine is stopping!'),
-       ('Power consumption significantly too high. Machine is stopping!');
+       ('Safety door is open! Close it.');
 
 -- Populating program_state table
 INSERT INTO program_state (program_id, program_target_amount, program_current_amount, program_runtime)
@@ -35,7 +35,7 @@ VALUES (1, 50, 25, 8),
 INSERT INTO warning (warning_type)
 VALUES ('Coolant Level below 10%. Please refill!'),
        ('Laser module power below 10%. Please swap module!'),
-       ('Power Consumption is getting high. Please take a break!');
+       ('Power Consumption is high.');
 
 INSERT INTO machine_protocol (protocol_description)
 VALUES ('None'), 

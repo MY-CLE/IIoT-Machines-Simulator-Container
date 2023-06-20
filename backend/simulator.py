@@ -227,9 +227,6 @@ class Simulator:
         if self.simulatedMachine.getCoolantLevel() <= 5:
             self.warnings.coolantLvlError()
             self.stopMachine()
-        if self.simulatedMachine.getTotalEnegeryConsumption() >= 100000000:
-            self.warnings.powerConsumptionError()
-            self.stopMachine()
         if self.simulatedMachine.getCapacityLaserModule() <= 5:
             self.warnings.laserModuleError()
             self.stopMachine()
