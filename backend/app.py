@@ -7,9 +7,7 @@ from flask import Flask, jsonify, request, make_response
 import sqlite3
 from flask_cors import CORS
 from database.handler.databaseHandler import DatabaseHandler
-from simulator import Simulator
-from triangle import Triangle
-from circle import Circle
+from logic.simulator import Simulator
 from database.handler.databaseHandler import DatabaseHandler
 
 app = Flask(__name__)
