@@ -151,6 +151,10 @@ class Simulator:
         self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
         self.checkErrors()
         self.checkWarnings()
+        if(self.protocol == "Modbus/TCP"):
+            self.updateModbus()
+        if(self.protocol == "OPCUA"):
+            self.updateOPCUA()
         if(self.simulatedMachine.isProgramRunning):
             #calculate runtime with curret time
             #self.times.calculateRunTime(time)
@@ -158,10 +162,6 @@ class Simulator:
             machineRuntime = self.simulatedMachine.updateMachine(time, *updatedParameter)
             self.simulatedProgram.checkMachineRuntimeValue(machineRuntime)
 
-            if(self.protocol == "Modbus/TCP"):
-                self.updateModbus()
-            if(self.protocol == "OPCUA"):
-                self.updateOPCUA()
 
         #if clause to check wether or not idleTime needs to be calculated
         else:
@@ -172,12 +172,25 @@ class Simulator:
         try:
             self.ouaClient = OPCUAClient()
             logging.info("OPCUA Client started")
-            self.ouaClient.changeParam("Runtime", int(self.times.getRuntime()))
-            self.ouaClient.changeParam("Coolant_Level", int(self.metrics.getCoolantLevelPercent()))
-            self.ouaClient.changeParam("Power_Consumption", int(self.metrics.getPowerConsumptionKWH()))
-            self.ouaClient.changeParam("Power_Laser", int(self.metrics.getLaserModulePowerWeardown()))
-            self.ouaClient.changeParam("Idle_Time", int(self.times.getIdleTime()))
+            self.ouaClient.changeParam("Runtime", int(self.simulatedMachine.getMachineRuntime()))
+            self.ouaClient.changeParam("Idle_Time", int(self.simulatedMachine.getMachineIdleTime()))
+            self.ouaClient.changeParam("Coolant_Level", int(self.simulatedMachine.getCoolantLevel()))
+            self.ouaClient.changeParam("Power_Consumption", int(self.simulatedMachine.getTotalEnegeryConsumption()/1000)) # in kWh
+            self.ouaClient.changeParam("Capacity_Laser_Module", int(self.simulatedMachine.getCapacityLaserModule()))
+            self.ouaClient.changeParam("Total_Items", int(self.simulatedMachine.getTotalItems()))
+
             self.ouaClient.getParam()
+
+            if(self.simulatedMachine.isProgramRunning):
+                self.ouaClient.changeParam("Program_Runtime", int(self.simulatedProgram.getProgramRuntime()))
+                self.ouaClient.changeParam("Target_Amount", int(self.simulatedProgram.getProgramTargetAmount()))
+                self.ouaClient.changeParam("Current_Amount", int(self.simulatedProgram.getProgramCurrentAmount()))
+                self.ouaClient.changeParam("Coolant_Consumption", int(self.simulatedProgram.getProgramCoolantConsumption()*100))
+                self.ouaClient.changeParam("Laser_Module_Weardown", int(self.simulatedProgram.getProgramLaserModuleWeardown()*100))
+                self.ouaClient.changeParam("Laser_Power_Consumption", int(self.simulatedProgram.getProgramLaserModulePowerConsumption()))
+                self.ouaClient.changeParam("Time_Per_Item", int(self.simulatedProgram.getProgramTimePerItem()))
+                
+                self.ouaClient.getParam()
         except:
             self.ouaClient.client.disconnect()
 
@@ -186,12 +199,25 @@ class Simulator:
         try:
             self.modbusClient = ModbusTCPClient()
             logging.info("ModbusTCP Client started")
-            self.modbusClient.writeSingleRegister(0, int(self.times.getRuntime()))
-            self.modbusClient.writeSingleRegister(1, int(self.metrics.getCoolantLevelPercent()))
-            self.modbusClient.writeSingleRegister(2, int(self.metrics.getPowerConsumptionKWH()))
-            self.modbusClient.writeSingleRegister(3, int(self.metrics.getLaserModulePowerWeardown()))
-            self.modbusClient.writeSingleRegister(4, int(self.times.getIdleTime()))
-            self.modbusClient.readHoldingRegisters(0, 10)
+            self.modbusClient.writeSingleRegister(0, int(self.simulatedMachine.getMachineRuntime()))
+            self.modbusClient.writeSingleRegister(1, int(self.simulatedMachine.getMachineIdleTime()))
+            self.modbusClient.writeSingleRegister(2, int(self.simulatedMachine.getCoolantLevel()))
+            self.modbusClient.writeSingleRegister(3, int(self.simulatedMachine.getTotalEnegeryConsumption()/1000)) # in kWh
+            self.modbusClient.writeSingleRegister(4, int(self.simulatedMachine.getCapacityLaserModule()))
+            self.modbusClient.writeSingleRegister(5, int(self.simulatedMachine.getTotalItems()))
+
+            self.modbusClient.readHoldingRegisters(0, 6)
+
+            if(self.simulatedMachine.isProgramRunning):
+                self.modbusClient.writeSingleRegister(6, int(self.simulatedProgram.getProgramRuntime()))
+                self.modbusClient.writeSingleRegister(7, int(self.simulatedProgram.getProgramTargetAmount()))
+                self.modbusClient.writeSingleRegister(8, int(self.simulatedProgram.getProgramCurrentAmount()))
+                self.modbusClient.writeSingleRegister(9, int(self.simulatedProgram.getProgramCoolantConsumption()*100))
+                self.modbusClient.writeSingleRegister(10, int(self.simulatedProgram.getProgramLaserModuleWeardown()*100))
+                self.modbusClient.writeSingleRegister(11, int(self.simulatedProgram.getProgramLaserModulePowerConsumption()))
+                self.modbusClient.writeSingleRegister(12, int(self.simulatedProgram.getProgramTimePerItem()))
+
+                self.modbusClient.readHoldingRegisters(6, 7)
         except:
             self.modbusClient.client.close()
 
@@ -234,4 +260,3 @@ class Simulator:
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
         self.startMachine()
-
