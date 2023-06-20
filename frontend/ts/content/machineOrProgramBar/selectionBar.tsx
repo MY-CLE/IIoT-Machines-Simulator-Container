@@ -34,13 +34,13 @@ function SelectionBar(props: { whichPage: any }) {
         onClick={handleMachineClick}
         className={`w-1/2 border border-black border-t-0 font-medium text-xs ${machineColor} sm:text-base lg:text-xl xl:text-2xl`}
       >
-        Maschinenzustand
+        Machine State
       </button>
       <button
         onClick={handleProgramClick}
         className={`w-1/2 border border-black border-t-0 border-l-0 font-medium ${programColor} text-xs sm:text-base lg:text-xl xl:text-2xl`}
       >
-        Programmübersicht
+        Program Overview
       </button>
     </div>
   );

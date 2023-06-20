@@ -130,7 +130,7 @@ function ProgramStatePage(props: {
             <IconArrowBack width={45} color={'#000'}></IconArrowBack>
           </button>
           <span className="flex flex-grow text-4xl text-left sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl ">
-            Programmübersicht: {program.description}
+            Program Overview: {program.description}
           </span>
         </div>
         <div className="flex flex-row justify-between w-full h-full mb-4 ">
@@ -153,22 +153,22 @@ function ProgramStatePage(props: {
           </div>
           <div className="flex flex-col items-center justify-evenly w-1/2 h-full">
             <button
-              className="w-1/3 h-14 text-2xl text-white bg-green-400 rounded-md border-2 border-black shadow "
+              className="w-1/3 h-14 text-xl text-white bg-green-400 rounded-md border-2 border-black shadow lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
               onClick={() => startProgram(props.state.simulation_id | 0)}
             >
               Start
             </button>
             <button
-              className="w-1/3 h-14 text-2xl text-white bg-red-400 rounded-md border-2 border-black shadow"
+              className="w-1/3 h-14 text-xl text-white bg-red-400 rounded-md border-2 border-black shadow lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
               onClick={() => stopProgram(props.state.simulation_id | 0)}
             >
               Stop
             </button>
             <button
-              className="w-1/3 h-14 text-2xl text-white bg-yellow-400 rounded-md border-2 border-black"
+              className="w-1/3 h-14 text-xl text-white bg-yellow-400 rounded-md border-2 border-black lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
               onClick={() => restartProgram(props.state.simulation_id | 0)}
             >
-              Restart
+              Reset values
             </button>
           </div>
         </div>

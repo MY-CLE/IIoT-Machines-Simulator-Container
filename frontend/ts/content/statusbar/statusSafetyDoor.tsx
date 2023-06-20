@@ -8,10 +8,11 @@ export function StatusSafetyDoor(props: { value: boolean }) {
         <div className=" w-full h-full">
           <IconDoor isOpen={props.value}/>
         </div>
-        <div>{props.value}</div>
+        <p className="text-lg sm:text-base lg:text-xl xl:text2xl font-medium">{props.value}</p>
       </div>
     </>
   );
 }
 
 export default StatusSafetyDoor;
+
