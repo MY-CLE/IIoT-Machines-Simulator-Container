@@ -118,6 +118,11 @@ class Simulator:
         self.simulatedProgram.resetToDefaultState()
         self.simulatorState = True
         self.simulatedMachine.startMachine(datetime.now())
+
+    #function to start machine with parameters loaded from database
+    def loadMachine(self) -> None:
+        self.simulatorState = True
+        self.simulatedMachine.startMachine(datetime.now())
     
     def startProgram(self) -> None:
         date = datetime.now()
@@ -256,4 +261,4 @@ class Simulator:
         self.protocol = DatabaseHandler.selectProtocolById(machineState.getMachineProtocol()).getProtocolDescription()
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
-        self.startMachine()
+        self.loadMachine()
