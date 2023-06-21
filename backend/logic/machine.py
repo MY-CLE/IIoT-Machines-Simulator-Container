@@ -136,12 +136,12 @@ class Machine():
             }
             
     def getMachineStateSnapshot(self) -> dict:
-        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime)},
-                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime)},
-                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel)},
-                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption)},
-                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule)},
-                {"id":"6", "description": "Total Items", "value": int(self.totalItems)}]
+        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime),"isAdminParameter": False},
+                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime),"isAdminParameter": False},
+                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel), "isAdminParameter": True},
+                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption), "isAdminParameter": False},
+                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule), "isAdminParameter": True},
+                {"id":"6", "description": "Total Items", "value": int(self.totalItems), "isAdminParameter": True}]
         
         errors = []
         for index, error in enumerate(self.activeErrors):

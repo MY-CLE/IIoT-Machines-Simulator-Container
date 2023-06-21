@@ -31,6 +31,7 @@ export interface Parameter {
   id: number;
   description: string;
   value: number;
+  isAdminParameter: boolean;
 }
 
 export interface StatusBarValues {

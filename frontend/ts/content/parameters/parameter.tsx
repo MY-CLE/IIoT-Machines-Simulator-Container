@@ -15,11 +15,12 @@ const customStyles = {
     backgroundColor: "#F2F2F2",
   },
 };
-interface ParameterProps {
+export interface ParameterProps {
   name: string;
   id: number;
   value: number;
   simulation_id: number;
+  isAdminParameter: boolean;
 }
 function ParameterComponent(props: ParameterProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -42,6 +43,7 @@ function ParameterComponent(props: ParameterProps) {
         id: props.id,
         value: parseInt(parameterInput.value),
         description: props.name,
+        isAdminParameter: props.isAdminParameter,
       });
       console.log(status);
     })();
@@ -49,16 +51,18 @@ function ParameterComponent(props: ParameterProps) {
   }
 
   return (
-    <div className="flex flex-row border border-black w-full h-16 justify-start items-center bg-white rounded-xl">
-      <div className=" ml-1 justify-start items-center flex flex-grow w-1/4 flex-wrap mr-20 font-medium text-xs sm:text-base lg:text-xl xl:text2xl">
+    <div className="flex flex-row items-center justify-start w-full h-16 bg-white border border-black rounded-xl">
+      <div className="flex flex-wrap items-center justify-start flex-grow w-1/4 ml-1 mr-20 text-xs font-medium sm:text-base lg:text-xl xl:text2xl">
         {props.name}
       </div>
-      <div className="justify-center items-center flex flex-grow flex-wrap bg-gray-400 h-3/4 w-1/6 rounded-lg border border-black mr-2 drop-shadow text-xs sm:text-base lg:text-xl xl:text2xl">
+      <div className="flex flex-wrap items-center justify-center flex-grow w-1/6 mr-2 text-xs bg-gray-400 border border-black rounded-lg h-3/4 drop-shadow sm:text-base lg:text-xl xl:text2xl">
         {props.value}
       </div>
       <button
         onClick={openModal}
-        className="justify-center items-center flex flex-grow flex-wrap bg-white mr-5 w-0 h-3/4 border border-black rounded-lg drop-shadow"
+        className={`${
+          props.isAdminParameter ? "bg-red-500" : "bg-slate-100"
+        } flex flex-wrap items-center justify-center flex-grow w-0 mr-5 border border-black rounded-lg h-3/4 drop-shadow`}
       >
         <IconPen />
       </button>
