@@ -10,6 +10,7 @@ import {
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 
+const url = "/simulator";
 Modal.setAppElement("#root");
 const customStyles: Styles = {
   content: {
@@ -68,7 +69,7 @@ function LandingPage(props: {
         simulation_id: simulation_id.simulation_id,
         program_id: 1,
       });
-      navigate(`/machine`);
+      navigate(`${url}/machine/`);
     }
   }
   return (
@@ -121,7 +122,7 @@ function SimulationListElement(props: any) {
         simulation_id: response.simulation_id,
         program_id: 0,
       });
-      navigate(`/machine`);
+      navigate(`/machine/state`);
     }
   }
   return (
