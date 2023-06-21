@@ -79,13 +79,13 @@ function LandingPage(props: {
           className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={startSimulation}
         >
-          Create simulation
+          Create Simulation
         </button>
         <button
           className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={openModal}
         >
-          Load simulation
+          Load Simulation
         </button>
         <Modal
           isOpen={modalIsOpen}
