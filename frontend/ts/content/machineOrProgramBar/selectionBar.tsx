@@ -8,6 +8,7 @@ function SelectionBar(props: { whichPage: any }) {
   const navigation = useNavigate();
 
   useEffect(() => {
+    console.log(props.whichPage);
     if (props.whichPage === "program") {
       setMachineColor("bg-unselectedbar-green");
       setProgramColor("bg-selectedbar-green");

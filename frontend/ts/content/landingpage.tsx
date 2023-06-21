@@ -69,7 +69,7 @@ function LandingPage(props: {
         simulation_id: simulation_id.simulation_id,
         program_id: 1,
       });
-      navigate(`${url}/machine/`);
+      navigate(`${url}/machine`);
     }
   }
   return (

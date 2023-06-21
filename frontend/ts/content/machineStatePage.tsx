@@ -53,7 +53,6 @@ function MachineStatePage(props: {
     (async () => {
       // when the page is loaded the first time, the errors are fetched
       let newErrors = await getErrors(props.state.simulation_id | 0);
-      console.log("new Errors getting fetched");
       if (newErrors.errors && newErrors.warnings) {
         setErrors(newErrors);
       }
