@@ -7,10 +7,6 @@ from orm.notification.error import Error
 from orm.notification.warning import Warning
 from orm.user.admin import Admin
 
-result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program;")
-dbObj = DatabaseObject(result[0])
-machine_program = MachineProgram(dbObj)
-print(machine_program)    
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_state;")
 dbObj = DatabaseObject(result[0])
@@ -36,3 +32,5 @@ result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM admin;")
 dbObj = DatabaseObject(result[0])
 admin = Admin(dbObj)
 print(admin)    
+
+DatabaseHandler.deleteMachineStateById(1)

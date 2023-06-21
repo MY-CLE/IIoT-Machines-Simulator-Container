@@ -15,7 +15,7 @@ from database.orm.machine.protocol import Protocol
 class DatabaseHandler:
 
     #set up the connection to the database file and use a cusror for queries
-    _CONNECTION = sqlite3.connect("database/machine-sim.db", check_same_thread=False)
+    _CONNECTION = sqlite3.connect("../backend/database/machine-sim.db", check_same_thread=False)
     _CURSOR = _CONNECTION.cursor()
     
     
@@ -33,6 +33,16 @@ class DatabaseHandler:
     def save(query: str, values: tuple) -> None:
         DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
         DatabaseHandler._CURSOR.execute(query, values)
+        DatabaseHandler._CONNECTION.commit()
+        DatabaseHandler._CURSOR.close()
+
+    @staticmethod
+    def delete(query: str, parameter: tuple = None) -> None:
+        DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
+        if parameter == None:
+            DatabaseHandler._CURSOR.execute(query)
+        else:
+            DatabaseHandler._CURSOR.execute(query, parameter)
         DatabaseHandler._CONNECTION.commit()
         DatabaseHandler._CURSOR.close()
     
@@ -137,6 +147,16 @@ class DatabaseHandler:
         DatabaseHandler.save(query, values) 
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state ORDER BY program_state_id DESC LIMIT 1")
         return DatabaseObject(resultSet[0]).getResultRow()[0]
+    
+    @staticmethod
+    def deleteProgramState(id: int) -> None:
+        DatabaseHandler.delete("DELETE FROM program_state WHERE program_state_id = ?", (id,))
+    
+    @staticmethod
+    def deleteMachineStateById(id: int) -> None:
+        machineState: MachineState = DatabaseHandler.selectMachineState(id)
+        DatabaseHandler.delete("DELETE FROM machine_state WHERE machine_state_id = ?", (id,))
+        DatabaseHandler.deleteProgramState(machineState.getProgramState())
 
 
 
