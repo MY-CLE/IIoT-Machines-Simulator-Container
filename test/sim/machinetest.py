@@ -110,7 +110,7 @@ class TestMachine(unittest.TestCase):
 
         self.assertEqual(self.machine.machineRuntime, machineRuntime)
 
-    def test_UpdateMachineState(self) -> None:
+    def test_LoadMachineState(self) -> None:
         nowTime: datetime = datetime.now()
         machineState: MachineState = MachineState(1, nowTime, 1, "TestMachine", 1, 1, 1, nowTime, nowTime, 1, 1, 1, 1, 1, 1)
         
