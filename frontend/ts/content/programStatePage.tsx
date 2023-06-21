@@ -3,7 +3,7 @@ import StatusBar from "./statusbar/statusBar";
 import SelectionBar from "./machineOrProgramBar/selectionBar";
 import ParameterComponent from "./parameters/parameter";
 import IconArrowBack from "../icons/iconBackArrow";
-import { Machine, Program, StatusBarValues } from "../interfaces";
+import { Machine, Parameter, Program, StatusBarValues } from "../interfaces";
 import { restartProgram, startProgram, stopProgram } from "../api-service";
 import { useNavigate } from "react-router-dom";
 
@@ -23,7 +23,6 @@ function ProgramStatePage(props: {
   program: Program;
 }) {
   const navigation = useNavigate();
-
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
       <div className="flex flex-col w-full h-full p-4 text-2xl bg-white border border-t-0 border-black border-1 ">
@@ -42,21 +41,18 @@ function ProgramStatePage(props: {
         </div>
         <div className="flex flex-row justify-between w-full h-full mb-4 ">
           <div className="flex flex-row flex-wrap w-1/2 h-full justify-evenly ">
-            {props.program.parameters!.map(
-              (item: { id: number; description: string; value: number }) => {
-                return (
-                  <div key={item.id} className="w-3/4">
-                    <ParameterComponent
-                      simulation_id={props.state.simulation_id}
-                      key={item.id}
-                      name={item.description}
-                      value={item.value}
-                      id={item.id}
-                    />
-                  </div>
-                );
-              }
-            )}
+            {props.program.parameters!.map((item: Parameter) => {
+              return (
+                <ParameterComponent
+                  simulation_id={props.state.simulation_id}
+                  key={item.id}
+                  name={item.description}
+                  value={item.value}
+                  id={item.id}
+                  isAdminParameter={item.isAdminParameter}
+                />
+              );
+            })}
           </div>
           <div className="flex flex-col items-center w-1/2 h-full justify-evenly">
             <button

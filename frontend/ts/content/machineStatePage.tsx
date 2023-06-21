@@ -24,8 +24,8 @@ const customStyles = {
 Modal.setAppElement("#root");
 
 const paramterDefault: Array<Parameter> = [
-  { id: 0, description: "", value: 0 },
-  { id: 1, description: "", value: 0 },
+  { id: 0, description: "", value: 0, isAdminParameter: false },
+  { id: 1, description: "", value: 0, isAdminParameter: false },
 ];
 function MachineStatePage(props: {
   state: {
@@ -189,7 +189,7 @@ function MachineStatePage(props: {
         </div>
         <div className="flex flex-row justify-between w-full h-full py-5">
           <div className="flex flex-col items-center justify-between w-1/3 h-full text-center">
-            {props.machine.parameters.map((item, index) => {
+            {props.machine.parameters.map((item: Parameter, index) => {
               return (
                 <ParameterComponent
                   simulation_id={props.state.simulation_id}
@@ -197,6 +197,7 @@ function MachineStatePage(props: {
                   name={item.description}
                   value={item.value}
                   id={item.id}
+                  isAdminParameter={item.isAdminParameter}
                 />
               );
             })}
