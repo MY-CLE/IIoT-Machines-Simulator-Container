@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import StatusBar from "./statusbar/statusBar";
-import SelectionBar from "./machineOrProgramBar/selectionBar";
-import { useLocation, useNavigate } from "react-router-dom";
-import { getMachine, getPrograms, setCurrentProgram } from "../api-service";
-import { Machine, Program, StatusBarValues } from "../interfaces";
+import { useNavigate } from "react-router-dom";
+import { getPrograms, setCurrentProgram } from "../api-service";
+import { Program } from "../interfaces";
+
+const url = "/simulator";
 
 function ChooseProgramPage(props: {
   state: {
@@ -38,53 +38,11 @@ function ChooseProgramPage(props: {
         }
       );
       setPrograms(progs);
-      let machineState = await getMachine(
-        props.state.simulation_id ? props.state.simulation_id : 0
-      );
-      console.log(machineState);
-
-      let values: StatusBarValues = getStatusbarValues(machineState);
-      setStatusBarValues(values);
     })();
-
-    const id = setInterval(async () => {
-      let machineState = await getMachine(
-        props.state.simulation_id ? props.state.simulation_id : 0
-      );
-      console.log(machineState);
-
-      let values: StatusBarValues = getStatusbarValues(machineState);
-      setStatusBarValues(values);
-    }, 5000);
-    return () => clearInterval(id);
   }, []);
 
-  function getStatusbarValues(machineState: Machine): StatusBarValues {
-    let runtime = machineState.parameters[0].value;
-    let errors = 0,
-      warnings = 0,
-      safetyDoorStatus = false;
-    if (machineState.error_state) {
-      errors = machineState.error_state.errors.length;
-      warnings = machineState.error_state.warnings.length;
-      for(const err of machineState.error_state.errors){
-        if(err.name[1] === 'Safety door is open! Close it.'){
-          safetyDoorStatus = true;
-        }
-      }
-    }
-    return {
-      runtime: runtime,
-      utilization: 5,
-      warning: warnings,
-      error: errors,
-      safety_door: safetyDoorStatus,
-      lock: false,
-    };
-  }
-
   function navigateToMachineStatePage() {
-    navigation("/machine");
+    navigation(`${url}/machine`);
   }
 
   async function navigateToProgramStatePage(id: number) {
@@ -99,35 +57,20 @@ function ChooseProgramPage(props: {
         simulation_id: props.state.simulation_id,
       });
 
-      navigation("/program/current");
+      navigation(`${url}/program/current`);
     }
   }
 
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
-      <div className="flex flex-row items-center justify-start h-32 max-w-full bg-gray-300">
-        <div className="w-full text-2xl">
-          <StatusBar
-            runtime={statusBarValues.runtime}
-            utilization={statusBarValues.utilization}
-            error={statusBarValues.error}
-            warning={statusBarValues.warning}
-            safety_door={statusBarValues.safety_door}
-            lock={statusBarValues.lock}
-          />
-        </div>
-      </div>
-      <div>
-        <SelectionBar whichPage={"program"} />
-      </div>
-      <div className="flex flex-col justify-start w-full h-full text-2xl border border-t-0 border-black border-1 bg-white">
+      <div className="flex flex-col justify-start w-full h-full text-2xl bg-white border border-t-0 border-black border-1">
         {" "}
         {/*bg-program-choose-grey*/}
-        <div className="w-full h-auto p-4 text-center text-black text-2xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl">
+        <div className="w-full h-auto p-4 text-2xl text-center text-black sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl">
           Programm Auswahl
         </div>
-        <div className=" flex flex-grow justify-center items-center">
-          <div className="flex flex-row flex-wrap justify-between w-full h-full mb-4p items-center ">
+        <div className="flex items-center justify-center flex-grow ">
+          <div className="flex flex-row flex-wrap items-center justify-between w-full h-full mb-4p ">
             {programs.map((item: any) => {
               return (
                 <ProgramCard
@@ -149,10 +92,12 @@ export default ChooseProgramPage;
 function ProgramCard(props: any) {
   return (
     <button
-      className="flex items-center justify-center w-1/4 mx-6 bg-unselectedbar-green hover:bg-selectedbar-green rounded-2xl h-1/3 drop-shadow-sm border border-black"
+      className="flex items-center justify-center w-1/4 mx-6 border border-black bg-unselectedbar-green hover:bg-selectedbar-green rounded-2xl h-1/3 drop-shadow-sm"
       onClick={() => props.func(props.id)}
     >
-      <span className="text-2xl sm:text-base lg:text-xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl">{props.name}</span>
+      <span className="text-2xl sm:text-base lg:text-xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl">
+        {props.name}
+      </span>
     </button>
   );
 }

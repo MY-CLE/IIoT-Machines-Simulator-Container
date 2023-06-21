@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const url = "/simulator";
 
 function SelectionBar(props: { whichPage: any }) {
   const [machineColor, setMachineColor] = useState<string>("");
@@ -18,13 +19,13 @@ function SelectionBar(props: { whichPage: any }) {
 
   const handleMachineClick = () => {
     if (props.whichPage !== "machine") {
-      navigation("/machine");
+      navigation(`${url}/machine`);
     }
   };
 
   const handleProgramClick = () => {
     if (props.whichPage !== "program") {
-      navigation("/program/current");
+      navigation(`${url}/program/current`);
     }
   };
 
