@@ -72,6 +72,10 @@ function App() {
   }
 
   async function getCurrentPrograData() {
+    let machineState = await getMachine(
+      state.simulation_id ? state.simulation_id : 0
+    );
+    //setTimeout(() => {}, 500);
     let program = await getProgram(state.simulation_id | 0);
     if (program.description === "") {
       navigation(`simulator/programs`);
@@ -79,10 +83,6 @@ function App() {
     if (program.parameters) {
       setProgram(program);
     }
-    let machineState = await getMachine(
-      state.simulation_id ? state.simulation_id : 0
-    );
-    console.log(machineState);
 
     let values: StatusBarValues = getStatusbarValues(machineState);
     setStatuesBarValues(values);
