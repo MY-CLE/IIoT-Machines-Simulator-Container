@@ -23,7 +23,6 @@ function ProgramStatePage(props: {
   program: Program;
 }) {
   const navigation = useNavigate();
-
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
       <div className="flex flex-col w-full h-full p-4 text-2xl bg-white border border-t-0 border-black border-1 ">
@@ -44,16 +43,14 @@ function ProgramStatePage(props: {
           <div className="flex flex-row flex-wrap w-1/2 h-full justify-evenly ">
             {props.program.parameters!.map((item: Parameter) => {
               return (
-                <div key={item.id} className="w-3/4">
-                  <ParameterComponent
-                    simulation_id={props.state.simulation_id}
-                    key={item.id}
-                    name={item.description}
-                    value={item.value}
-                    id={item.id}
-                    isAdminParameter={item.isAdminParameter}
-                  />
-                </div>
+                <ParameterComponent
+                  simulation_id={props.state.simulation_id}
+                  key={item.id}
+                  name={item.description}
+                  value={item.value}
+                  id={item.id}
+                  isAdminParameter={item.isAdminParameter}
+                />
               );
             })}
           </div>

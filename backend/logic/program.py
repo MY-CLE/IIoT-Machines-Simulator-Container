@@ -226,7 +226,8 @@ class Program:
             parameter = {
                 "id": index,
                 "description": param["description"],
-                "value": param["value"]
+                "value": param["value"],
+                "isAdminParameter": param["isAdminParameter"]
             }
             data["parameters"].append(parameter)
         return data
