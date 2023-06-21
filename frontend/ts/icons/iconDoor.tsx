@@ -69,7 +69,7 @@ function IconDoor(props: {isOpen:boolean}) {
           </div>
         </div>
       </div>
-      <p>{text}</p>
+      <p  className="text-xs sm:text-base lg:text-xl xl:text2xl">{text}</p>
     </div>
   );
 }

@@ -75,16 +75,16 @@ function LandingPage(props: {
     <div className="flex flex-col flex-grow flex-nowrap">
       <div className="flex flex-row items-center justify-around flex-grow basis-2/5">
         <button
-          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue"
+          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={startSimulation}
         >
-          Simulation erzeugen
+          Create simulation
         </button>
         <button
-          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue"
+          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={openModal}
         >
-          Simulation laden
+          Load simulation
         </button>
         <Modal
           isOpen={modalIsOpen}

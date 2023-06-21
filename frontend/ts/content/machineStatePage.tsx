@@ -261,12 +261,12 @@ function MachineStatePage(props: {
                 className="border border-gray-500 rounded px-4 py-2 mt-4"
                 onClick={openModal}
               >
-                Quittieren
+                Acknowledge
               </button>
             </div>
           </div>
         )}
-        <div className="w-full h-auto text-left text-4xl sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl">Maschinenzustand</div>
+        <div className="w-full h-auto text-left text-4xl sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl">Machine State</div>
         <div className="flex flex-row w-full h-full py-5 justify-between">
           <div className="flex flex-col items-center justify-between w-1/3 h-full text-center">
             {parameters.map((item, index) => {
@@ -293,7 +293,7 @@ function MachineStatePage(props: {
                   style={{ width: "10vw", height: "10vw", minWidth: "50px", minHeight: "50px" }}
                   onClick={openListPopup}
                 >
-                  <span className="text-xs sm:text-base lg:text-xl"> Quittieren</span>
+                  <span className="text-xs sm:text-base lg:text-xl"> Acknowledge</span>
                 </button>
   
                 <Modal
@@ -304,7 +304,7 @@ function MachineStatePage(props: {
                 >
                   <h1 className="w-full font-bold">Authentification</h1>
                   <span className="w-full">
-                    Bitte geben sie das Administrator Passwort ein
+                    Please enter the root password
                   </span>
                   <input
                     placeholder=""
