@@ -210,13 +210,13 @@ class Program:
             self.programRuntime = machineRuntime 
         
     def getProgramStateSnapshot(self) -> dict:
-        parameters = [{"description": "Program Runtime (s)", "value": int(self.getProgramRuntime())},
-                           {"description": "Target Amount", "value": int(self.getProgramTargetAmount())},
-                           {"description": "Current Amount", "value": int(self.getProgramCurrentAmount())},
-                           {"description": "Coolant Consumption (% / s)", "value": self.getProgramCoolantConsumption()},
-                           {"description": "Laser Module Weardown (% / s)", "value": self.getProgramLaserModuleWeardown()},
-                           {"description": "Laser Power Consumption (W)", "value": int(self.getProgramLaserModulePowerConsumption())},
-                           {"description": "Time per Item (s)", "value": self.getProgramTimePerItem()},
+        parameters = [{"description": "Program Runtime (s)", "value": int(self.getProgramRuntime()), "isAdminParameter": False},
+                           {"description": "Target Amount", "value": int(self.getProgramTargetAmount()), "isAdminParameter": False},
+                           {"description": "Current Amount", "value": int(self.getProgramCurrentAmount()), "isAdminParameter": False},
+                           {"description": "Coolant Consumption (% / s)", "value": self.getProgramCoolantConsumption(), "isAdminParameter": True},
+                           {"description": "Laser Module Weardown (% / s)", "value": self.getProgramLaserModuleWeardown(), "isAdminParameter": True},
+                           {"description": "Laser Power Consumption (W)", "value": int(self.getProgramLaserModulePowerConsumption()), "isAdminParameter": True},
+                           {"description": "Time per Item (s)", "value": self.getProgramTimePerItem(), "isAdminParameter": True},
                            ]
         data = {
             "description": self.getProgramProgramDescription(),
@@ -226,7 +226,8 @@ class Program:
             parameter = {
                 "id": index,
                 "description": param["description"],
-                "value": param["value"]
+                "value": param["value"],
+                "isAdminParameter": param["isAdminParameter"]
             }
             data["parameters"].append(parameter)
         return data
