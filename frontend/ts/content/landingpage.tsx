@@ -15,7 +15,7 @@ Modal.setAppElement("#root");
 const customStyles: Styles = {
   content: {
     position: "absolute",
-    width: "50%",
+    width: "35%",
     top: "50%",
     left: "50%",
     right: "auto",
@@ -92,7 +92,7 @@ function LandingPage(props: {
           onRequestClose={closeModal}
           style={customStyles}
         >
-          <div className="flex flex-col flex-grow w-full h-full flex-nowrap">
+          <div className="flex flex-col items-center justify-center flex-grow w-full h-fit flex-nowrap">
             {simulations.map((item: Simulation) => {
               return (
                 <SimulationListElement
@@ -102,7 +102,12 @@ function LandingPage(props: {
                 />
               );
             })}
-            <button onClick={closeModal}>close</button>
+            <button
+              onClick={closeModal}
+              className="w-1/2 px-4 py-2 border-2 border-black rounded-md shadow-md bg-slate-200 hover:bg-slate-500"
+            >
+              close
+            </button>
           </div>
         </Modal>
       </div>
@@ -127,7 +132,7 @@ function SimulationListElement(props: any) {
   }
   return (
     <button
-      className="w-full p-2 m-2 border rounded-lg h-fit"
+      className="w-3/4 p-2 m-2 border-2 border-black rounded-lg h-fit"
       onClick={handleLoadSimulation}
     >
       <span>{sim.description} </span>

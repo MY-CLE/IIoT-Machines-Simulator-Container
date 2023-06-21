@@ -45,7 +45,7 @@ def simulations():
             json["simulations"].append({
               "id": sim.getID(),
               "description": sim.getName(),
-              "last_edited": "Jabba",
+              "last_edited": sim.getLastEdited(),
             })
         return jsonify(json)  #list of all sims
     elif request.method == 'POST':
