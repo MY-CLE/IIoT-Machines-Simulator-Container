@@ -25,7 +25,7 @@ function App() {
   const location = useLocation();
   const navigation = useNavigate();
 
-  const [selectionBarValue, setSelectionBarValue] = useState<String>("program")
+  const [selectionBarValue, setSelectionBarValue] = useState<String>("program");
   const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const [statuesBarValues, setStatuesBarValues] = useState({
     runtime: 0,
@@ -71,7 +71,7 @@ function App() {
       state.simulation_id ? state.simulation_id : 0
     );
     let values: StatusBarValues = getStatusbarValues(machineState);
-    console.log(machineState)
+    console.log(machineState);
     setMachine(machineState);
     setStatuesBarValues(values);
   }
@@ -82,9 +82,6 @@ function App() {
     );
     //setTimeout(() => {}, 500);
     let program = await getProgram(state.simulation_id | 0);
-    if (program.description === "") {
-      navigation(`/simulator/programs`);
-    }
     if (program.parameters) {
       setProgram(program);
     }
@@ -98,7 +95,6 @@ function App() {
       state.simulation_id ? state.simulation_id : 0
     );
     console.log(machineState);
-  
 
     let values: StatusBarValues = getStatusbarValues(machineState);
     setStatuesBarValues(values);
@@ -155,8 +151,18 @@ function App() {
                   lock={statuesBarValues.lock}
                 />
               </div>
-              {selectionBarValue === "program" && <SelectionBar whichPage={"program"} /> } 
-              {selectionBarValue === "machine" && <SelectionBar whichPage={"machine"} /> } 
+              {selectionBarValue === "program" && (
+                <SelectionBar
+                  whichPage={"program"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+              {selectionBarValue === "machine" && (
+                <SelectionBar
+                  whichPage={"machine"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
 
               <Outlet />
             </>

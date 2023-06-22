@@ -127,7 +127,7 @@ function SimulationListElement(props: any) {
         simulation_id: response.simulation_id,
         program_id: 0,
       });
-      navigate(`/machine/state`);
+      navigate(`simulator/machine`);
     }
   }
   return (

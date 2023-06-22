@@ -90,15 +90,6 @@ function MachineStatePage(props: {
     setListPopup(true);
   }
 
-  function navigateToProgram() {
-    console.log(props.state.program_id);
-    if (props.state.program_id === -1) {
-      navigation(`${url}/programs`);
-    } else {
-      navigation(`${url}/program/current`);
-    }
-  }
-
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
       <div className="flex flex-col justify-start w-full h-full p-4 text-2xl bg-gray-200 border border-t-0 border-black border-1">
@@ -231,7 +222,9 @@ function MachineStatePage(props: {
                   style={customStyles}
                 >
                   <h1 className="w-full font-bold">Authentification</h1>
-                  <span className="w-full">Please enter the root password</span>
+                  <span className="w-full">
+                    Please enter the admin password
+                  </span>
                   <input
                     placeholder=""
                     id="inputPassword"

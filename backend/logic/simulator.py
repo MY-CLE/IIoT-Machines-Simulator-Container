@@ -144,13 +144,13 @@ class Simulator:
 
     def updateSimulation(self, time: datetime) -> None:        
         self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
-        self.checkErrors()
-        self.checkWarnings()
         if(self.protocol == "Modbus/TCP"):
             self.updateModbus()
         if(self.protocol == "OPCUA"):
             self.updateOPCUA()
         if(self.simulatedMachine.isProgramRunning):
+            self.checkErrors()
+            self.checkWarnings()
             #calculate runtime with curret time
             #self.times.calculateRunTime(time)
             updatedParameter:list = self.simulatedProgram.updateProgram(time)
