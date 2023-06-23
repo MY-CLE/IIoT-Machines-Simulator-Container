@@ -25,12 +25,12 @@ class ProgramState(object):
         return self.runtime
     
     def __str__(self):
-        return f"MyClass(stateID: {self.stateID}, ID: {self.ID}, targetAmount: {self.targetAmount}, currentAmount: {self.currentAmount}, runtime: {self.runtime})"
+        return f"MyClass(stateID: {self.stateID}, id: {self.ID}, targetAmount: {self.targetAmount}, currentAmount: {self.currentAmount}, runtime: {self.runtime})"
     
     def getJson(self):
         return {
-            "stateID": self.stateID,
-            "ID": self.ID,
+            "stateId": self.stateID,
+            "id": self.ID,
             "targetAmount": self.targetAmount,
             "currentAmount": self.currentAmount,
             "runtime": self.runtime

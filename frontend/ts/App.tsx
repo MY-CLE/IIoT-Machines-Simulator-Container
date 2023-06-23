@@ -1,56 +1,199 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "./header";
 import ProgramStatePage from "./content/programStatePage";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import LandingPage from "./content/landingpage";
 import MachineStatePage from "./content/machineStatePage";
 import ChooseProgramPage from "./content/chooseProgramPage";
 
 import { useState } from "react";
+import StatusBar from "./content/statusbar/statusBar";
+import SelectionBar from "./content/machineOrProgramBar/selectionBar";
+import { getMachine, getProgram } from "./api-service";
+import { Machine, Program, StatusBarValues } from "./interfaces";
 
 function App() {
+  const location = useLocation();
+
+  const [selectionBarValue, setSelectionBarValue] = useState<string>("program");
   const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: (
-        <>
-          <Header isLandingPage={true} />
-          <LandingPage state={state} setState={setState} />
-        </>
-      ),
-    },
-    {
-      path: "/machine",
-      element: (
-        <>
-          <Header isLandingPage={false} />
-          <MachineStatePage state={state} setState={setState} />
-        </>
-      ),
-    },
-    {
-      path: "/programs",
-      element: (
-        <>
-          <Header isLandingPage={false} />
-          <ChooseProgramPage state={state} setState={setState} />
-        </>
-      ),
-    },
-    {
-      path: "/program/current",
-      element: (
-        <>
-          <Header isLandingPage={false} />
-          <ProgramStatePage state={state} setState={setState} />
-        </>
-      ),
-    },
-  ]);
+  const [statuesBarValues, setStatuesBarValues] = useState({
+    runtime: 0,
+    utilization: 0,
+    error: 0,
+    warning: 0,
+    safety_door: false,
+    lock: false,
+  });
+  const [program, setProgram] = useState({
+    description: "",
+    id: -1,
+    parameters: [],
+  } as Program);
+  const [machine, setMachine] = useState({
+    parameters: [],
+    errorState: { errors: [], warnings: [] },
+  } as Machine);
+
+  const [intervallId, setIntervallId] = useState<any>(0);
+
+  useEffect(() => {
+    clearInterval(intervallId);
+    if (location.pathname === "/simulator/machine") {
+      setSelectionBarValue("machine");
+      getMachineStatePageData();
+      const id = setInterval(() => getMachineStatePageData(), 5000);
+      setIntervallId(id);
+    } else if (location.pathname === "/simulator/program/current") {
+      setSelectionBarValue("program");
+      getCurrentProgramData();
+      const id = setInterval(() => getCurrentProgramData(), 5000);
+      setIntervallId(id);
+    } else if (location.pathname === "/simulator/programs") {
+      setSelectionBarValue("program");
+      getProgramsPageData();
+      const id = setInterval(() => getProgramsPageData(), 5000);
+      setIntervallId(id);
+    }
+  }, [location]);
+
+  async function getMachineStatePageData() {
+    let machineStateRes = await getMachine();
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
+    let values: StatusBarValues = getStatusbarValues(machineState);
+    setMachine(machineState);
+    setStatuesBarValues(values);
+  }
+
+  async function getCurrentProgramData() {
+    let machineStateRes = await getMachine();
+    let programRes = await getProgram();
+
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
+
+    if (!programRes) return;
+    let program = (await programRes.json()) as Program;
+
+    if (program.parameters) {
+      setProgram(program);
+    }
+
+    let values: StatusBarValues = getStatusbarValues(machineState);
+    setStatuesBarValues(values);
+  }
+
+  async function getProgramsPageData() {
+    let machineStateRes = await getMachine();
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
+    let values: StatusBarValues = getStatusbarValues(machineState);
+    setStatuesBarValues(values);
+  }
+
+  function getStatusbarValues(machineState: Machine): StatusBarValues {
+    let runtime = machineState.parameters[0].value;
+    let errors = 0,
+      warnings = 0,
+      safetyDoorStatus = false;
+    if (machineState.errorState) {
+      errors = machineState.errorState.errors.length;
+      warnings = machineState.errorState.warnings.length;
+      for (const err of machineState.errorState.errors) {
+        if (err.name[1] === "Safety door is open! Close it.") {
+          safetyDoorStatus = true;
+        }
+      }
+    }
+    return {
+      runtime: runtime,
+      utilization: 5,
+      warning: warnings,
+      error: errors,
+      safety_door: safetyDoorStatus,
+      lock: false,
+    };
+  }
+
   return (
     <div className="flex flex-col flex-grow w-screen h-screen">
-      <RouterProvider router={router}></RouterProvider>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Header isLandingPage={true} />
+              <LandingPage state={state} setState={setState} />
+            </>
+          }
+        />
+        <Route
+          path="/simulator"
+          element={
+            <>
+              <Header isLandingPage={false} />
+              <div className="w-full text-2xl">
+                <StatusBar
+                  runtime={statuesBarValues.runtime}
+                  utilization={statuesBarValues.utilization}
+                  error={statuesBarValues.error}
+                  warning={statuesBarValues.warning}
+                  safety_door={statuesBarValues.safety_door}
+                  lock={statuesBarValues.lock}
+                />
+              </div>
+              {selectionBarValue === "program" && (
+                <SelectionBar
+                  whichPage={"program"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+              {selectionBarValue === "machine" && (
+                <SelectionBar
+                  whichPage={"machine"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+
+              <Outlet />
+            </>
+          }
+        >
+          <Route
+            path="/simulator/machine"
+            element={
+              <>
+                <MachineStatePage
+                  state={state}
+                  setState={setState}
+                  machine={machine}
+                />
+              </>
+            }
+          />
+          <Route
+            path="/simulator/programs"
+            element={
+              <>
+                <ChooseProgramPage state={state} setState={setState} />
+              </>
+            }
+          />
+          <Route
+            path="/simulator/program/current"
+            element={
+              <>
+                <ProgramStatePage
+                  state={state}
+                  setState={setState}
+                  program={program}
+                />
+              </>
+            }
+          />
+        </Route>
+      </Routes>
     </div>
   );
 }

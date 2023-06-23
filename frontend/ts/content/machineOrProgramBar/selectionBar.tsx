@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+const url = "/simulator";
 
-function SelectionBar(props: { whichPage: any }) {
+function SelectionBar(props: { whichPage: any; isProgramSelected: boolean }) {
   const [machineColor, setMachineColor] = useState<string>("");
   const [programColor, setProgramColor] = useState<string>("");
   const navigation = useNavigate();
 
   useEffect(() => {
+    console.log(props.whichPage);
     if (props.whichPage === "program") {
       setMachineColor("bg-unselectedbar-green");
       setProgramColor("bg-selectedbar-green");
@@ -17,14 +19,14 @@ function SelectionBar(props: { whichPage: any }) {
   }, []);
 
   const handleMachineClick = () => {
-    if (props.whichPage !== "machine") {
-      navigation("/machine");
-    }
+    navigation(`${url}/machine`);
   };
 
   const handleProgramClick = () => {
-    if (props.whichPage !== "program") {
-      navigation("/program/current");
+    if (props.isProgramSelected) {
+      navigation(`${url}/program/current`);
+    } else {
+      navigation(`${url}/programs`);
     }
   };
 
@@ -34,13 +36,13 @@ function SelectionBar(props: { whichPage: any }) {
         onClick={handleMachineClick}
         className={`w-1/2 border border-black border-t-0 font-medium text-xs ${machineColor} sm:text-base lg:text-xl xl:text-2xl`}
       >
-        Maschinenzustand
+        Machine State
       </button>
       <button
         onClick={handleProgramClick}
         className={`w-1/2 border border-black border-t-0 border-l-0 font-medium ${programColor} text-xs sm:text-base lg:text-xl xl:text-2xl`}
       >
-        Programmübersicht
+        Program Overview
       </button>
     </div>
   );

@@ -35,6 +35,16 @@ class DatabaseHandler:
         DatabaseHandler._CURSOR.execute(query, values)
         DatabaseHandler._CONNECTION.commit()
         DatabaseHandler._CURSOR.close()
+
+    @staticmethod
+    def delete(query: str, parameter: tuple = None) -> None:
+        DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
+        if parameter == None:
+            DatabaseHandler._CURSOR.execute(query)
+        else:
+            DatabaseHandler._CURSOR.execute(query, parameter)
+        DatabaseHandler._CONNECTION.commit()
+        DatabaseHandler._CURSOR.close()
     
     @staticmethod
     def selectMachineProgram(name: str) -> MachineProgram:
@@ -44,7 +54,6 @@ class DatabaseHandler:
     @staticmethod
     def selectAllMachinePrograms() -> list[MachineProgram]:
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program")
-        print(resultSet)
         allProgramslist: list[MachineProgram] = []
         for result in resultSet:
             allProgramslist.append(MachineProgram(*DatabaseObject(result).getResultRow()))
@@ -52,7 +61,6 @@ class DatabaseHandler:
     
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
-        print(id)
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
         return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
     
@@ -95,12 +103,13 @@ class DatabaseHandler:
     
     @staticmethod
     def selectMachineState(id: int) -> MachineState:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state WHERE machine_state_id = ?", (id,))
-        return MachineState(*DatabaseObject(resultSet[0]).getResultRow())
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state WHERE machine_state_id= ?", (id,))
+        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow()
+        return MachineState(*listOfParameters)
     
     @staticmethod
     def selectProgramState(id: int) -> ProgramState:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id = ?", (id,))
+        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id= ?", (id,))
         listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
         return ProgramState(*listOfParameters)
     
@@ -137,6 +146,16 @@ class DatabaseHandler:
         DatabaseHandler.save(query, values) 
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state ORDER BY program_state_id DESC LIMIT 1")
         return DatabaseObject(resultSet[0]).getResultRow()[0]
+    
+    @staticmethod
+    def deleteProgramState(id: int) -> None:
+        DatabaseHandler.delete("DELETE FROM program_state WHERE program_state_id = ?", (id,))
+    
+    @staticmethod
+    def deleteMachineStateById(id: int) -> None:
+        machineState: MachineState = DatabaseHandler.selectMachineState(id)
+        DatabaseHandler.delete("DELETE FROM machine_state WHERE machine_state_id = ?", (id,))
+        DatabaseHandler.deleteProgramState(machineState.getProgramState())
 
 
 

@@ -20,7 +20,7 @@ export function StatusBar(props: {
   let date = new Date();
   return (
     <header>
-      <div className="flex flex-row items-center justify-start w-full flex-nowrap">
+      <div className="flex flex-row items-center justify-start w-full flex-nowrap h-fit">
         <StatusStatus />
         <StatusPower />
         <StatusTime value={props.runtime} />

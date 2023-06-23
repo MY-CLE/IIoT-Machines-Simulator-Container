@@ -5,16 +5,16 @@ import {
   createSimulation,
   getSimultions,
   loadSimulation,
-  postSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
 
+const url = "/simulator";
 Modal.setAppElement("#root");
 const customStyles: Styles = {
   content: {
     position: "absolute",
-    width: "50%",
+    width: "35%",
     top: "50%",
     left: "50%",
     right: "auto",
@@ -37,21 +37,18 @@ function LandingPage(props: {
   >;
 }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [simulations, setSimulations] = useState<[Simulation]>([
-    { id: 0, last_edited: new Date(), description: "" },
-  ]);
+  const [simulations, setSimulations] = useState<[Simulation] | []>([]);
   const navigate = useNavigate();
 
   async function openModal() {
     console.log("open modal");
     let sims = await getSimultions();
-    console.log(sims.simulations);
 
-    if (sims.simulations) {
+    if (sims) {
       setSimulations(sims.simulations);
       setModalIsOpen(true);
     } else {
-      console.log("no simulations found");
+      setSimulations([]);
     }
   }
   function closeModal() {
@@ -60,38 +57,34 @@ function LandingPage(props: {
 
   async function startSimulation() {
     console.log("create simulation");
-    let simulation_id = await createSimulation();
-    console.log(simulation_id);
+    let response = await createSimulation();
+    console.log(response);
 
-    if (simulation_id.simulation_id) {
-      props.setState({
-        simulation_id: simulation_id.simulation_id,
-        program_id: 1,
-      });
-      navigate(`/machine`);
+    if (response) {
+      navigate(`${url}/machine/`);
     }
   }
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
       <div className="flex flex-row items-center justify-around flex-grow basis-2/5">
         <button
-          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue"
+          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={startSimulation}
         >
-          Simulation erzeugen
+          Create Simulation
         </button>
         <button
-          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue"
+          className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={openModal}
         >
-          Simulation laden
+          Load Simulation
         </button>
         <Modal
           isOpen={modalIsOpen}
           onRequestClose={closeModal}
           style={customStyles}
         >
-          <div className="flex flex-col flex-grow w-full h-full flex-nowrap">
+          <div className="flex flex-col items-center justify-center flex-grow w-full h-fit flex-nowrap">
             {simulations.map((item: Simulation) => {
               return (
                 <SimulationListElement
@@ -101,7 +94,12 @@ function LandingPage(props: {
                 />
               );
             })}
-            <button onClick={closeModal}>close</button>
+            <button
+              onClick={closeModal}
+              className="w-1/2 px-4 py-2 border-2 border-black rounded-md shadow-md bg-slate-200 hover:bg-slate-500"
+            >
+              close
+            </button>
           </div>
         </Modal>
       </div>
@@ -116,17 +114,13 @@ function SimulationListElement(props: any) {
   let sim = props.simulation;
   async function handleLoadSimulation() {
     const response = await loadSimulation(sim.id);
-    if (response.simulation_id) {
-      props.setState({
-        simulation_id: response.simulation_id,
-        program_id: 0,
-      });
-      navigate(`/machine`);
+    if (response) {
+      navigate(`${url}/machine`);
     }
   }
   return (
     <button
-      className="w-full p-2 m-2 border rounded-lg h-fit"
+      className="w-3/4 p-2 m-2 border-2 border-black rounded-lg h-fit"
       onClick={handleLoadSimulation}
     >
       <span>{sim.description} </span>

@@ -3,7 +3,7 @@ import json
 
 from database.handler.databaseHandler import DatabaseHandler
 
-class Warnings:
+class Notifications(object):
     def __init__(self) -> None:    
         self.errors = []
         self.warnings = []

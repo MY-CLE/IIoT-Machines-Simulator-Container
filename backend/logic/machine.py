@@ -84,7 +84,7 @@ class Machine():
         
     def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float, programAdditionalTime: int):
         self.isProgramRunning = isProgramRunning
-        self.additionalTime = programAdditionalTime
+        self.additionalTime += programAdditionalTime
         self.machineRuntime += programAdditionalTime
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)
@@ -97,7 +97,7 @@ class Machine():
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
 
-        self.machineStateId = machineState.getID()
+        self.machineStateId = machineState.getId()
         self.machineStateName = machineState.getName()
         self.lastEdited = machineState.getLastEdited()
 
@@ -136,12 +136,12 @@ class Machine():
             }
             
     def getMachineStateSnapshot(self) -> dict:
-        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime)},
-                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime)},
-                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel)},
-                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption)},
-                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule)},
-                {"id":"6", "description": "Total Items", "value": int(self.totalItems)}]
+        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime),"isAdminParameter": False},
+                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime),"isAdminParameter": False},
+                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel), "isAdminParameter": True},
+                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption), "isAdminParameter": False},
+                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule), "isAdminParameter": True},
+                {"id":"6", "description": "Total Items", "value": int(self.totalItems), "isAdminParameter": True}]
         
         errors = []
         for index, error in enumerate(self.activeErrors):
@@ -165,7 +165,7 @@ class Machine():
             "machineProtocolId": self.machineProtocolId,
             "lastEdited": self.lastEdited,
             "parameters": parameters,
-            "error_state": {
+            "errorState": {
                "errors": errors,
                "warnings": warnings,
                }
