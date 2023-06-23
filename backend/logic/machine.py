@@ -84,7 +84,7 @@ class Machine():
         
     def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float, programAdditionalTime: int):
         self.isProgramRunning = isProgramRunning
-        self.additionalTime = programAdditionalTime
+        self.additionalTime += programAdditionalTime
         self.machineRuntime += programAdditionalTime
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)

@@ -24,6 +24,8 @@ import { clear } from "console";
 function App() {
   const location = useLocation();
   const navigation = useNavigate();
+
+  const [selectionBarValue, setSelectionBarValue] = useState<String>("program");
   const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const [statuesBarValues, setStatuesBarValues] = useState({
     runtime: 0,
@@ -46,16 +48,18 @@ function App() {
   const [intervallId, setIntervallId] = useState<any>(0);
   useEffect(() => {
     clearInterval(intervallId);
-    console.log(location.pathname);
-    if (location.pathname === "/simulator/machine/") {
+    if (location.pathname === "/simulator/machine") {
+      setSelectionBarValue("machine");
       getMachineStatePageData();
       const id = setInterval(() => getMachineStatePageData(), 5000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/program/current") {
-      getCurrentPrograData();
-      const id = setInterval(() => getCurrentPrograData(), 5000);
+      setSelectionBarValue("program");
+      getCurrentProgramData();
+      const id = setInterval(() => getCurrentProgramData(), 5000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/programs") {
+      setSelectionBarValue("program");
       getProgramsPageData();
       const id = setInterval(() => getProgramsPageData(), 5000);
       setIntervallId(id);
@@ -67,19 +71,17 @@ function App() {
       state.simulation_id ? state.simulation_id : 0
     );
     let values: StatusBarValues = getStatusbarValues(machineState);
+    console.log(machineState);
     setMachine(machineState);
     setStatuesBarValues(values);
   }
 
-  async function getCurrentPrograData() {
+  async function getCurrentProgramData() {
     let machineState = await getMachine(
       state.simulation_id ? state.simulation_id : 0
     );
     //setTimeout(() => {}, 500);
     let program = await getProgram(state.simulation_id | 0);
-    if (program.description === "") {
-      navigation(`simulator/programs`);
-    }
     if (program.parameters) {
       setProgram(program);
     }
@@ -149,6 +151,19 @@ function App() {
                   lock={statuesBarValues.lock}
                 />
               </div>
+              {selectionBarValue === "program" && (
+                <SelectionBar
+                  whichPage={"program"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+              {selectionBarValue === "machine" && (
+                <SelectionBar
+                  whichPage={"machine"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+
               <Outlet />
             </>
           }
@@ -157,7 +172,6 @@ function App() {
             path="/simulator/machine"
             element={
               <>
-                <SelectionBar whichPage="machine" />
                 <MachineStatePage
                   state={state}
                   setState={setState}
@@ -170,7 +184,6 @@ function App() {
             path="/simulator/programs"
             element={
               <>
-                <SelectionBar whichPage="program" />
                 <ChooseProgramPage state={state} setState={setState} />
               </>
             }
@@ -179,7 +192,6 @@ function App() {
             path="/simulator/program/current"
             element={
               <>
-                <SelectionBar whichPage="program" />
                 <ProgramStatePage
                   state={state}
                   setState={setState}

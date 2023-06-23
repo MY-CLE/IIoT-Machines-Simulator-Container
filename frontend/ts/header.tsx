@@ -97,8 +97,8 @@ export function Header(props: { isLandingPage: boolean }) {
                 Leaving Simulation
               </h1>
               <p className="mb-3">
-                You are about to leave the current simulation. This simulation
-                will be destoryed if you haven't saved ist.
+                You are about to leave the current Simulation. This Simulation
+                will be lost if you haven't saved it.
               </p>
               <div className="flex justify-between">
                 <button
@@ -131,13 +131,13 @@ export function Header(props: { isLandingPage: boolean }) {
               <h1 className="mb-3 text-2xl font-semibold">Save Simulation</h1>
               <form onSubmit={handleSaveSubmit}>
                 <label className="block" htmlFor="Simname">
-                  <span className="text-gray-700">Name for Simulation</span>
+                  <span className="text-gray-700">Name of Simulation</span>
                 </label>
                 <input
                   id="Simname"
                   type="text"
                   name="Simname"
-                  placeholder="e.q. Simulation 1"
+                  placeholder="e.g. Simulation 1"
                   className="w-full px-2 py-1 mb-2 border-2 border-gray-400 rounded-lg"
                 />
                 <div className="flex justify-between">
@@ -213,7 +213,7 @@ export function Header(props: { isLandingPage: boolean }) {
                     Close
                   </button>
                   <button className="px-4 py-2 mt-4 ml-1 border-2 border-black rounded-md">
-                    Anwenden
+                    Apply
                   </button>
                 </div>
               </form>

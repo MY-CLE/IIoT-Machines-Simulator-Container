@@ -53,7 +53,6 @@ function MachineStatePage(props: {
     (async () => {
       // when the page is loaded the first time, the errors are fetched
       let newErrors = await getErrors(props.state.simulation_id | 0);
-      console.log("new Errors getting fetched");
       if (newErrors.errors && newErrors.warnings) {
         setErrors(newErrors);
       }
@@ -89,15 +88,6 @@ function MachineStatePage(props: {
 
   function openListPopup() {
     setListPopup(true);
-  }
-
-  function navigateToProgram() {
-    console.log(props.state.program_id);
-    if (props.state.program_id === -1) {
-      navigation(`${url}/programs`);
-    } else {
-      navigation(`${url}/program/current`);
-    }
   }
 
   return (
@@ -232,7 +222,9 @@ function MachineStatePage(props: {
                   style={customStyles}
                 >
                   <h1 className="w-full font-bold">Authentification</h1>
-                  <span className="w-full">Please enter the root password</span>
+                  <span className="w-full">
+                    Please enter the admin password
+                  </span>
                   <input
                     placeholder=""
                     id="inputPassword"

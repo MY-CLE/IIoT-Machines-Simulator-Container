@@ -67,7 +67,7 @@ function ChooseProgramPage(props: {
         {" "}
         {/*bg-program-choose-grey*/}
         <div className="w-full h-auto p-4 text-2xl text-center text-black sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl">
-          Programm Auswahl
+          Program Selection
         </div>
         <div className="flex items-center justify-center flex-grow ">
           <div className="flex flex-row flex-wrap items-center justify-between w-full h-full mb-4p ">
