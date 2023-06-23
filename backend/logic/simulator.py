@@ -5,7 +5,7 @@ from datetime import datetime
 
 from logic.machine import Machine
 from logic.program import Program
-from logic.notifications import Warnings
+from logic.notifications import Notifications
 from database.handler.databaseHandler import DatabaseHandler
 
 from opcuaIRF.opcuaServer import OPCUAServer
@@ -25,7 +25,7 @@ class Simulator:
         self.privilegeState: bool = False
         self.simulatedProgram: Program = Program()
         self.simulatedMachine: Machine = Machine()	
-        self.warnings: Warnings = Warnings()
+        self.notification: Notifications = Notifications()
         
         self.opcuaServerThread = None
         self.modbusServerThread = None
@@ -143,7 +143,7 @@ class Simulator:
         self.simulatedProgram.resetProgram()
 
     def updateSimulation(self, time: datetime) -> None:        
-        self.simulatedMachine.updateMachineErrors(self.warnings.getErrors(), self.warnings.getWarnings())
+        self.simulatedMachine.updateMachineErrors(self.notification.getErrors(), self.notification.getWarnings())
         self.checkErrors()
         self.checkWarnings()
         if(self.protocol == "Modbus/TCP"):
@@ -239,16 +239,31 @@ class Simulator:
         return DatabaseHandler.selectAllMachinePrograms()
     
     #here is TotalItemsProduced implemeted instead CurrentAmount
-    def saveSimulation(self, simName: str ):
+    def saveSimulation(self, simName: str) -> None:
         stateId = DatabaseHandler.storeProgramState(self.simulatedProgram.getAsProgramState())
         protocol = DatabaseHandler.selectProtocolByName(self.protocol)
         self.simulatedMachine.prepareForDB(datetime.now(), simName, protocol.getProtocolID(), stateId)
         DatabaseHandler.storeMachineState(self.simulatedMachine.getAsMachineState())
         
-    def loadSimulation(self, simulation_id):
-        machineState = DatabaseHandler.selectMachineState(simulation_id)
+    def loadSimulation(self, simulationId) -> None:
+        machineState = DatabaseHandler.selectMachineState(simulationId)
         programState = DatabaseHandler.selectProgramState(machineState.getProgramState())
         self.protocol = DatabaseHandler.selectProtocolById(machineState.getMachineProtocol()).getProtocolDescription()
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
         self.loadMachine()
+
+    def loadSimulationById(self, simulationId) -> dict:
+        machineState = DatabaseHandler.selectMachineState(simulationId)
+        programState = DatabaseHandler.selectProgramState(machineState.getProgramState())
+
+        return {
+            "simulation":{
+                "id": machineState.getId(),
+                "machineState": machineState.getJson(),
+                "programState": programState.getJson(),
+                },
+            }
+    
+    def deleteSimulationById(self, simulationId) -> None:
+        DatabaseHandler.deleteMachineStateById(simulationId)

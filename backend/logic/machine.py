@@ -97,7 +97,7 @@ class Machine():
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
 
-        self.machineStateId = machineState.getID()
+        self.machineStateId = machineState.getId()
         self.machineStateName = machineState.getName()
         self.lastEdited = machineState.getLastEdited()
 
@@ -165,7 +165,7 @@ class Machine():
             "machineProtocolId": self.machineProtocolId,
             "lastEdited": self.lastEdited,
             "parameters": parameters,
-            "error_state": {
+            "errorState": {
                "errors": errors,
                "warnings": warnings,
                }
