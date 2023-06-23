@@ -4,7 +4,6 @@ import { Error } from "../../interfaces";
 import { sendError, sendWarning } from "../../api-service";
 
 interface sendErrorProps {
-  simulationID: number;
   name: string;
   messages: Array<Error>;
   color: string;
@@ -13,22 +12,26 @@ interface sendErrorProps {
 function SendError(props: sendErrorProps) {
   const [selectedID, setSelectedID] = useState<number | null>(null);
 
-  const handleSendError = () => {
+  const handleSendError = async () => {
     if (selectedID === null) {
       console.log(`No ${props.name} selected`);
       return;
     }
     console.log(props.name);
     if (props.name === "Error") {
-      sendError(props.simulationID, selectedID)
-        .then((response) => {
-          console.log(`${props.name} ${selectedID} sent successfully`);
-        })
-        .catch((error) => {
-          console.log(`Error sending ${props.name} ${selectedID}`, error);
-        });
+      let res = sendError(selectedID);
+      if (res != null) {
+        console.log(`${props.name} ${selectedID} sent successfully`);
+      } else {
+        console.log(`Error sending ${props.name} ${selectedID}`);
+      }
     } else {
-      sendWarning(props.simulationID, selectedID);
+      let res = sendWarning(selectedID);
+      if (res != null) {
+        console.log(`${props.name} ${selectedID} sent successfully`);
+      } else {
+        console.log(`Error sending ${props.name} ${selectedID}`);
+      }
     }
   };
 

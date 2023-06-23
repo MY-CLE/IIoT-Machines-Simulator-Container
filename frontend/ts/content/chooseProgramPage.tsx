@@ -21,35 +21,24 @@ function ChooseProgramPage(props: {
   const [programs, setPrograms] = useState<Array<Program>>([
     { description: "", parameters: null, id: null },
   ]);
-  const [statusBarValues, setStatusBarValues] = useState({
-    runtime: 0,
-    utilization: 0,
-    error: 0,
-    warning: 0,
-    safety_door: false,
-    lock: false,
-  });
 
   useEffect(() => {
     (async () => {
-      let progs = await getPrograms(props.state.simulation_id | 0).then(
-        (programs) => {
-          return programs.programs;
-        }
-      );
-      setPrograms(progs);
+      let progs: { programs: Array<Program> } | null = null;
+      let progsRes = await getPrograms();
+      if (progsRes) {
+        progs = (await progsRes.json()) as { programs: Array<Program> };
+      }
+      console.log(progs);
+      if (!progs) return;
+      setPrograms(progs.programs);
     })();
   }, []);
 
-  function navigateToMachineStatePage() {
-    navigation(`${url}/machine`);
-  }
-
   async function navigateToProgramStatePage(id: number) {
     console.log(id);
-    const response = await setCurrentProgram(props.state.simulation_id, id);
-    if (response !== 200) {
-      alert("Programm konnte nicht gesetzt werden");
+    const response = await setCurrentProgram(id);
+    if (!response) {
       return;
     } else {
       props.setState({

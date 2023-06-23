@@ -66,6 +66,9 @@ export function Header(props: { isLandingPage: boolean }) {
     console.log("save simulation");
     const response = await saveSimulation(saveName as string);
     console.log(response);
+    if (!response) {
+      return;
+    }
     handleCloseSaveSimulationModal();
   }
 
