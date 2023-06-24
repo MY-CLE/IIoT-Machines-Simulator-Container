@@ -48,8 +48,8 @@ def simulation(simulationId):
             return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
     
     elif request.method == 'DELETE':
-        if DatabaseHandler.selectMachineState(simulationId):
-            simulator.deleteSimulationById(simulationId) #delete a selected sim
+        if DatabaseHandler.selectMachineState(simulationId) != None: #delete a selected sim
+            simulator.deleteSimulationById(simulationId)
             return make_response(f"Simulation '{simulationId}' was deleted successfully", 200)
         else:
             return make_response(f"Simulation '{simulationId}' does not exist", 400)
