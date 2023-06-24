@@ -3,9 +3,7 @@ from datetime import datetime
 
 class MachineState(object):
 
-    
-    from datetime import datetime
-    
+
     def __init__(self, machineStateID: int, lastEdited: datetime, machineProtocol: int, machineStateName: str, errorState: int, warningState: int, programState: int, 
                  machineStartTime: datetime, machineStopTime: datetime, machineDownTime: int, machineRunTime: int, totalItems: int, energyConsumptionWatt: int, capacityLasermodule: int, coolantLevel: int) -> None:
         self.machineStateID: int = machineStateID
@@ -23,6 +21,7 @@ class MachineState(object):
         self.energyConsumptionWatt: int = energyConsumptionWatt
         self.capacityLasermodule: int = capacityLasermodule
         self.coolantLevel: int = coolantLevel
+    
 
     def getID(self) -> int:
         return self.machineStateID
@@ -102,5 +101,21 @@ class MachineState(object):
             "capacityLaserModule": self.capacityLasermodule,
             "coolantLevelMl": self.coolantLevel
         }
+    
+    def __eq__(self, other):
+        if other != None:
+            return (
+                self.machineStateID == other.machineStateID
+                and self.machineProtocol == other.machineProtocol
+                and self.machineStateName == other.machineStateName
+                and self.errorState == other.errorState
+                and self.warningState == other.warningState
+                and self.programState == other.programState
+                and self.totalItems == other.totalItems
+                and self.energyConsumptionWatt == other.energyConsumptionWatt
+                and self.capacityLasermodule == other.capacityLasermodule
+                and self.coolantLevel == other.coolantLevel
+            )
+        return False
 
         

@@ -21,10 +21,13 @@ class DatabaseHandler:
     
     
     @staticmethod
-    def select(query: str, parameter: str = None) -> list[DatabaseObject]:
+    def select(query: str, parameter: tuple = None) -> list[DatabaseObject]:
         DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
         if parameter == None:
             DatabaseHandler._CURSOR.execute(query)
+        elif type(parameter[0]) == str:
+            form = f"{parameter[0]}"
+            DatabaseHandler._CURSOR.execute(query, (form,))
         else:
             DatabaseHandler._CURSOR.execute(query, parameter)
         resultSet: list[DatabaseObject] = DatabaseHandler._CURSOR.fetchall()
@@ -55,7 +58,8 @@ class DatabaseHandler:
     def selectMachineProgram(name: str) -> MachineProgram:
        try:
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
-        return MachineProgram(DatabaseObject(resultSet[0]))
+        print(resultSet)
+        return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
        except EmptySetException as e:
            return None
    
@@ -77,21 +81,21 @@ class DatabaseHandler:
     
     #get all possible warning messages within the Database
     @staticmethod
-    def selectWarningMessages() -> list[str]:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM warning")
+    def selectWarningMessages() -> list[Warning]:
+        resultSet: list[Warning] = DatabaseHandler.select(f"SELECT * FROM warning")
         warningMessages: list[str] = []
         for result in resultSet:
             warning: Warning = Warning(DatabaseObject(result))
-            warningMessages.append(warning.getType())
+            warningMessages.append(warning)
         return warningMessages
     
     @staticmethod
-    def selectErrorMessages() -> list[str]:
+    def selectErrorMessages() -> list[Error]:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM error")
         errorMessages: list[str] = []
         for result in resultSet:
             error: Error = Error(DatabaseObject(result))
-            errorMessages.append(error.getType())
+            errorMessages.append(error)
         return errorMessages
     
     @staticmethod
@@ -142,7 +146,7 @@ class DatabaseHandler:
     @staticmethod
     def selectProtocolByName(description: str) -> Protocol:
         try:
-            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ? ", (description,))
             listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
             return Protocol(*listOfParameters)
         except EmptySetException as e:
@@ -172,7 +176,9 @@ class DatabaseHandler:
     
     @staticmethod
     def deleteProgramState(id: int) -> None:
-        DatabaseHandler.delete("DELETE FROM program_state WHERE program_state_id = ?", (id,))
+        programState: ProgramState = DatabaseHandler.selectProgramState(id)
+        if(programState != None):
+            DatabaseHandler.delete("DELETE FROM program_state WHERE program_state_id = ?", (id,))
     
     @staticmethod
     def deleteMachineStateById(id: int) -> None:

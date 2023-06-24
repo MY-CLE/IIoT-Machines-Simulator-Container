@@ -27,12 +27,12 @@ class Warnings:
     #in correct id order
     def initPossibleErrors(self):
         for errorMessage in DatabaseHandler.selectErrorMessages():
-            self.possibleErrors.append(errorMessage)
+            self.possibleErrors.append(errorMessage.getType())
         
     #in correct id order
     def initPossibleWarnings(self):
         for warningMessage in DatabaseHandler.selectWarningMessages():
-            self.possibleWarnings.append(warningMessage)  
+            self.possibleWarnings.append(warningMessage.getType())  
     
     def coolantLvlWarning(self):
         warningMessage = self.possibleWarnings[0]
