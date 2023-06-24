@@ -8,9 +8,13 @@ logging.getLogger("opcua").setLevel(logging.WARNING)
 
 # Get the IP Address of the machine
 def getIPAddress():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
+        
 
 # OPC-UA Client
 # Client reads and writes the parameters from the server

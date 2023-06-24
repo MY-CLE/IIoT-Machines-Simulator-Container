@@ -45,23 +45,25 @@ class Simulator:
 
         self.protocol = protocol
 
-        if (self.protocol == "Modbus/TCP" or self.protocol == "None") and self.opcuaServerThread != None:
-            self.opcuaServerThread.join(timeout=1)
-            self.opcuaServerThread = None
-            logging.info("OPCUA Server stopped")
-
-        if (self.protocol == "OPCUA" or self.protocol == "None") and self.modbusServerThread != None:
+        if self.protocol != "Modbus/TCP" and self.modbusServerThread != None:
             self.modbusServerThread.join(timeout=1)
             self.modbusServerThread = None
             logging.info("Modbus/TCP Server stopped")
 
+        if self.protocol != "OPCUA" and self.opcuaServerThread != None:
+            self.opcuaServerThread.join(timeout=1)
+            self.opcuaServerThread = None
+            logging.info("OPCUA Server stopped")
+
         if self.protocol == "OPCUA":
             self.opcuaServerThread = threading.Thread(
                 target=self.startOPCUAServer)
+            self.opcuaServerThread.daemon = True
             self.opcuaServerThread.start()
         elif self.protocol == "Modbus/TCP":
             self.modbusServerThread = threading.Thread(
                 target=self.startModbusServer)
+            self.modbusServerThread.daemon = True
             self.modbusServerThread.start()
 
     def updateProgramParameters(self, data):
@@ -134,13 +136,11 @@ class Simulator:
     def startOPCUAServer(self):
         self.ouaServer = OPCUAServer()
         self.ouaServer.startServer()
-        logging.info("Server started")
 
     def startModbusServer(self):
         self.modbusServer = ModbusTCPServer()
         self.modbusServer.startServer()
         self.modbusServer.logServerChanges(0, 10)
-        logging.info("Server started")
 
     # function to reset Simulator to default metrics, times and simulatorState
     def resetSimulator(self):
@@ -273,6 +273,7 @@ class Simulator:
 
     # here is TotalItemsProduced implemeted instead CurrentAmount
     def saveSimulation(self, simName: str) -> None:
+        #raise Exception(self.protocol)
         stateId = DatabaseHandler.storeProgramState(
             self.simulatedProgram.getAsProgramState())
         protocol = DatabaseHandler.selectProtocolByName(self.protocol)

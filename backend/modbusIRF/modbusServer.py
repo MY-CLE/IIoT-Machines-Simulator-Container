@@ -8,9 +8,12 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 
 # Get the IP Address of the machine
 def getIPAddress():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 # Modbus TCP Server
 # Slave (Server) receives data from Master (Client) and can either send data back or change its own data

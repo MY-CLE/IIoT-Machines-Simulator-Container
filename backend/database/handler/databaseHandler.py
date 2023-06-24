@@ -20,10 +20,13 @@ class DatabaseHandler:
     
     
     @staticmethod
-    def select(query: str, parameter: str = None) -> list[DatabaseObject]:
+    def select(query: str, parameter: tuple = None) -> list[DatabaseObject]:
         DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
         if parameter == None:
             DatabaseHandler._CURSOR.execute(query)
+        elif type(parameter[0]) == str:
+            form = f"{parameter[0]}"
+            DatabaseHandler._CURSOR.execute(query, (form,))
         else:
             DatabaseHandler._CURSOR.execute(query, parameter)
         resultSet: list[DatabaseObject] = DatabaseHandler._CURSOR.fetchall()
