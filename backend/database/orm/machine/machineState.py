@@ -23,7 +23,7 @@ class MachineState(object):
         self.coolantLevel: int = coolantLevel
     
 
-    def getID(self) -> int:
+    def getId(self) -> int:
         return self.machineStateID
     
     def getLastEdited(self) -> datetime:

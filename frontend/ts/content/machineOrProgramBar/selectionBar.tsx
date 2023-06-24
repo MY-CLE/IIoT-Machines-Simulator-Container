@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 const url = "/simulator";
 
-function SelectionBar(props: { whichPage: any }) {
+function SelectionBar(props: { whichPage: any; isProgramSelected: boolean }) {
   const [machineColor, setMachineColor] = useState<string>("");
   const [programColor, setProgramColor] = useState<string>("");
   const navigation = useNavigate();
 
   useEffect(() => {
+    console.log(props.whichPage);
     if (props.whichPage === "program") {
       setMachineColor("bg-unselectedbar-green");
       setProgramColor("bg-selectedbar-green");
@@ -18,14 +19,14 @@ function SelectionBar(props: { whichPage: any }) {
   }, []);
 
   const handleMachineClick = () => {
-    if (props.whichPage !== "machine") {
-      navigation(`${url}/machine`);
-    }
+    navigation(`${url}/machine`);
   };
 
   const handleProgramClick = () => {
-    if (props.whichPage !== "program") {
+    if (props.isProgramSelected) {
       navigation(`${url}/program/current`);
+    } else {
+      navigation(`${url}/programs`);
     }
   };
 

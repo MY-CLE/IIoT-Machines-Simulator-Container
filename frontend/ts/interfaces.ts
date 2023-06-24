@@ -8,7 +8,7 @@ export interface Simulation {
 
 export interface Machine {
   parameters: Array<Parameter>;
-  error_state: Errors;
+  errorState: Errors;
 }
 
 export interface Program {

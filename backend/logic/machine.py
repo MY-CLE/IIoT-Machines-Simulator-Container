@@ -52,10 +52,12 @@ class Machine():
     
     def calculateIdleTime(self, nowTime: datetime) -> None:
         self.lastUpdate = nowTime
-        if self.isProgramRunning == True:
+        if self.isProgramRunning:
             self.machineIdleTime = 0
         else:
-            self.machineIdleTime = self.machineIdleTime + (nowTime - self.getMachineStopTime()).total_seconds()
+            machineStopTime = self.getMachineStopTime()
+            if machineStopTime is not None:
+                self.machineIdleTime += (nowTime - machineStopTime).total_seconds()
             self.setMachineStopTime(nowTime)
 
     def startMachine(self, startTime: datetime) -> None:
@@ -84,7 +86,7 @@ class Machine():
         
     def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float, programAdditionalTime: int):
         self.isProgramRunning = isProgramRunning
-        self.additionalTime = programAdditionalTime
+        self.additionalTime += programAdditionalTime
         self.machineRuntime += programAdditionalTime
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)
@@ -97,7 +99,7 @@ class Machine():
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
 
-        self.machineStateId = machineState.getID()
+        self.machineStateId = machineState.getId()
         self.machineStateName = machineState.getName()
         self.lastEdited = machineState.getLastEdited()
 
@@ -165,7 +167,7 @@ class Machine():
             "machineProtocolId": self.machineProtocolId,
             "lastEdited": self.lastEdited,
             "parameters": parameters,
-            "error_state": {
+            "errorState": {
                "errors": errors,
                "warnings": warnings,
                }

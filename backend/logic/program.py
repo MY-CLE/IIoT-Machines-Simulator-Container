@@ -164,7 +164,10 @@ class Program:
     
     def resetProgram(self) -> None:
         self.isProgramRunning = False
-        self.loadMachineProgram()
+        if self.machineProgram is not None:
+            self.loadMachineProgram()
+        else:
+            self.startProgram(0)
         
     def resetToDefaultState(self) -> None:
          #Active Changing Parameters
@@ -232,7 +235,7 @@ class Program:
             data["parameters"].append(parameter)
         return data
         
-    def getDict(self) -> dict:
+    def toDict(self) -> dict:
         return {
             "programCurrentAmount":self.programCurrentAmount,
             "programRuntime":self.programRuntime,

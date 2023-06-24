@@ -132,7 +132,6 @@ class DatabaseHandler:
             return ProgramState(*listOfParameters)
         except EmptySetException as e:
             return None
-
     
     @staticmethod
     def selectProtocolById(id: int) -> Protocol:
