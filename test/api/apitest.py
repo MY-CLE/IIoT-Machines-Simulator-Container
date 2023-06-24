@@ -25,14 +25,20 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.text, "Simulation saved successfully")
 
     def test_putSimulation(self):
+        # Create Simulation
+        response = self.client.put('/api/simulations/0')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.text, "Simulation created successfully")
+        # Load Simulation
         response = self.client.put('/api/simulations/1')
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, simulator.loadSimulationById(1))
 
     def test_deleteSimulation(self):
         # Delete valid simulation id
-        response = self.client.delete('/api/simulations/6')
+        response = self.client.delete('/api/simulations/4')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Simulation '6' was deleted successfully")
+        self.assertEqual(response.text, "Simulation '4' was deleted successfully")
 
         # Delete invalid simulation id
         response = self.client.delete('/api/simulations/100')

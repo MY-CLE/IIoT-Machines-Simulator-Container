@@ -40,8 +40,12 @@ def simulations():
 @app.route('/api/simulations/<int:simulationId>', methods=['PUT', 'DELETE'])
 def simulation(simulationId):
     if request.method == 'PUT':
-        simulator.loadSimulation(simulationId) #load a selected sim
-        return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
+        if simulationId == 0:
+            simulator.startMachine()
+            return make_response("Simulation created successfully", 201)
+        else:
+            simulator.loadSimulation(simulationId) #load a selected sim
+            return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
     
     elif request.method == 'DELETE':
         if DatabaseHandler.selectMachineState(simulationId):
