@@ -33,4 +33,6 @@ dbObj = DatabaseObject(result[0])
 admin = Admin(dbObj)
 print(admin)    
 
-DatabaseHandler.deleteMachineStateById(1)
+result: list[DatabaseObject] = DatabaseHandler.selectProtocolByName("OPCUA")
+
+print(result[0])

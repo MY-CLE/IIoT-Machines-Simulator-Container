@@ -35,3 +35,14 @@ class ProgramState(object):
             "currentAmount": self.currentAmount,
             "runtime": self.runtime
         }
+    
+    def __eq__(self, other):
+        if other != None:
+            return (
+                self.stateID == other.stateID
+                and self.ID == other.ID
+                and self.targetAmount == other.targetAmount
+                and self.currentAmount == other.currentAmount
+                and self.runtime == other.runtime
+            )
+        return False
