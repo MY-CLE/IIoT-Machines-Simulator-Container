@@ -1,5 +1,7 @@
+import os
 import sys
 import json
+import sqlite3
 import unittest
 sys.path.append("..")
 from backend.database.handler.databaseHandler import DatabaseHandler
@@ -11,7 +13,38 @@ class TestApi(unittest.TestCase):
 
     app.testing = True
     client = app.test_client()
-    app.after_request
+    DB_PATH = "../backend/database/machine-sim.db"
+
+    @classmethod
+    def setUpClass(cls):
+        if os.path.exists(cls.DB_PATH):
+            with open(cls.DB_PATH, 'w') as file:
+                file.truncate()
+        cls.create_and_populate_table()
+
+    @classmethod
+    def tearDownClass(cls):
+        with open(cls.DB_PATH, 'w') as file:
+            file.truncate()
+        cls.create_and_populate_table()
+
+    @staticmethod
+    def create_and_populate_table():
+        conn = sqlite3.connect(TestApi.DB_PATH, check_same_thread=False)
+        cursor = conn.cursor()
+
+        with open("../backend/database/create_tables.sql", "r") as create_file:
+            create_script = create_file.read()
+            cursor.executescript(create_script)
+            conn.commit()
+
+        with open("../backend/database/populate_tables.sql", "r") as populate_file:
+            populate_script = populate_file.read()
+            cursor.executescript(populate_script)
+
+        conn.commit()
+        cursor.close()
+        conn.close()
 
     def test_getSimulations(self):
         response = self.client.get('/api/simulations')
@@ -36,9 +69,9 @@ class TestApi(unittest.TestCase):
 
     def test_deleteSimulation(self):
         # Delete valid simulation id
-        response = self.client.delete('/api/simulations/4')
+        response = self.client.delete('/api/simulations/3')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Simulation '4' was deleted successfully")
+        self.assertEqual(response.text, "Simulation '3' was deleted successfully")
 
         # Delete invalid simulation id
         response = self.client.delete('/api/simulations/100')
