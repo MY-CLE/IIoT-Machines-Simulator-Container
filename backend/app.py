@@ -87,15 +87,15 @@ def error():
         error_id = request.form['error_id']
         warning_id = request.form['warning_id']
 
-        if error_id is None and warning_id is None:
+        if error_id == '' and warning_id == '':
             return make_response('No Error Id or Warning Id provided', 400)
-        if error_id:
+        if error_id and warning_id == '':
             simulator.notification.setSelectedError(error_id)
             simulator.stopProgram()
             return make_response('Error was successfully set', 200)
-        elif warning_id:
+        elif warning_id and error_id == '':
             simulator.notification.setSelectedWarning(warning_id)
-            return make_response('Warnings was successfully set', 200)
+            return make_response('Warning was successfully set', 200)
 
     elif request.method == 'PATCH':
         simulator.notification.errors = []

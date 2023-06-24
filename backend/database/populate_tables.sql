@@ -4,10 +4,9 @@ VALUES ('admin123');
 
 -- Populating machine_state table
 INSERT INTO machine_state (last_edited, machine_protocol, machine_state_name, error_state, warning_state, program_state, machine_start_time, machine_stop_time, machine_down_time, machine_runtime, total_items, energy_consumption_watt, capacity_lasermodule, coolant_level)
-VALUES 
-	('2023-06-15 09:00:00', 1, 'State 1', 2, 3, 1, '2023-06-15 08:30:00', '2023-06-15 10:30:00', 60, 7200, 100, 5000, 200, 80),
-	('2023-06-15 10:30:00', 2, 'State 2', 3, 4, 5, '2023-06-15 10:00:00', '2023-06-15 12:00:00', 120, 10800, 150, 6000, 250, 70),
-	('2023-06-15 12:30:00', 3, 'State 3', 4, 5, 6, '2023-06-15 12:00:00', '2023-06-15 14:00:00', 90, 14400, 200, 7000, 300, 60);
+VALUES ('2023-06-15 09:00:00.000000', 1, 'State 1', 2, 3, 1, '2023-06-15 08:30:00.000000', '2023-06-15 10:30:00.000000', 60, 7200, 100, 5000, 200, 80),
+	('2023-06-15 10:30:00.000000', 2, 'State 2', 3, 4, 5, '2023-06-15 10:00:00.000000', '2023-06-15 12:00:00.000000', 120, 10800, 150, 6000, 250, 70),
+	('2023-06-15 12:30:00.000000', 3, 'State 3', 4, 5, 6, '2023-06-15 12:00:00.000000', '2023-06-15 14:00:00.000000', 90, 14400, 200, 7000, 300, 60);
 
 
 -- Populating machine_program table
