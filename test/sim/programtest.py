@@ -17,14 +17,17 @@ class TestProgram(unittest.TestCase):
         programState: ProgramState = ProgramState(stateId=1, id=1, targetAmount=1, currentAmount=0, runtime=0)
         machineProgram: MachineProgram = MachineProgram(ID=1, description="Test", laserModuleWeardown=1, coolantConsumptionMl=1, powerConsumptionLaserModule=1, timePerItem=1)
 
-        with patch.object(DatabaseHandler, 'selectMachineProgramById', return_value=machineProgram) as mock_select:
+        #mock object to check if loadMachineProgram gets called
+        with patch.object(Program, 'loadMachineProgram', return_value=None) as mock_load:
             self.program.loadProgramState(programState)
 
             self.assertEqual(self.program.programId, programState.getID())
             self.assertEqual(self.program.programTargetAmount, programState.getTargetAmount())
             self.assertEqual(self.program.programCurrentAmount, programState.getCurrentAmount())
             self.assertEqual(self.program.programRuntime, programState.getRuntime())
-            self.assertEqual(self.program.lastUpdate, None)
+            self.assertIsNone(self.program.lastUpdate)
+
+            mock_load.assert_called_once()
 
 
     def test_LoadMachineStateProgram(self) -> None:
@@ -44,7 +47,6 @@ class TestProgram(unittest.TestCase):
         self.assertEqual(self.program.programLaserModulePowerConsumption, machineProgram.getLaserModulePowerConsumption())
         self.assertEqual(self.program.programTimePerItem, machineProgram.getTimePerItem()) 
 
-        #pass
 
     def test_UpdateProgram(self) -> None:
         newTime: datetime = datetime.now()
@@ -146,6 +148,7 @@ class TestProgram(unittest.TestCase):
     def test_SetMachineProgram(self) -> None:
         machineProgram: MachineProgram = MachineProgram(ID=1, description="Test", laserModuleWeardown=1, coolantConsumptionMl=1, powerConsumptionLaserModule=1, timePerItem=1)
 
+        #mock object for setMachineProgram so we can make sure it only gets called once
         with patch.object(self.program, 'setMachineProgram') as mock_load:
             self.program.setMachineProgram(machineProgram)
 

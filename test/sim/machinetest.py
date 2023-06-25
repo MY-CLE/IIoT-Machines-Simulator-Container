@@ -72,7 +72,6 @@ class TestMachine(unittest.TestCase):
 
         # Use assertLogs as a context manager to capture logging output at the INFO level
         with self.assertLogs(level=logging.INFO) as cm:
-            # Call the method to update machine errors and warnings
             self.machine.updateMachineErrors(newErrors, newWarnings)
 
             # Check if the machine's active errors and warnings have been updated correctly
@@ -85,7 +84,7 @@ class TestMachine(unittest.TestCase):
                 "INFO:root:Warnings: " + str(newWarnings)
             ]
 
-            # Check if the captured logging output matches the expected value
+            # Check if the output matches the expected value
             self.assertEqual(cm.output, expectedLogging)
 
     def test_UpdateMachine(self) -> None:
@@ -93,14 +92,14 @@ class TestMachine(unittest.TestCase):
         powerConsumptionPerS: int = 2
         coolantConsumptionPerS: int = 2
         newItems: int = 2
-        isProgramRunning: bool = False
+        isProgramRunning: bool = True
         laserModuleWeardown: float = 0.01
         programAdditionalTime = 2
 
         self.machine.startMachine(nowTime)
         machineRuntime = self.machine.updateMachine(nowTime, powerConsumptionPerS, coolantConsumptionPerS, newItems, isProgramRunning, laserModuleWeardown, programAdditionalTime)
         
-        self.assertEqual(self.machine.isProgramRunning, isProgramRunning)
+        self.assertTrue(self.machine.isProgramRunning)
         self.assertEqual(self.machine.additionalTime, 0) #has to be null because calculateTimes sets addtionalTime to 0 when called in this case
         self.assertEqual(self.machine.machineRuntime, programAdditionalTime)
         self.assertEqual(self.machine.totalItems, newItems)
@@ -134,34 +133,82 @@ class TestMachine(unittest.TestCase):
         self.assertEqual(self.machine.capacityLaserModule, machineState.getCapacityLaserModule())
 
     def test_ToDict(self) -> None:
-        """ self.machine.machineStateId = 1
+        self.machine.machineStateId = 1
         self.machine.machineStateName = "Test Machine"
+        self.machine.machineProtocolId = 1
+        self.machine.lastEdited = "2023-06-25 12:00:00"
+        self.machine.errorStateId = 2
+        self.machine.warningStateId = 3
+        self.machine.programStateId = 4
+        self.machine.machineStartTime = "2023-06-25 10:00:00"
+        self.machine.machineStopTime = "2023-06-25 11:00:00"
+        self.machine.machineIdleTime = 3600
+        self.machine.machineRuntime = 3600
+        self.machine.totalItems = 10
+        self.machine.totalEnergyConsumption = 50.0
+        self.machine.capacityLaserModule = 100
+        self.machine.coolantLevel = 80.0
 
         expectedDict = {
             "machineStateId": 1,
-            "machineStateName": "Test Machine"
+            "machineStateName": "Test Machine",
+            "machineProtocolId": 1,
+            "lastEdited": "2023-06-25 12:00:00",
+            "errorStateId": 2,
+            "warningStateId": 3,
+            "programStateId": 4,
+            "machineStartTime": "2023-06-25 10:00:00",
+            "machineStopTime": "2023-06-25 11:00:00",
+            "machineIdleTime": 3600,
+            "machineRuntime": 3600,
+            "totalItems": 10,
+            "totalEnergyConsumption": 50.0,
+            "capacityLaserModule": 100,
+            "coolantLevel": 80.0
         }
-
         actualDict = self.machine.toDict()
-
-        self.assertDictEqual(actualDict, expectedDict)  """
-        pass
+        self.assertDictEqual(actualDict, expectedDict)
 
     def test_GetMachineStateSnapshot(self) -> None:
-        """ self.machine.machineStateId = 1
+        self.machine.machineStateId = 1
         self.machine.machineStateName = "Test Machine"
-        # Set other attributes of the Machine object
+        self.machine.machineProtocolId = 1
+        self.machine.lastEdited = "2023-06-25 12:00:00"
+        self.machine.machineRuntime = 3600
+        self.machine.machineIdleTime = 1800
+        self.machine.coolantLevel = 75
+        self.machine.totalEnergyConsumption = 100.0
+        self.machine.capacityLaserModule = 80
+        self.machine.totalItems = 50
+        self.machine.activeErrors = ["Error 1", "Error 2"]
+        self.machine.activeWarnings = ["Warning 1", "Warning 2"]
 
         expectedData = {
             "machineStateId": 1,
             "machineStateName": "Test Machine",
-            # Set other attributes of the Machine object
+            "machineProtocolId": 1,
+            "lastEdited": "2023-06-25 12:00:00",
+            "parameters": [
+                {"id": "1", "description": "Runtime (s)", "value": 3600},
+                {"id": "2", "description": "Idle Time (s)", "value": 1800},
+                {"id": "3", "description": "Coolant Level (%)", "value": 75},
+                {"id": "4", "description": "Power Consumption (Wh)", "value": 100},
+                {"id": "5", "description": "Capacity Laser Module (%)", "value": 80},
+                {"id": "6", "description": "Total Items", "value": 50}
+            ],
+            "error_state": {
+                "errors": [
+                    {"id": "0", "name": "Error 1"},
+                    {"id": "1", "name": "Error 2"}
+                ],
+                "warnings": [
+                    {"id": "0", "name": "Warning 1"},
+                    {"id": "1", "name": "Warning 2"}
+                ]
+            }
         }
-
         actualData = self.machine.getMachineStateSnapshot()
-
-        self.assertDictEqual(actualData, expectedData) """
-        pass
+        self.assertDictEqual(actualData, expectedData)
 
     def test_PrepareForDB(self) -> None:
         nowTime = datetime.now()
