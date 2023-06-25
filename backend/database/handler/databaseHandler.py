@@ -11,7 +11,7 @@ from database.orm.user.admin import Admin
 from database.orm.machine.machineState import MachineState
 from database.orm.program.programState import ProgramState
 from database.orm.machine.protocol import Protocol
-from database.handler.emptySetEception import EmptySetException
+from database.handler.emptySetException import EmptySetException
 
 class DatabaseHandler:
 
@@ -57,8 +57,8 @@ class DatabaseHandler:
     @staticmethod
     def selectMachineProgram(name: str) -> MachineProgram:
        try:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
-        return MachineProgram(DatabaseObject(resultSet[0]))
+        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description= ?", (name,))
+        return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
        except EmptySetException as e:
            return None
    
@@ -73,7 +73,7 @@ class DatabaseHandler:
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
         try:
-            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = ?", (id,))
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id= ?", (id,))
             return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
         except EmptySetException as e:
             return None

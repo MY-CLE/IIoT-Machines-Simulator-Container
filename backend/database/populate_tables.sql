@@ -26,9 +26,6 @@ INSERT INTO program_state (program_id, program_target_amount, program_current_am
 VALUES (1, 50, 25, 5),
        (2, 100, 75, 6),
        (3, 200, 150, 7);
-VALUES (1, 50, 25, 8),
-       (2, 100, 75, 9),
-       (3, 200, 150, 10);
 
 -- Populating warning table
 INSERT INTO warning (warning_type)
