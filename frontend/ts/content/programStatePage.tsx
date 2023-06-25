@@ -47,6 +47,7 @@ function ProgramStatePage(props: {
                   value={item.value}
                   id={item.id}
                   isAdminParameter={item.isAdminParameter}
+                  maxValue={item.maxValue}
                 />
               );
             })}
