@@ -106,6 +106,9 @@ export async function deleteSimulationById(
         throw new Error(text);
       });
     }
+    enqueueSnackbar(await response.text().then((text) => text), {
+      variant: "success",
+    });
     return response;
   } catch (error: any) {
     enqueueSnackbar(error.message, { variant: "error" });
@@ -262,8 +265,6 @@ export async function resetMachine() {
     return null;
   }
 }
-
-
 
 export async function resetProgram() {
   let response;
