@@ -84,7 +84,7 @@ class Machine():
         
     def updateMachine(self, nowTime: datetime, powerConsumptionPerS: int, coolantConsumptionPerS: int, newItems: int, isProgramRunning: bool, laserModuleWeardown: float, programAdditionalTime: int):
         self.isProgramRunning = isProgramRunning
-        self.additionalTime = programAdditionalTime
+        self.additionalTime += programAdditionalTime
         self.machineRuntime += programAdditionalTime
         if(self.machineStartTime != None):
             self.calculateTimes(nowTime)
@@ -97,7 +97,7 @@ class Machine():
     def loadMachineState(self, machineState: MachineState):
         self.isProgramRunning =False
 
-        self.machineStateId = machineState.getID()
+        self.machineStateId = machineState.getId()
         self.machineStateName = machineState.getName()
         self.lastEdited = machineState.getLastEdited()
 
@@ -165,7 +165,7 @@ class Machine():
             "machineProtocolId": self.machineProtocolId,
             "lastEdited": self.lastEdited,
             "parameters": parameters,
-            "error_state": {
+            "errorState": {
                "errors": errors,
                "warnings": warnings,
                }

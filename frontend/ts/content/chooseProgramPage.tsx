@@ -21,35 +21,24 @@ function ChooseProgramPage(props: {
   const [programs, setPrograms] = useState<Array<Program>>([
     { description: "", parameters: null, id: null },
   ]);
-  const [statusBarValues, setStatusBarValues] = useState({
-    runtime: 0,
-    utilization: 0,
-    error: 0,
-    warning: 0,
-    safety_door: false,
-    lock: false,
-  });
 
   useEffect(() => {
     (async () => {
-      let progs = await getPrograms(props.state.simulation_id | 0).then(
-        (programs) => {
-          return programs.programs;
-        }
-      );
-      setPrograms(progs);
+      let progs: { programs: Array<Program> } | null = null;
+      let progsRes = await getPrograms();
+      if (progsRes) {
+        progs = (await progsRes.json()) as { programs: Array<Program> };
+      }
+      console.log(progs);
+      if (!progs) return;
+      setPrograms(progs.programs);
     })();
   }, []);
 
-  function navigateToMachineStatePage() {
-    navigation(`${url}/machine`);
-  }
-
   async function navigateToProgramStatePage(id: number) {
     console.log(id);
-    const response = await setCurrentProgram(props.state.simulation_id, id);
-    if (response !== 200) {
-      alert("Programm konnte nicht gesetzt werden");
+    const response = await setCurrentProgram(id);
+    if (!response) {
       return;
     } else {
       props.setState({
@@ -67,7 +56,7 @@ function ChooseProgramPage(props: {
         {" "}
         {/*bg-program-choose-grey*/}
         <div className="w-full h-auto p-4 text-2xl text-center text-black sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl">
-          Programm Auswahl
+          Program Selection
         </div>
         <div className="flex items-center justify-center flex-grow ">
           <div className="flex flex-row flex-wrap items-center justify-between w-full h-full mb-4p ">

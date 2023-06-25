@@ -1,15 +1,7 @@
 import React, { useEffect } from "react";
 import Header from "./header";
 import ProgramStatePage from "./content/programStatePage";
-import {
-  createBrowserRouter,
-  Outlet,
-  Route,
-  RouterProvider,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import LandingPage from "./content/landingpage";
 import MachineStatePage from "./content/machineStatePage";
 import ChooseProgramPage from "./content/chooseProgramPage";
@@ -19,11 +11,11 @@ import StatusBar from "./content/statusbar/statusBar";
 import SelectionBar from "./content/machineOrProgramBar/selectionBar";
 import { getMachine, getProgram } from "./api-service";
 import { Machine, Program, StatusBarValues } from "./interfaces";
-import { clear } from "console";
 
 function App() {
   const location = useLocation();
-  const navigation = useNavigate();
+
+  const [selectionBarValue, setSelectionBarValue] = useState<string>("program");
   const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const [statuesBarValues, setStatuesBarValues] = useState({
     runtime: 0,
@@ -40,22 +32,25 @@ function App() {
   } as Program);
   const [machine, setMachine] = useState({
     parameters: [],
-    error_state: { errors: [], warnings: [] },
+    errorState: { errors: [], warnings: [] },
   } as Machine);
 
   const [intervallId, setIntervallId] = useState<any>(0);
+
   useEffect(() => {
     clearInterval(intervallId);
-    console.log(location.pathname);
-    if (location.pathname === "/simulator/machine/") {
+    if (location.pathname === "/simulator/machine") {
+      setSelectionBarValue("machine");
       getMachineStatePageData();
       const id = setInterval(() => getMachineStatePageData(), 5000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/program/current") {
-      getCurrentPrograData();
-      const id = setInterval(() => getCurrentPrograData(), 5000);
+      setSelectionBarValue("program");
+      getCurrentProgramData();
+      const id = setInterval(() => getCurrentProgramData(), 5000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/programs") {
+      setSelectionBarValue("program");
       getProgramsPageData();
       const id = setInterval(() => getProgramsPageData(), 5000);
       setIntervallId(id);
@@ -63,23 +58,24 @@ function App() {
   }, [location]);
 
   async function getMachineStatePageData() {
-    let machineState = await getMachine(
-      state.simulation_id ? state.simulation_id : 0
-    );
+    let machineStateRes = await getMachine();
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
     let values: StatusBarValues = getStatusbarValues(machineState);
     setMachine(machineState);
     setStatuesBarValues(values);
   }
 
-  async function getCurrentPrograData() {
-    let machineState = await getMachine(
-      state.simulation_id ? state.simulation_id : 0
-    );
-    //setTimeout(() => {}, 500);
-    let program = await getProgram(state.simulation_id | 0);
-    if (program.description === "") {
-      navigation(`simulator/programs`);
-    }
+  async function getCurrentProgramData() {
+    let machineStateRes = await getMachine();
+    let programRes = await getProgram();
+
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
+
+    if (!programRes) return;
+    let program = (await programRes.json()) as Program;
+
     if (program.parameters) {
       setProgram(program);
     }
@@ -89,11 +85,9 @@ function App() {
   }
 
   async function getProgramsPageData() {
-    let machineState = await getMachine(
-      state.simulation_id ? state.simulation_id : 0
-    );
-    console.log(machineState);
-
+    let machineStateRes = await getMachine();
+    if (!machineStateRes) return;
+    let machineState = (await machineStateRes.json()) as Machine;
     let values: StatusBarValues = getStatusbarValues(machineState);
     setStatuesBarValues(values);
   }
@@ -103,10 +97,10 @@ function App() {
     let errors = 0,
       warnings = 0,
       safetyDoorStatus = false;
-    if (machineState.error_state) {
-      errors = machineState.error_state.errors.length;
-      warnings = machineState.error_state.warnings.length;
-      for (const err of machineState.error_state.errors) {
+    if (machineState.errorState) {
+      errors = machineState.errorState.errors.length;
+      warnings = machineState.errorState.warnings.length;
+      for (const err of machineState.errorState.errors) {
         if (err.name[1] === "Safety door is open! Close it.") {
           safetyDoorStatus = true;
         }
@@ -149,6 +143,19 @@ function App() {
                   lock={statuesBarValues.lock}
                 />
               </div>
+              {selectionBarValue === "program" && (
+                <SelectionBar
+                  whichPage={"program"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+              {selectionBarValue === "machine" && (
+                <SelectionBar
+                  whichPage={"machine"}
+                  isProgramSelected={program.description !== ""}
+                />
+              )}
+
               <Outlet />
             </>
           }
@@ -157,7 +164,6 @@ function App() {
             path="/simulator/machine"
             element={
               <>
-                <SelectionBar whichPage="machine" />
                 <MachineStatePage
                   state={state}
                   setState={setState}
@@ -170,7 +176,6 @@ function App() {
             path="/simulator/programs"
             element={
               <>
-                <SelectionBar whichPage="program" />
                 <ChooseProgramPage state={state} setState={setState} />
               </>
             }
@@ -179,7 +184,6 @@ function App() {
             path="/simulator/program/current"
             element={
               <>
-                <SelectionBar whichPage="program" />
                 <ProgramStatePage
                   state={state}
                   setState={setState}

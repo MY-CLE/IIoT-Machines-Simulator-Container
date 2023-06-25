@@ -232,7 +232,7 @@ class Program:
             data["parameters"].append(parameter)
         return data
         
-    def getDict(self) -> dict:
+    def toDict(self) -> dict:
         return {
             "programCurrentAmount":self.programCurrentAmount,
             "programRuntime":self.programRuntime,

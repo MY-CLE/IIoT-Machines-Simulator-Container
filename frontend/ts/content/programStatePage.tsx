@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-import StatusBar from "./statusbar/statusBar";
-import SelectionBar from "./machineOrProgramBar/selectionBar";
+import React from "react";
 import ParameterComponent from "./parameters/parameter";
 import IconArrowBack from "../icons/iconBackArrow";
-import { Machine, Parameter, Program, StatusBarValues } from "../interfaces";
-import { restartProgram, startProgram, stopProgram } from "../api-service";
+import { Parameter, Program } from "../interfaces";
+import { resetProgram, startProgram, stopProgram } from "../api-service";
 import { useNavigate } from "react-router-dom";
 
 const url = "/simulator";
@@ -44,7 +42,6 @@ function ProgramStatePage(props: {
             {props.program.parameters!.map((item: Parameter) => {
               return (
                 <ParameterComponent
-                  simulation_id={props.state.simulation_id}
                   key={item.id}
                   name={item.description}
                   value={item.value}
@@ -57,19 +54,19 @@ function ProgramStatePage(props: {
           <div className="flex flex-col items-center w-1/2 h-full justify-evenly">
             <button
               className="w-1/3 text-xl text-white bg-green-400 border-2 border-black rounded-md shadow h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
-              onClick={() => startProgram(props.state.simulation_id | 0)}
+              onClick={() => startProgram()}
             >
               Start
             </button>
             <button
               className="w-1/3 text-xl text-white bg-red-400 border-2 border-black rounded-md shadow h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
-              onClick={() => stopProgram(props.state.simulation_id | 0)}
+              onClick={() => stopProgram()}
             >
               Stop
             </button>
             <button
               className="w-1/3 text-xl text-white bg-yellow-400 border-2 border-black rounded-md h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
-              onClick={() => restartProgram(props.state.simulation_id | 0)}
+              onClick={() => resetProgram()}
             >
               Reset values
             </button>

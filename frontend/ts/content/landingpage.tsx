@@ -5,7 +5,6 @@ import {
   createSimulation,
   getSimultions,
   loadSimulation,
-  postSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
@@ -38,21 +37,18 @@ function LandingPage(props: {
   >;
 }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [simulations, setSimulations] = useState<[Simulation]>([
-    { id: 0, last_edited: new Date(), description: "" },
-  ]);
+  const [simulations, setSimulations] = useState<[Simulation] | []>([]);
   const navigate = useNavigate();
 
   async function openModal() {
     console.log("open modal");
     let sims = await getSimultions();
-    console.log(sims.simulations);
 
-    if (sims.simulations) {
+    if (sims) {
       setSimulations(sims.simulations);
       setModalIsOpen(true);
     } else {
-      console.log("no simulations found");
+      setSimulations([]);
     }
   }
   function closeModal() {
@@ -61,14 +57,10 @@ function LandingPage(props: {
 
   async function startSimulation() {
     console.log("create simulation");
-    let simulation_id = await createSimulation();
-    console.log(simulation_id);
+    let response = await createSimulation();
+    console.log(response);
 
-    if (simulation_id.simulation_id) {
-      props.setState({
-        simulation_id: simulation_id.simulation_id,
-        program_id: 1,
-      });
+    if (response) {
       navigate(`${url}/machine/`);
     }
   }
@@ -79,13 +71,13 @@ function LandingPage(props: {
           className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={startSimulation}
         >
-          Create simulation
+          Create Simulation
         </button>
         <button
           className="w-1/5 px-3 text-3xl text-black rounded-lg h-2/4 bg-button-blue sm:text-base lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
           onClick={openModal}
         >
-          Load simulation
+          Load Simulation
         </button>
         <Modal
           isOpen={modalIsOpen}
@@ -122,12 +114,8 @@ function SimulationListElement(props: any) {
   let sim = props.simulation;
   async function handleLoadSimulation() {
     const response = await loadSimulation(sim.id);
-    if (response.simulation_id) {
-      props.setState({
-        simulation_id: response.simulation_id,
-        program_id: 0,
-      });
-      navigate(`/machine/state`);
+    if (response) {
+      navigate(`${url}/machine`);
     }
   }
   return (

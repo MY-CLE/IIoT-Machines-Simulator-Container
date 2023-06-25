@@ -24,7 +24,7 @@ class MachineState(object):
         self.capacityLasermodule: int = capacityLasermodule
         self.coolantLevel: int = coolantLevel
 
-    def getID(self) -> int:
+    def getId(self) -> int:
         return self.machineStateID
     
     def getLastEdited(self) -> datetime:

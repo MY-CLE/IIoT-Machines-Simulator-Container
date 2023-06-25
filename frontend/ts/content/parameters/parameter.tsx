@@ -19,7 +19,6 @@ export interface ParameterProps {
   name: string;
   id: number;
   value: number;
-  simulation_id: number;
   isAdminParameter: boolean;
 }
 function ParameterComponent(props: ParameterProps) {
@@ -38,17 +37,13 @@ function ParameterComponent(props: ParameterProps) {
     closeModal();
 
     if (props.isAdminParameter) {
-      let res = await authenticate(
-        props.simulation_id,
-        formdata.get("password")?.toString()!
-      );
-      if (res !== 200) {
-        alert("Wrong Password");
+      let res = await authenticate(formdata.get("password")?.toString()!);
+      if (res.status !== 200) {
         return;
       }
     }
 
-    let status = await patchMachineParameter(props.simulation_id, {
+    let status = await patchMachineParameter({
       id: props.id,
       value: parseInt(formdata.get("value")?.toString()!),
       description: props.name,

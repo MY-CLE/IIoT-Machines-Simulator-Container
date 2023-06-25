@@ -2,12 +2,9 @@ import React, { useEffect, useState } from "react";
 import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
-import { useNavigate } from "react-router-dom";
-import { authenticate, getErrors } from "../api-service";
+import { authenticate, clearNotifications, getErrors } from "../api-service";
 import { Errors, Machine, Parameter } from "../interfaces";
 import Modal from "react-modal";
-
-const url = "/simulator";
 
 const customStyles = {
   content: {
@@ -23,10 +20,6 @@ const customStyles = {
 };
 Modal.setAppElement("#root");
 
-const paramterDefault: Array<Parameter> = [
-  { id: 0, description: "", value: 0, isAdminParameter: false },
-  { id: 1, description: "", value: 0, isAdminParameter: false },
-];
 function MachineStatePage(props: {
   state: {
     simulation_id: number;
@@ -47,15 +40,15 @@ function MachineStatePage(props: {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [listPopup, setListPopup] = useState(false);
 
-  const navigation = useNavigate();
-
   useEffect(() => {
+    let errorsValues: Errors | null = null;
     (async () => {
       // when the page is loaded the first time, the errors are fetched
-      let newErrors = await getErrors(props.state.simulation_id | 0);
-      console.log("new Errors getting fetched");
-      if (newErrors.errors && newErrors.warnings) {
-        setErrors(newErrors);
+      let newErrors: Response | null = await getErrors();
+      if (newErrors) {
+        errorsValues = (await newErrors.json()) as Errors;
+        setErrors(errorsValues);
+        return;
       }
     })();
   }, []);
@@ -70,34 +63,24 @@ function MachineStatePage(props: {
     setModalIsOpen(false);
   }
 
-  function sendQuittieren() {
+  async function sendQuittieren() {
     let inputfield = document.getElementById(
       "inputPassword"
     ) as HTMLInputElement;
     let password = inputfield.value;
-    console.log(password);
-    (async () => {
-      let statuscode = await authenticate(
-        props.state.simulation_id | 0,
-        password
-      );
-      console.log(statuscode);
-    })();
+    let response: any = null;
+    response = await authenticate(password);
 
-    closeModal();
+    if (response.status == 200) {
+      let clearErrors = await clearNotifications();
+      if (clearErrors && clearErrors.status == 200) {
+        closeModal();
+      }
+    }
   }
 
   function openListPopup() {
     setListPopup(true);
-  }
-
-  function navigateToProgram() {
-    console.log(props.state.program_id);
-    if (props.state.program_id === -1) {
-      navigation(`${url}/programs`);
-    } else {
-      navigation(`${url}/program/current`);
-    }
   }
 
   return (
@@ -107,7 +90,7 @@ function MachineStatePage(props: {
           <div className="fixed top-0 left-0 z-50 flex items-center justify-center w-full h-full bg-gray-800 bg-opacity-50">
             <div className="flex flex-col items-center justify-between w-1/2 h-full p-4 bg-white border border-gray-500">
               <div>
-                {props.machine.error_state.errors.length > 0 && (
+                {props.machine.errorState.errors.length > 0 && (
                   <>
                     <h1>Errors:</h1>
                     <br />
@@ -123,7 +106,7 @@ function MachineStatePage(props: {
                         </tr>
                       </thead>
                       <tbody>
-                        {props.machine.error_state.errors.map(
+                        {props.machine.errorState.errors.map(
                           (error: { id: number; name: string }) => (
                             <tr key={error.id}>
                               <td className="w-1/4 px-4 py-2 border border-gray-500">
@@ -141,7 +124,7 @@ function MachineStatePage(props: {
                 )}
               </div>
               <div>
-                {props.machine.error_state.warnings.length > 0 && (
+                {props.machine.errorState.warnings.length > 0 && (
                   <>
                     <br />
                     <h1>Warnings:</h1>
@@ -158,7 +141,7 @@ function MachineStatePage(props: {
                         </tr>
                       </thead>
                       <tbody>
-                        {props.machine.error_state.warnings.map(
+                        {props.machine.errorState.warnings.map(
                           (warning: { id: number; name: string }) => (
                             <tr key={warning.id}>
                               <td className="w-1/4 px-4 py-2 border border-gray-500">
@@ -192,7 +175,6 @@ function MachineStatePage(props: {
             {props.machine.parameters.map((item: Parameter, index) => {
               return (
                 <ParameterComponent
-                  simulation_id={props.state.simulation_id}
                   key={item.id}
                   name={item.description}
                   value={item.value}
@@ -232,7 +214,9 @@ function MachineStatePage(props: {
                   style={customStyles}
                 >
                   <h1 className="w-full font-bold">Authentification</h1>
-                  <span className="w-full">Please enter the root password</span>
+                  <span className="w-full">
+                    Please enter the admin password
+                  </span>
                   <input
                     placeholder=""
                     id="inputPassword"
@@ -253,7 +237,6 @@ function MachineStatePage(props: {
           <div className="flex flex-col justify-between w-1/3 h-full text-2xl text-center">
             <div className="flex flex-grow w-full mb-5 text-2xl">
               <SendError
-                simulationID={props.state.simulation_id}
                 name={"Error"}
                 messages={errors.errors}
                 color={"bg-red-500"}
@@ -261,7 +244,6 @@ function MachineStatePage(props: {
             </div>
             <div className="flex flex-grow w-full mt-5 text-2xl">
               <SendError
-                simulationID={props.state.simulation_id}
                 name={"Warning"}
                 messages={errors.warnings}
                 color={"bg-orange-500"}
