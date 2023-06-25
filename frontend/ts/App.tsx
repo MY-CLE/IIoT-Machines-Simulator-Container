@@ -117,7 +117,7 @@ function App() {
   }
 
   return (
-    <div className="flex flex-col flex-grow w-screen h-screen">
+    <div className="flex flex-col w-screen h-screen">
       <Routes>
         <Route
           path="/"

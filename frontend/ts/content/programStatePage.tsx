@@ -37,8 +37,8 @@ function ProgramStatePage(props: {
             Program Overview: {props.program.description}
           </span>
         </div>
-        <div className="flex flex-row justify-between w-full h-full mb-4 ">
-          <div className="flex flex-row flex-wrap w-1/2 h-full justify-evenly ">
+        <div className="flex flex-row justify-between w-full h-full">
+          <div className="flex flex-row flex-wrap w-1/2 h-full justify-between ">
             {props.program.parameters!.map((item: Parameter) => {
               return (
                 <ParameterComponent
@@ -51,24 +51,24 @@ function ProgramStatePage(props: {
               );
             })}
           </div>
-          <div className="flex flex-col items-center w-1/2 h-full justify-evenly">
+          <div className="flex flex-col items-center w-1/2 h-full justify-evenly font-normal">
             <button
-              className="w-1/3 text-xl text-white bg-green-400 border-2 border-black rounded-md shadow h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
+              className="w-1/3 bg-green-400 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
               onClick={() => startProgram()}
             >
               Start
             </button>
             <button
-              className="w-1/3 text-xl text-white bg-red-400 border-2 border-black rounded-md shadow h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
+              className="w-1/3 bg-red-400 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
               onClick={() => stopProgram()}
             >
               Stop
             </button>
             <button
-              className="w-1/3 text-xl text-white bg-yellow-400 border-2 border-black rounded-md h-14 lg:text-2xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl"
+              className="w-1/3  bg-yellow-400 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
               onClick={() => resetProgram()}
             >
-              Reset values
+              Reset Program
             </button>
           </div>
         </div>
