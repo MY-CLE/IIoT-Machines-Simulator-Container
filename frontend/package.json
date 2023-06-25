@@ -10,7 +10,7 @@
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
-    "axios": "^1.4.0",
+    "axios": "^1.0.0",
     "cross-env": "^7.0.3",
     "notistack": "^3.0.1",
     "react": "^18.2.0",

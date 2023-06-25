@@ -48,7 +48,7 @@ export async function getSimulations(): Promise<{
     const response = await axios.get(`${url}/simulations`);
     console.log("axios: res:", response);
     //return response;
-    return null;
+    return response.data;
   } catch (error: any) {
     console.log("axios: error:", error);
     return null;
