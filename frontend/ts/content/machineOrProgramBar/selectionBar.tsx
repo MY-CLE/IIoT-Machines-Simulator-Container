@@ -8,7 +8,7 @@ function SelectionBar(props: { whichPage: any; isProgramSelected: boolean }) {
   const navigation = useNavigate();
 
   useEffect(() => {
-    console.log(props.whichPage);
+    console.log(props.isProgramSelected);
     if (props.whichPage === "program") {
       setMachineColor("bg-unselectedbar-green");
       setProgramColor("bg-selectedbar-green");
@@ -31,7 +31,7 @@ function SelectionBar(props: { whichPage: any; isProgramSelected: boolean }) {
   };
 
   return (
-    <div className="flex flex-row w-full h-10">
+    <div className="flex flex-row w-full h-10 flex-shrink-0">
       <button
         onClick={handleMachineClick}
         className={`w-1/2 border border-black border-t-0 font-medium text-xs ${machineColor} sm:text-base lg:text-xl xl:text-2xl`}

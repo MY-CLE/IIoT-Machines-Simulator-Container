@@ -15,7 +15,7 @@ import { Machine, Program, StatusBarValues } from "./interfaces";
 function App() {
   const location = useLocation();
 
-  const [selectionBarValue, setSelectionBarValue] = useState<string>("program");
+  const [selectionBarValue, setSelectionBarValue] = useState<string>("machine");
   const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const [statuesBarValues, setStatuesBarValues] = useState({
     runtime: 0,
@@ -23,7 +23,7 @@ function App() {
     error: 0,
     warning: 0,
     safety_door: false,
-    lock: false,
+    coolantLevel: 0,
   });
   const [program, setProgram] = useState({
     description: "",
@@ -39,8 +39,10 @@ function App() {
 
   useEffect(() => {
     clearInterval(intervallId);
+    console.log(location.pathname);
     if (location.pathname === "/simulator/machine") {
       setSelectionBarValue("machine");
+      getCurrentProgramData();
       getMachineStatePageData();
       const id = setInterval(() => getMachineStatePageData(), 5000);
       setIntervallId(id);
@@ -77,6 +79,7 @@ function App() {
     let program = (await programRes.json()) as Program;
 
     if (program.parameters) {
+      console.log(program.description)
       setProgram(program);
     }
 
@@ -94,6 +97,8 @@ function App() {
 
   function getStatusbarValues(machineState: Machine): StatusBarValues {
     let runtime = machineState.parameters[0].value;
+    let coolantLevel = machineState.parameters[2].value;
+    let laserModuleCapacity = machineState.parameters[4].value;
     let errors = 0,
       warnings = 0,
       safetyDoorStatus = false;
@@ -108,16 +113,16 @@ function App() {
     }
     return {
       runtime: runtime,
-      utilization: 5,
+      utilization: laserModuleCapacity,
       warning: warnings,
       error: errors,
       safety_door: safetyDoorStatus,
-      lock: false,
+      coolantLevel: coolantLevel,
     };
   }
 
   return (
-    <div className="flex flex-col flex-grow w-screen h-screen">
+    <div className="flex flex-col w-screen h-screen">
       <Routes>
         <Route
           path="/"
@@ -140,7 +145,7 @@ function App() {
                   error={statuesBarValues.error}
                   warning={statuesBarValues.warning}
                   safety_door={statuesBarValues.safety_door}
-                  lock={statuesBarValues.lock}
+                  coolantLevel={statuesBarValues.coolantLevel}
                 />
               </div>
               {selectionBarValue === "program" && (

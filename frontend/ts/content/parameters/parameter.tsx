@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import IconPen from "../../icons/iconPen";
 import Modal from "react-modal";
 import { authenticate, patchMachineParameter } from "../../api-service";
+import { enqueueSnackbar } from "notistack";
 Modal.setAppElement("#root");
 const customStyles = {
   content: {
@@ -20,6 +21,7 @@ export interface ParameterProps {
   id: number;
   value: number;
   isAdminParameter: boolean;
+  maxValue: number;
 }
 function ParameterComponent(props: ParameterProps) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -42,14 +44,37 @@ function ParameterComponent(props: ParameterProps) {
         return;
       }
     }
+    if (!typeCheck(formdata)) {
+      return;
+    }
 
     let status = await patchMachineParameter({
       id: props.id,
       value: parseInt(formdata.get("value")?.toString()!),
       description: props.name,
       isAdminParameter: props.isAdminParameter,
+      maxValue: props.maxValue,
     });
     console.log(status);
+  }
+
+  function typeCheck(formdata: FormData) {
+    if (formdata.get("value")?.toString() === "") {
+      enqueueSnackbar("Please enter a value", { variant: "error" });
+      return false;
+    } else if (isNaN(parseInt(formdata.get("value")?.toString()!))) {
+      enqueueSnackbar("Please enter a number", { variant: "error" });
+      return false;
+    } else if (
+      parseInt(formdata.get("value")?.toString()!) > props.maxValue ||
+      parseInt(formdata.get("value")?.toString()!) < 0
+    ) {
+      enqueueSnackbar("Please enter a number between 0 and " + props.maxValue, {
+        variant: "error",
+      });
+      return false;
+    }
+    return true;
   }
 
   return (

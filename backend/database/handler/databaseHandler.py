@@ -66,6 +66,7 @@ class DatabaseHandler:
     def selectAllMachinePrograms() -> list[MachineProgram]:
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program")
         allProgramslist: list[MachineProgram] = []
+        print(resultSet)
         for result in resultSet:
             allProgramslist.append(MachineProgram(*DatabaseObject(result).getResultRow()))
         return allProgramslist
@@ -110,6 +111,7 @@ class DatabaseHandler:
     def selectMachineStates() -> list[MachineState]:
         resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state")
         machineStates: list[MachineState] = []
+        print(resultSet)
         for result in resultSet:
             machineState: MachineState = MachineState(*DatabaseObject(result).getResultRow())
             machineStates.append(machineState)

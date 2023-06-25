@@ -110,7 +110,7 @@ class Simulator:
         self.simulatedMachine.stopMachine(date)
 
     def startMachine(self) -> None:
-        self.simulatedMachine.resetMachine()
+        self.resetSimulator()
         self.simulatedProgram.resetToDefaultState()
         self.simulatorState = True
         self.simulatedMachine.startMachine(datetime.now())
@@ -253,20 +253,20 @@ class Simulator:
     def checkErrors(self) -> None:
         # check if metrics are above or below a certain 'amount' to throw errors
         if self.simulatedMachine.getCoolantLevel() <= 5:
-            self.warnings.coolantLvlError()
+            self.notification.coolantLvlError()
             self.stopMachine()
         if self.simulatedMachine.getCapacityLaserModule() <= 5:
-            self.warnings.laserModuleError()
+            self.notification.laserModuleError()
             self.stopMachine()
 
     def checkWarnings(self) -> None:
         # check if metrics are above or below a certain 'amount' to throw warnings
         if self.simulatedMachine.getCoolantLevel() <= 10:
-            self.warnings.coolantLvlWarning()
+            self.notification.coolantLvlWarning()
         if self.simulatedMachine.getTotalEnegeryConsumption() >= 90000000:
-            self.warnings.powerConsumptionWarning()
+            self.notification.powerConsumptionWarning()
         if self.simulatedMachine.getCapacityLaserModule() <= 10:
-            self.warnings.laserModuleWarning()
+            self.notification.laserModuleWarning()
 
     def getPrograms(self):
         return DatabaseHandler.selectAllMachinePrograms()

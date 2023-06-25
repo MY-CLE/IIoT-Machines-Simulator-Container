@@ -117,8 +117,7 @@ class Notifications(object):
                 "name": warning
             }
             data["warnings"].append(warning_data)
-        
-        print(data)   
+          
         return json.dumps(data)
             
             

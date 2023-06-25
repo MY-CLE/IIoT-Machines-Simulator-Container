@@ -47,7 +47,7 @@ function SendError(props: sendErrorProps) {
       //  background:
       //    "repeating-linear-gradient( -45deg, #e8eaeb, #e8eaeb 5px, #fff 5px, #fff 25px )",
       //}}
-      className="flex flex-col bg-white h-full w-full border justify-start items-center border-dashed border-black rounded-lg drop-shadow-sm space-y-7 py-5 opacity-80"
+      className="flex flex-col bg-white h-full w-full justify-start items-center border-dashed border-2 border-header-red rounded-lg drop-shadow-sm space-y-7 py-5"
     >
       <div className="mt-5 font-medium text-xs sm:text-base lg:text-xl xl:text2xl">
         Send {props.name}

@@ -29,7 +29,7 @@ export async function getSimultions(): Promise<{
 export async function createSimulation(): Promise<Response | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/${1}`, {
+    response = await fetch(`${url}/simulations/${0}`, {
       method: "PUT",
       redirect: "follow",
     });
@@ -106,6 +106,9 @@ export async function deleteSimulationById(
         throw new Error(text);
       });
     }
+    enqueueSnackbar(await response.text().then((text) => text), {
+      variant: "success",
+    });
     return response;
   } catch (error: any) {
     enqueueSnackbar(error.message, { variant: "error" });
@@ -233,6 +236,35 @@ export async function stopProgram() {
     return null;
   }
 }
+export async function resetMachine() {
+  let response;
+  try {
+    response = await fetch(`${url}/simulations/machine/programs/current`, {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        id: 900,
+        description: "program_status",
+        value: "resetMachine",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      await response.text().then((text) => {
+        throw new Error(text);
+      });
+    }
+    enqueueSnackbar(await response.text().then((text) => text), {
+      variant: "success",
+    });
+    return response;
+  } catch (error: any) {
+    enqueueSnackbar(error.message, { variant: "error" });
+    return null;
+  }
+}
 
 export async function resetProgram() {
   let response;
@@ -243,7 +275,7 @@ export async function resetProgram() {
       body: JSON.stringify({
         id: 900,
         description: "program_status",
-        value: "reset",
+        value: "resetProgram",
       }),
       headers: {
         "Content-Type": "application/json",
@@ -391,7 +423,7 @@ export async function getPrograms(): Promise<Response | null> {
     }
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
+    //enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
