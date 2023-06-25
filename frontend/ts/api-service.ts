@@ -1,27 +1,56 @@
-import { text } from "stream/consumers";
 import { Errors, Machine, Parameter, Program, Simulation } from "./interfaces";
 import { enqueueSnackbar } from "notistack";
-
+import axios from "axios";
 const url = `${process.env.REACT_APP_SERVER_URL}`;
 
-export async function getSimultions(): Promise<{
+// export const client = axios.create({
+//   baseURL: "http://localhost:5000",
+// });
+
+// client.interceptors.request.use(
+//   (config) => {
+//     console.log(config);
+//     config.url = `${url}${config.url}`;
+//     return config;
+//   },
+//   (error) => {
+//     console.log(error.response);
+//     if (error.response.status === 500) {
+//       enqueueSnackbar("Internal Server Error", { variant: "error" });
+//       return Promise.reject(error);
+//     }
+//     enqueueSnackbar(error.message, { variant: "error" });
+//     return Promise.reject(error);
+//   }
+// );
+
+// axios.interceptors.response.use(
+//   (response) => {
+//     console.log(response);
+//     return response;
+//   },
+//   (error) => {
+//     console.log(error.response);
+//     if (error.response.status === 500) {
+//       enqueueSnackbar("Internal Server Error", { variant: "error" });
+//       return Promise.reject(error);
+//     }
+//     enqueueSnackbar(error.message, { variant: "error" });
+//     return Promise.reject(error);
+//   }
+// );
+
+export async function getSimulations(): Promise<{
   simulations: [Simulation];
 } | null> {
-  console.log(`GET Request auf ${url}/simulations`);
-  let response;
   try {
-    response = await fetch(`${url}/simulations`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return await response.json();
+    console.log("axios: getSimulations");
+    const response = await axios.get(`${url}/simulations`);
+    console.log("axios: res:", response);
+    //return response;
+    return null;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
+    console.log("axios: error:", error);
     return null;
   }
 }

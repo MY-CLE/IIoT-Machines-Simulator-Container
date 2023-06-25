@@ -3,7 +3,7 @@ import { useState } from "react";
 import Modal, { Styles } from "react-modal";
 import {
   createSimulation,
-  getSimultions,
+  getSimulations,
   loadSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
@@ -42,7 +42,7 @@ function LandingPage(props: {
 
   async function openModal() {
     console.log("open modal");
-    let sims = await getSimultions();
+    let sims = await getSimulations();
 
     if (sims) {
       setSimulations(sims.simulations);
