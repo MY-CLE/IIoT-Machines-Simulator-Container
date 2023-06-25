@@ -71,6 +71,7 @@ class Machine():
 
     def resetMachine(self):
         self.isProgramRunning = False
+        self.setMachineIdleTime(0)
         self.setMachineRuntime(0)
         self.setTotalItems(0)
         self.setCapacityLaserModule(100)

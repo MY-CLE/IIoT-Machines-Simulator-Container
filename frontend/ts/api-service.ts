@@ -233,6 +233,37 @@ export async function stopProgram() {
     return null;
   }
 }
+export async function resetMachine() {
+  let response;
+  try {
+    response = await fetch(`${url}/simulations/machine/programs/current`, {
+      method: "PATCH",
+      redirect: "follow",
+      body: JSON.stringify({
+        id: 900,
+        description: "program_status",
+        value: "resetMachine",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      await response.text().then((text) => {
+        throw new Error(text);
+      });
+    }
+    enqueueSnackbar(await response.text().then((text) => text), {
+      variant: "success",
+    });
+    return response;
+  } catch (error: any) {
+    enqueueSnackbar(error.message, { variant: "error" });
+    return null;
+  }
+}
+
+
 
 export async function resetProgram() {
   let response;
@@ -243,7 +274,7 @@ export async function resetProgram() {
       body: JSON.stringify({
         id: 900,
         description: "program_status",
-        value: "reset",
+        value: "resetProgram",
       }),
       headers: {
         "Content-Type": "application/json",

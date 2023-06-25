@@ -55,7 +55,7 @@ function ChooseProgramPage(props: {
       <div className="flex flex-col justify-start w-full h-full text-2xl bg-white border border-t-0 border-black border-1">
         {" "}
         {/*bg-program-choose-grey*/}
-        <div className="w-full h-auto p-4 text-2xl text-center text-black sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl 3xl:text-7xl 4xl:text-8xl">
+        <div className="w-full h-auto p-4 text-2xl text-center text-black sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 2xl:text-4xl 3xl:text-6xl 4xl:text-8xl">
           Program Selection
         </div>
         <div className="flex items-center justify-center flex-grow ">
@@ -84,7 +84,7 @@ function ProgramCard(props: any) {
       className="flex items-center justify-center w-1/4 mx-6 border border-black bg-unselectedbar-green hover:bg-selectedbar-green rounded-2xl h-1/3 drop-shadow-sm"
       onClick={() => props.func(props.id)}
     >
-      <span className="text-2xl sm:text-base lg:text-xl xl:text-3xl 2xl:text-4xl 3xl:text-5xl">
+      <span className="text-2xl sm:text-base lg:text-xl xl:text-3xl 2xl:text-3xl 3xl:text-4xl">
         {props.name}
       </span>
     </button>
