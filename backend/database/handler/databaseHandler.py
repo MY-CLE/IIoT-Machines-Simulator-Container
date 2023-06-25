@@ -58,8 +58,7 @@ class DatabaseHandler:
     def selectMachineProgram(name: str) -> MachineProgram:
        try:
         resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
-        print(resultSet)
-        return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
+        return MachineProgram(DatabaseObject(resultSet[0]))
        except EmptySetException as e:
            return None
    
@@ -145,7 +144,7 @@ class DatabaseHandler:
     @staticmethod
     def selectProtocolByName(description: str) -> Protocol:
         try:
-            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ? ", (description,))
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
             listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
             return Protocol(*listOfParameters)
         except EmptySetException as e:
