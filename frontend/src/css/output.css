@@ -920,29 +920,16 @@ video {
   border-width: 2px;
 }
 
-.border-y-4 {
-  border-top-width: 4px;
-  border-bottom-width: 4px;
-}
-
 .border-l-0 {
   border-left-width: 0px;
-}
-
-.border-t-0 {
-  border-top-width: 0px;
-}
-
-.border-l {
-  border-left-width: 1px;
 }
 
 .border-l-2 {
   border-left-width: 2px;
 }
 
-.border-l-4 {
-  border-left-width: 4px;
+.border-t-0 {
+  border-top-width: 0px;
 }
 
 .border-dashed {
