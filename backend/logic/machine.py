@@ -138,12 +138,12 @@ class Machine():
             }
             
     def getMachineStateSnapshot(self) -> dict:
-        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime),"isAdminParameter": False},
-                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime),"isAdminParameter": False},
-                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel), "isAdminParameter": True},
-                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption), "isAdminParameter": False},
-                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule), "isAdminParameter": True},
-                {"id":"6", "description": "Total Items", "value": int(self.totalItems), "isAdminParameter": True}]
+        parameters = [{"id": "1","description": "Runtime (s)", "value": int(self.machineRuntime),"isAdminParameter": False, "maxValue": 65535},
+                {"id":"2", "description": "Idle Time (s)", "value": int(self.machineIdleTime),"isAdminParameter": False, "maxValue": 65535},
+                {"id":"3","description": "Coolant Level (%)", "value": int(self.coolantLevel), "isAdminParameter": True, "maxValue": 100},
+                {"id":"4", "description": "Power Consumption (Wh)", "value": int(self.totalEnergyConsumption), "isAdminParameter": False, "maxValue": 65535},
+                {"id":"5", "description": "Capacity Laser Module (%)", "value": int(self.capacityLaserModule), "isAdminParameter": True, "maxValue": 100},
+                {"id":"6", "description": "Total Items", "value": int(self.totalItems), "isAdminParameter": True, "maxValue": 65535}]
         
         errors = []
         for index, error in enumerate(self.activeErrors):
@@ -162,6 +162,7 @@ class Machine():
             warnings.append(tempWarning)
             
         data = {
+            "isProgramRunning": self.isProgramRunning,
             "machineStateId": self.machineStateId,
             "machineStateName": self.machineStateName,
             "machineProtocolId": self.machineProtocolId,

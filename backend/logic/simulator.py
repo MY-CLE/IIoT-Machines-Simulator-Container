@@ -110,7 +110,7 @@ class Simulator:
         self.simulatedMachine.stopMachine(date)
 
     def startMachine(self) -> None:
-        self.simulatedMachine.resetMachine()
+        self.resetSimulator()
         self.simulatedProgram.resetToDefaultState()
         self.simulatorState = True
         self.simulatedMachine.startMachine(datetime.now())

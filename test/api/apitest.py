@@ -185,11 +185,15 @@ class TestApi(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text, "Program was successfully stopped")
 
-        # Reset program
-        response = self.client.patch('/api/simulations/machine/programs/current', json={'id':"1",'description':"program_status",'value': "reset"})
+        # Reset Machine
+        response = self.client.patch('/api/simulations/machine/programs/current', json={'id':"1",'description':"program_status",'value': "resetMachine"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.text, "Machine was successfully reset")
+
+        # Reset Program
+        response = self.client.patch('/api/simulations/machine/programs/current', json={'id':"1",'description':"program_status",'value': "resetProgram"})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.text, "Program was successfully reset")
-
 
 if __name__ == '__main__':
     unittest.main()
