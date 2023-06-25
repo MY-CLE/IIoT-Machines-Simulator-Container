@@ -9,10 +9,10 @@ on:
 
 jobs:
   testing:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7.0, 3.8.0, 3.9.0, 3.10.0, 3.11.0]
+        python-version: [3.7, 3.8, 3.9, 3.10, 3.11]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
