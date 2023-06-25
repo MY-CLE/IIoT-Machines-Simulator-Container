@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
-import { authenticate, clearNotifications, getErrors } from "../api-service";
+import { authenticate, clearNotifications, getErrors, resetMachine } from "../api-service";
 import { Errors, Machine, Parameter } from "../interfaces";
 import Modal from "react-modal";
 
@@ -89,6 +89,10 @@ function MachineStatePage(props: {
     setListModal(false);
   }
 
+  async function resetMachineValues(){
+      const response = await resetMachine();
+  }
+
   return (
     <div className="flex flex-col flex-nowrap h-full justify-start text-2xl p-4 bg-gray-200 border border-t-0 border-black border-1">
       <div className="w-full h-auto text-4xl text-left sm:text-base mb-2 lg:text-xl xl:text-2xl 2xl:text-3xl 3xl:text-4xl">
@@ -116,7 +120,9 @@ function MachineStatePage(props: {
               </div>
 
               <div className="flex justify-center items-center">
-                <button className="w-2/3 bg-yellow-400 border border-black rounded-md shadow h-14 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl">
+                <button className="w-2/3 bg-yellow-400 border border-black rounded-md shadow h-14 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl"
+                onClick={resetMachineValues}
+                >
                   Reset Machine
                 </button>
               </div>
@@ -261,7 +267,7 @@ function MachineStatePage(props: {
                   onClick={sendQuittieren}
                   className="w-full mt-5 border border-black rounded-lg "
                 >
-                  send
+                  Send
                 </button>
               </Modal>
             </div>
