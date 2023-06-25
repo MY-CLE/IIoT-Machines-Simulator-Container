@@ -11,6 +11,7 @@ from database.orm.user.admin import Admin
 from database.orm.machine.machineState import MachineState
 from database.orm.program.programState import ProgramState
 from database.orm.machine.protocol import Protocol
+from database.handler.emptySetEception import EmptySetException
 
 class DatabaseHandler:
 
@@ -28,7 +29,11 @@ class DatabaseHandler:
             DatabaseHandler._CURSOR.execute(query, parameter)
         resultSet: list[DatabaseObject] = DatabaseHandler._CURSOR.fetchall()
         DatabaseHandler._CURSOR.close()
-        return resultSet
+        if(len(resultSet) == 0):
+            raise EmptySetException()
+        else:
+            return resultSet
+            
     
     def save(query: str, values: tuple) -> None:
         DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
@@ -48,8 +53,11 @@ class DatabaseHandler:
     
     @staticmethod
     def selectMachineProgram(name: str) -> MachineProgram:
-       resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
-       return MachineProgram(DatabaseObject(resultSet[0]))
+       try:
+        resultSet: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program WHERE machine_program_description = ?", (name,))
+        return MachineProgram(DatabaseObject(resultSet[0]))
+       except EmptySetException as e:
+           return None
    
     @staticmethod
     def selectAllMachinePrograms() -> list[MachineProgram]:
@@ -61,8 +69,11 @@ class DatabaseHandler:
     
     @staticmethod
     def selectMachineProgramById(id: str) -> MachineProgram:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = '{id}'")
-        return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
+        try:
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * FROM machine_program WHERE machine_program_id = ?", (id,))
+            return MachineProgram(*DatabaseObject(resultSet[0]).getResultRow())
+        except EmptySetException as e:
+            return None
     
     #get all possible warning messages within the Database
     @staticmethod
@@ -103,27 +114,38 @@ class DatabaseHandler:
     
     @staticmethod
     def selectMachineState(id: int) -> MachineState:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state WHERE machine_state_id= ?", (id,))
-        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow()
-        return MachineState(*listOfParameters)
+        try:
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_state WHERE machine_state_id = ?", (id,))
+            return MachineState(*DatabaseObject(resultSet[0]).getResultRow())
+        except EmptySetException as e:
+            return None
     
     @staticmethod
     def selectProgramState(id: int) -> ProgramState:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id= ?", (id,))
-        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
-        return ProgramState(*listOfParameters)
+        try:
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from program_state WHERE program_state_id = ?", (id,))
+            listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+            return ProgramState(*listOfParameters)
+        except EmptySetException as e:
+            return None
     
     @staticmethod
     def selectProtocolById(id: int) -> Protocol:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE machine_protocol_id= ?", (id,))
-        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
-        return Protocol(*listOfParameters)
+        try:
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE machine_protocol_id= ?", (id,))
+            listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+            return Protocol(*listOfParameters)
+        except EmptySetException as e:
+            return None
 
     @staticmethod
     def selectProtocolByName(description: str) -> Protocol:
-        resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
-        listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
-        return Protocol(*listOfParameters)
+        try:
+            resultSet: list[DatabaseObject] = DatabaseHandler.select(f"SELECT * from machine_protocol WHERE protocol_description= ?", (description,))
+            listOfParameters: list[object] = DatabaseObject(resultSet[0]).getResultRow() 
+            return Protocol(*listOfParameters)
+        except EmptySetException as e:
+            return None
     
     @staticmethod
     def storeMachineState(machineState: MachineState) -> None:
@@ -154,8 +176,9 @@ class DatabaseHandler:
     @staticmethod
     def deleteMachineStateById(id: int) -> None:
         machineState: MachineState = DatabaseHandler.selectMachineState(id)
-        DatabaseHandler.delete("DELETE FROM machine_state WHERE machine_state_id = ?", (id,))
-        DatabaseHandler.deleteProgramState(machineState.getProgramState())
+        if(machineState != None):
+            DatabaseHandler.delete("DELETE FROM machine_state WHERE machine_state_id = ?", (id,))
+            DatabaseHandler.deleteProgramState(machineState.getProgramState())
 
 
 
