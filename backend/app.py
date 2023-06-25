@@ -40,20 +40,29 @@ def simulations():
 @app.route('/api/simulations/<int:simulationId>', methods=['PUT', 'DELETE'])
 def simulation(simulationId):
     if request.method == 'PUT':
-        simulator.loadSimulation(simulationId) #load a selected sim
-        return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
+        if simulationId == 0:
+            simulator.startMachine()
+            return make_response("Simulation created successfully", 201)
+        else:
+            simulator.loadSimulation(simulationId) #load a selected sim
+            return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
     
     elif request.method == 'DELETE':
-        simulator.deleteSimulationById(simulationId) #delete a selected sim
-        return make_response(f"Simulation '{simulationId}' was deleted successfully", 200)
-
+        if DatabaseHandler.selectMachineState(simulationId) != None: #delete a selected sim
+            simulator.deleteSimulationById(simulationId)
+            return make_response(f"Simulation '{simulationId}' was deleted successfully", 200)
+        else:
+            return make_response(f"Simulation '{simulationId}' does not exist", 400)
 # ------------------------------------------------------------------------------
 # Protocol
 @app.route('/api/simulations/protocol', methods=['PATCH'])
 def simulationsProtocol():
   if request.method == 'PATCH':
-    simulator.setProtocol(request.form['protocol'])
-    return make_response(f"Protocol '{request.form['protocol']}' was set successfully", 200)
+    if request.form['protocol'] == 'OPCUA' or request.form['protocol'] == 'Modbus/TCP' or request.form['protocol'] == 'None':
+        simulator.setProtocol(request.form['protocol'])
+        return make_response(f"Protocol '{request.form['protocol']}' was set successfully", 200)
+    else:
+        return make_response(f"Protocol '{request.form['protocol']}' is not supported", 400)
 
 # ------------------------------------------------------------------------------
 # Machine
@@ -61,7 +70,7 @@ def simulationsProtocol():
 def machines():
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return make_response(jsonify(simulator.simulatedMachine.getMachineStateSnapshot())) #give back the current machine state
+        return make_response(jsonify(simulator.simulatedMachine.getMachineStateSnapshot()), 200) #give back the current machine state
     elif request.method == 'PATCH':
         simulator.updateMachineStateParameters(request.get_json())
         return make_response("Machine state parameters updated successfully", 200)  #change parameter(s) in the machine state
@@ -87,15 +96,15 @@ def error():
         error_id = request.form['error_id']
         warning_id = request.form['warning_id']
 
-        if error_id is None and warning_id is None:
+        if error_id == '' and warning_id == '':
             return make_response('No Error Id or Warning Id provided', 400)
-        if error_id:
+        if error_id and warning_id == '':
             simulator.notification.setSelectedError(error_id)
             simulator.stopProgram()
             return make_response('Error was successfully set', 200)
-        elif warning_id:
+        elif warning_id and error_id == '':
             simulator.notification.setSelectedWarning(warning_id)
-            return make_response('Warnings was successfully set', 200)
+            return make_response('Warning was successfully set', 200)
 
     elif request.method == 'PATCH':
         simulator.notification.errors = []
@@ -104,13 +113,14 @@ def error():
 
 # ------------------------------------------------------------------------------
 # Programs
-@app.route('/api/simulations/machine/programs')
+@app.route('/api/simulations/machine/programs', methods=['GET'])
 def allPrograms():
-    listOfPrograms = simulator.getPrograms()
-    data = {"programs": []}
-    for program in listOfPrograms:
-        data["programs"].append(program.toJSON())
-    return make_response(jsonify(data), 200) #list of all programs
+    if request.method == 'GET':
+        listOfPrograms = simulator.getPrograms()
+        data = {"programs": []}
+        for program in listOfPrograms:
+            data["programs"].append(program.toJSON())
+        return make_response(jsonify(data), 200) #list of all programs
 
 # ------------------------------------------------------------------------------
 # Current Program

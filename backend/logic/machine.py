@@ -52,10 +52,12 @@ class Machine():
     
     def calculateIdleTime(self, nowTime: datetime) -> None:
         self.lastUpdate = nowTime
-        if self.isProgramRunning == True:
+        if self.isProgramRunning:
             self.machineIdleTime = 0
         else:
-            self.machineIdleTime = self.machineIdleTime + (nowTime - self.getMachineStopTime()).total_seconds()
+            machineStopTime = self.getMachineStopTime()
+            if machineStopTime is not None:
+                self.machineIdleTime += (nowTime - machineStopTime).total_seconds()
             self.setMachineStopTime(nowTime)
 
     def startMachine(self, startTime: datetime) -> None:

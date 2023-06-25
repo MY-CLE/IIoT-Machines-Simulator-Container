@@ -49,3 +49,15 @@ class MachineProgram(object):
             "powerConsumptionLaserModule": self.powerConsumptionLaserModule,
             "timePerItem": self.timePerItem
         }
+    
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return (
+            self.ID == other.ID
+            and self.description == other.description
+            and self.laserModuleWeardown == other.laserModuleWeardown
+            and self.coolantConsumption == other.coolantConsumption
+            and self.powerConsumptionLaserModule == other.powerConsumptionLaserModule
+            and self.timePerItem == other.timePerItem
+        )
+        return False
