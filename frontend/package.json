@@ -6,7 +6,6 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
@@ -26,7 +25,8 @@
     "start:mock": "cross-env REACT_APP_SERVER_URL=https://1e5e6f35-1e8a-4c16-ad8d-916d7af4b6a9.mock.pstmn.io react-scripts start && tsc -w",
     "start:local": "cross-env REACT_APP_SERVER_URL=http://127.0.0.1:5000/api react-scripts start && tsc -w",
     "build": "tsc && cross-env REACT_APP_SERVER_URL=/api react-scripts build ",
-    "test": "react-scripts test",
+    "test": "jest",
+    "test:watch": "jest --watchAll --verbose --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -48,6 +48,9 @@
     ]
   },
   "devDependencies": {
-    "@types/react-modal": "^3.16.0"
+    "@types/jest": "^29.5.2",
+    "@types/react-modal": "^3.16.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0"
   }
 }

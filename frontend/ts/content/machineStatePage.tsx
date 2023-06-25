@@ -20,19 +20,7 @@ const customStyles = {
 };
 Modal.setAppElement("#root");
 
-function MachineStatePage(props: {
-  state: {
-    simulation_id: number;
-    program_id: number;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      simulation_id: number;
-      program_id: number;
-    }>
-  >;
-  machine: Machine;
-}) {
+function MachineStatePage(props: { machine: Machine }) {
   const [errors, setErrors] = useState<Errors>({
     errors: [{ id: 0, name: "" }],
     warnings: [{ id: 0, name: "" }],
