@@ -41,6 +41,7 @@ def simulations():
 def simulation(simulationId):
     if request.method == 'PUT':
         if simulationId == 0:
+            #reset machine
             simulator.startMachine()
             return make_response("Simulation created successfully", 201)
         else:

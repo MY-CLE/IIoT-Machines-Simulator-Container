@@ -1,15 +1,15 @@
 // icon:alert-circle | Entypo https://feathericons.com/ | Cole Bemis
 import * as React from "react";
 
-function IconError(props: React.SVGProps<SVGSVGElement>) {
+function IconError(props: {hasElements: boolean}) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="48"
       height="48"
       viewBox="0 0 24 24"
-      fill="#ff0000"
-      stroke="#000000"
+      fill={props.hasElements ? "#ff0000" : "gray"}
+      stroke={props.hasElements ? "#000000" : "gray"}
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"

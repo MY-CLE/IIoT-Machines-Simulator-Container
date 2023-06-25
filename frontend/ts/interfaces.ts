@@ -40,5 +40,5 @@ export interface StatusBarValues {
   error: number;
   warning: number;
   safety_door: boolean;
-  lock: boolean;
+  coolantLevel: number;
 }

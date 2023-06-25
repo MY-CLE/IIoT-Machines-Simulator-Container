@@ -29,7 +29,7 @@ export async function getSimultions(): Promise<{
 export async function createSimulation(): Promise<Response | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/${1}`, {
+    response = await fetch(`${url}/simulations/${0}`, {
       method: "PUT",
       redirect: "follow",
     });
@@ -391,7 +391,7 @@ export async function getPrograms(): Promise<Response | null> {
     }
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
+    //enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }

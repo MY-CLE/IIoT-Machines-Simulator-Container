@@ -37,7 +37,7 @@ function LandingPage(props: {
   >;
 }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [simulations, setSimulations] = useState<[Simulation] | []>([]);
+  const [simulations, setSimulations] = useState<Simulation[] | []>([]);
   const navigate = useNavigate();
 
   async function openModal() {
@@ -61,7 +61,7 @@ function LandingPage(props: {
     console.log(response);
 
     if (response) {
-      navigate(`${url}/machine/`);
+      navigate(`${url}/machine`);
     }
   }
   return (
