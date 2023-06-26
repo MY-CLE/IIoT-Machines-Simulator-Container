@@ -1,5 +1,6 @@
-from datetime import datetime
 import json
+from datetime import datetime
+from typing import List
 
 from database.handler.databaseHandler import DatabaseHandler
 
@@ -12,16 +13,16 @@ class Notifications(object):
         self.initPossibleErrors()
         self.initPossibleWarnings()
 
-    def getErrors(self) -> list:
+    def getErrors(self) -> List:
         return self.errors
     
-    def getWarnings(self) -> list:
+    def getWarnings(self) -> List:
         return self.warnings
     
-    def getPossibleErrors(self) -> list:
+    def getPossibleErrors(self) -> List:
         return self.possibleErrors
     
-    def getPossibleWarnings(self) -> list:
+    def getPossibleWarnings(self) -> List:
         return self.possibleWarnings
     
     #in correct id order

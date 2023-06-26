@@ -1,6 +1,7 @@
 import logging
 import threading
 
+from typing import List
 from datetime import datetime
 
 from logic.machine import Machine
@@ -159,7 +160,7 @@ class Simulator:
         if(self.simulatedMachine.isProgramRunning):
             # calculate runtime with curret time
             # self.times.calculateRunTime(time)
-            updatedParameter: list = self.simulatedProgram.updateProgram(time)
+            updatedParameter: List = self.simulatedProgram.updateProgram(time)
             machineRuntime = self.simulatedMachine.updateMachine(
                 time, *updatedParameter)
             self.simulatedProgram.checkMachineRuntimeValue(machineRuntime)

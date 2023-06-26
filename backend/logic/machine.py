@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 import logging
 from venv import logger
 from database.orm.machine.machineState import MachineState
@@ -17,8 +18,8 @@ class Machine():
         self.programStateId: int = None
         
         #Errors & Warnings
-        self.activeErrors: list = []
-        self.activeWarnings: list = []
+        self.activeErrors: List = []
+        self.activeWarnings: List = []
 
         #Active
         self.isProgramRunning: bool = False
@@ -83,7 +84,7 @@ class Machine():
         self.setMachineStartTime(datetime.now())
         self.lastUpdate = None
         
-    def updateMachineErrors(self, newErrors: list, newWarnings: list):
+    def updateMachineErrors(self, newErrors: List, newWarnings: List):
         self.activeErrors = newErrors
         self.activeWarnings = newWarnings
         logging.info("Errors: " + str(self.activeErrors))
@@ -291,16 +292,16 @@ class Machine():
     def setCoolantLevel(self, coolantLevel: int) -> None:
         self.coolantLevel = coolantLevel
         
-    def getActiveErrors(self) -> list:
+    def getActiveErrors(self) -> List:
         return self.activeErrors
     
-    def setActiveErrors(self, activeErrors: list) -> None:
+    def setActiveErrors(self, activeErrors: List) -> None:
         self.activeErrors = activeErrors
     
-    def getActiveWarnings(self) -> list:
+    def getActiveWarnings(self) -> List:
         return self.activeWarnings
     
-    def setActiveWarnings(self, activeWarnings: list) -> None:
+    def setActiveWarnings(self, activeWarnings: List) -> None:
         self.activeWarnings = activeWarnings
         
     def setIsProgramRunning(self, isProgramRunning: bool) -> None:

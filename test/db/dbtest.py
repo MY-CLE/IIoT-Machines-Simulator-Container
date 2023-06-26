@@ -2,6 +2,7 @@ import os
 import sys
 import sqlite3
 import unittest
+from typing import List
 from datetime import datetime
 
 os.chdir("../backend/")
@@ -78,7 +79,7 @@ class HandlerTest(unittest.TestCase):
         self.assertEqual(machineProgram, None)
 
     def test_selectAllMachinePrograms(self) -> None:
-        machinePrograms: list[MachineProgram] = DatabaseHandler.selectAllMachinePrograms()
+        machinePrograms: List[MachineProgram] = DatabaseHandler.selectAllMachinePrograms()
 
         #ensure PK is in ascending order and objects match 
         pkValue: int = 0
@@ -97,7 +98,7 @@ class HandlerTest(unittest.TestCase):
     # tests for all DB-Handler methods that use Warning class
 
     def test_selectAllWaringMessages(self) -> None:
-        warningMessages: list[Warning] = DatabaseHandler.selectWarningMessages()
+        warningMessages: List[Warning] = DatabaseHandler.selectWarningMessages()
 
         #ensure PK is in ascending order
         pkValue: int = 0
@@ -114,7 +115,7 @@ class HandlerTest(unittest.TestCase):
     # test for alls DB-Handler methods that use Error class
 
     def test_selectAllErrorMessages(self) -> None:
-        errorMessages: list[Error] = DatabaseHandler.selectErrorMessages()
+        errorMessages: List[Error] = DatabaseHandler.selectErrorMessages()
 
         #ensure PK is in ascending order
         pkValue: int = 0
@@ -131,7 +132,7 @@ class HandlerTest(unittest.TestCase):
      # test for alls DB-Handler methods that use Admin class
     
     def test_selectAllAdminUsers(self) -> None:
-        adminUsers: list[Admin] = DatabaseHandler.selectAdminUsers()
+        adminUsers: List[Admin] = DatabaseHandler.selectAdminUsers()
 
         #ensure PK is in ascending order
         pkValue: int = 0
@@ -158,7 +159,7 @@ class HandlerTest(unittest.TestCase):
 
 
     def test_selectAllMachineStates(self) -> None:
-        machineStates: list[MachineState] = DatabaseHandler.selectMachineStates()
+        machineStates: List[MachineState] = DatabaseHandler.selectMachineStates()
 
         #ensure PK is in ascending order and objects match
         pkValue: int = 0

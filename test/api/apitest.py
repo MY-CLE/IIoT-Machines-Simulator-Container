@@ -25,9 +25,9 @@ class TestApi(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        with open(cls.DB_PATH, 'w') as file:
-            file.truncate()
-        cls.create_and_populate_table()
+        #with open(cls.DB_PATH, 'w') as file:
+        #    file.truncate()
+        #cls.create_and_populate_table()
 
     @staticmethod
     def create_and_populate_table():
