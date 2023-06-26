@@ -46,17 +46,17 @@ function App() {
       setSelectionBarValue("machine");
       getCurrentProgramData();
       getMachineStatePageData();
-      const id = setInterval(() => getMachineStatePageData(), 5000);
+      const id = setInterval(() => getMachineStatePageData(), 1000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/program/current") {
       setSelectionBarValue("program");
       getCurrentProgramData();
-      const id = setInterval(() => getCurrentProgramData(), 5000);
+      const id = setInterval(() => getCurrentProgramData(), 1000);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/programs") {
       setSelectionBarValue("program");
       getProgramsPageData();
-      const id = setInterval(() => getProgramsPageData(), 5000);
+      const id = setInterval(() => getProgramsPageData(), 1000);
       setIntervallId(id);
     }
   }, [location]);
