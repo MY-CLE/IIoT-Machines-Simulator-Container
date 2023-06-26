@@ -41,8 +41,11 @@ function App() {
   const [intervallId, setIntervallId] = useState<any>(0);
 
   useEffect(() => {
+    console.log("useEffect", intervallId);
+
     clearInterval(intervallId);
-    //console.log(location.pathname);
+
+    console.log(location.pathname);
     console.log("refresh: " + refresh);
     if (location.pathname === "/simulator/machine") {
       setSelectionBarValue("machine");
@@ -64,18 +67,20 @@ function App() {
       const id = setInterval(() => getProgramsPageData(), refresh);
       setIntervallId(id);
     }
+    console.log("useEffect2", intervallId);
   }, [location, refresh]);
 
   async function getMachineStatePageData() {
+    console.log("getMachineStatePageData", refresh);
     let machine = await getMachine();
     if (!machine) return;
     setMachine(machine);
     let values: StatusBarValues = getStatusbarValues(machine);
-    setMachine(machine);
     setStatuesBarValues(values);
   }
 
   async function getCurrentProgramData() {
+    console.log("getCurrentProgramData", refresh);
     let machine = await getMachine();
     let program = await getProgram();
     let currentAmount = undefined;
@@ -114,6 +119,7 @@ function App() {
   }
 
   async function getProgramsPageData() {
+    console.log("getProgramsPageData", refresh);
     let machine = await getMachine();
     if (!machine) return;
     let values: StatusBarValues = getStatusbarValues(machine);
