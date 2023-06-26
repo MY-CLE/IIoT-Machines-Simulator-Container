@@ -17,7 +17,7 @@ from database.orm.machine.protocol import Protocol
 
 class HandlerTest(unittest.TestCase):
     
-    #setup the connection to the database and create a cursor before the tests are started
+    #setup the connection to the database and create a cursor before the tests are started d
     DB_PATH = "../backend/database/machine-sim.db"
 
     @classmethod
