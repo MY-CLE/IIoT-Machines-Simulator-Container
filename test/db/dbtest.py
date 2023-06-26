@@ -1,7 +1,7 @@
-import unittest
-import sys
 import os
+import sys
 import sqlite3
+import unittest
 from datetime import datetime
 
 sys.path.append("..")
@@ -14,28 +14,47 @@ from backend.database.orm.machine.machineState import MachineState
 from backend.database.orm.program.programState import ProgramState
 from backend.database.orm.machine.protocol import Protocol
 
-class HadlerTest(unittest.TestCase):
+class HandlerTest(unittest.TestCase):
     
     #setup the connection to the database and create a cursor before the tests are started
-    @classmethod
-    def setUpClass(cls) -> None:
-        DatabaseHandler._CONNECTION = sqlite3.connect("../test/db/test-machine-sim.db")
-        DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
-        os.chdir("db")
+    DB_PATH = "../backend/database/machine-sim.db"
 
-    # remove the test db file after all tests passed
     @classmethod
-    def tearDownClass(cls) -> None:
-        os.system("rm test-machine-sim.db")
+    def setUpClass(cls):
+        HandlerTest.setUp(cls)
+
+    @classmethod
+    def tearDownClass(cls):
+        HandlerTest.tearDown(cls)
+
+    @staticmethod
+    def create_and_populate_table():
+        conn = sqlite3.connect(HandlerTest.DB_PATH, check_same_thread=False)
+        cursor = conn.cursor()
+
+        with open("../backend/database/create_tables.sql", "r") as create_file:
+            create_script = create_file.read()
+            cursor.executescript(create_script)
+            conn.commit()
+
+        with open("../backend/database/populate_tables.sql", "r") as populate_file:
+            populate_script = populate_file.read()
+            cursor.executescript(populate_script)
+
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+    def setUp(self):
+        if os.path.exists(self.DB_PATH):
+            with open(self.DB_PATH, 'w') as file:
+                file.truncate()
+        self.create_and_populate_table()
     
-    # create and populate all tables before each test
-    def setUp(self) -> None:
-        os.system("sqlite3 test-machine-sim.db < create_test_tables.sql")
-        os.system("sqlite3 test-machine-sim.db < populate_test_tables.sql")
-    
-    # remove all tables after each test
-    def tearDown(self) -> None:
-        os.system("sqlite3 test-machine-sim.db < remove_test_tables.sql")
+    def tearDown(self):
+        with open(self.DB_PATH, 'w') as file:
+            file.truncate()
+        self.create_and_populate_table()
 
     # tests for all DB-Handler methods that use MachineProgram class
     
@@ -130,7 +149,7 @@ class HadlerTest(unittest.TestCase):
     def test_selectMachineStateByExistingID(self) -> None:
         machineState: MachineState = DatabaseHandler.selectMachineState(1)
         self.assertNotEqual(machineState, None)
-        self.assertEqual(machineState.getID(), 1)
+        self.assertEqual(machineState.getId(), 1)
 
     def test_selectMachineStateByWrongID(self) -> None:
         machineState: MachineState = DatabaseHandler.selectMachineState(100)
@@ -144,7 +163,7 @@ class HadlerTest(unittest.TestCase):
         pkValue: int = 0
         for machineState in machineStates:
             pkValue = pkValue + 1
-            self.assertEqual(machineState.getID(), pkValue)
+            self.assertEqual(machineState.getId(), pkValue)
             self.assertEqual(machineState, DatabaseHandler.selectMachineState(pkValue))
         
         #enusere highest PK matches rowcount in table
@@ -217,7 +236,7 @@ class HadlerTest(unittest.TestCase):
 
         #store the mock object and immediately delete it afterwards
         DatabaseHandler.storeMachineState(machineState)
-        DatabaseHandler.deleteMachineStateById(machineState.getID())
+        DatabaseHandler.deleteMachineStateById(machineState.getId())
 
         # get the number of entries in the machine_state table after deletion
         DatabaseHandler._CURSOR = DatabaseHandler._CONNECTION.cursor()
@@ -231,7 +250,7 @@ class HadlerTest(unittest.TestCase):
 
         #ensure the 
         self.assertEqual(resultSizeAfter, resultSizeBefore)
-        self.assertEqual(DatabaseHandler.selectMachineState(machineState.getID()), None)
+        self.assertEqual(DatabaseHandler.selectMachineState(machineState.getId()), None)
 
         #ensure also foreign key relationships are removed
         self.assertNotEqual(resultSizeBeforeProgramState, resultSizeAfterProgramState)

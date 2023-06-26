@@ -97,7 +97,7 @@ class Machine():
         return self.machineRuntime
 
     def loadMachineState(self, machineState: MachineState):
-        self.isProgramRunning =False
+        self.isProgramRunning = False
 
         self.machineStateId = machineState.getId()
         self.machineStateName = machineState.getName()
