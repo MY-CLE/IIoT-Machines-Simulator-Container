@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
-import { authenticate, clearNotifications, getErrors, resetMachine } from "../api-service";
+import { authenticate, clearNotifications, getErrors, getProgram, resetMachine } from "../api-service";
 import { Errors, Machine, Parameter } from "../interfaces";
 import Modal from "react-modal";
 
@@ -33,7 +33,8 @@ function MachineStatePage(props: {
       program_id: number;
     }>
   >;
-  machine: Machine;
+  machine: Machine,
+  getProgramState: any;
 }) {
   const [errors, setErrors] = useState<Errors>({
     errors: [{ id: 0, name: "" }],
@@ -91,6 +92,7 @@ function MachineStatePage(props: {
 
   async function resetMachineValues(){
       const response = await resetMachine();
+      props.getProgramState();
   }
 
   return (
@@ -169,7 +171,7 @@ function MachineStatePage(props: {
               >
                 
                   <div className="flex flex-col items-center justify-between w-full h-full bg-white border border-gray-500">
-                    <h1 className="mt-5 text-xl">Acknowledge Errors & Warning</h1>
+                    <h1 className="mt-5 text-xl font-medium">Acknowledge Errors & Warnings </h1>
                     <div className="w-3/4">
                       {props.machine.errorState.errors.length > 0 && (
                         <>

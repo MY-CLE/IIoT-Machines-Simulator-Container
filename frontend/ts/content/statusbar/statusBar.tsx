@@ -16,13 +16,14 @@ export function StatusBar(props: {
   warning: number;
   safety_door: boolean;
   coolantLevel: number;
+  isProgramRunning: boolean;
 }) {
   let date = new Date();
   return (
     <header>
       <div className="flex flex-row items-center justify-start w-full flex-nowrap h-fit">
         <StatusStatus />
-        <StatusPower />
+        <StatusPower isProgramRunning={props.isProgramRunning} errors={props.error}/>
         <StatusTime value={props.runtime} />
         <StatusUtil value={props.utilization} />
         <StatusCoolantLevel value={props.coolantLevel} />

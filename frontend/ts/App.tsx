@@ -24,6 +24,7 @@ function App() {
     warning: 0,
     safety_door: false,
     coolantLevel: 0,
+    isProgramRunning: false,
   });
   const [program, setProgram] = useState({
     description: "",
@@ -33,6 +34,7 @@ function App() {
   const [machine, setMachine] = useState({
     parameters: [],
     errorState: { errors: [], warnings: [] },
+    isProgramRunning: false,
   } as Machine);
 
   const [intervallId, setIntervallId] = useState<any>(0);
@@ -99,6 +101,7 @@ function App() {
     let runtime = machineState.parameters[0].value;
     let coolantLevel = machineState.parameters[2].value;
     let laserModuleCapacity = machineState.parameters[4].value;
+    let isProgramRunning = machineState.isProgramRunning;
     let errors = 0,
       warnings = 0,
       safetyDoorStatus = false;
@@ -118,6 +121,7 @@ function App() {
       error: errors,
       safety_door: safetyDoorStatus,
       coolantLevel: coolantLevel,
+      isProgramRunning: isProgramRunning,
     };
   }
 
@@ -146,6 +150,7 @@ function App() {
                   warning={statuesBarValues.warning}
                   safety_door={statuesBarValues.safety_door}
                   coolantLevel={statuesBarValues.coolantLevel}
+                  isProgramRunning={statuesBarValues.isProgramRunning}
                 />
               </div>
               {selectionBarValue === "program" && (
@@ -173,6 +178,7 @@ function App() {
                   state={state}
                   setState={setState}
                   machine={machine}
+                  getProgramState={getCurrentProgramData}
                 />
               </>
             }
