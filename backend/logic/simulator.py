@@ -286,8 +286,9 @@ class Simulator:
         machineState = DatabaseHandler.selectMachineState(simulationId)
         programState = DatabaseHandler.selectProgramState(
             machineState.getProgramState())
-        self.protocol = DatabaseHandler.selectProtocolById(
+        protocol = DatabaseHandler.selectProtocolById(
             machineState.getMachineProtocol()).getProtocolDescription()
+        self.setProtocol(protocol)
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
         self.loadMachine()
