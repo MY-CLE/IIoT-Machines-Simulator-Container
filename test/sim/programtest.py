@@ -43,8 +43,8 @@ class TestProgram(unittest.TestCase):
         self.assertEqual(self.program.programRuntime, 0)
         self.assertEqual(self.program.programId, machineProgram.getID())
         self.assertEqual(self.program.programProgramDescription, machineProgram.getDescription())
-        self.assertEqual(self.program.programLaserModuleWeardown, machineProgram.getLaserModuleWeardown()*0.01)
-        self.assertEqual(self.program.programCoolantConsumption, machineProgram.getCoolantConsumption()*0.01)
+        self.assertEqual(self.program.programLaserModuleWeardown, round(machineProgram.getLaserModuleWeardown()*0.0001, 4))
+        self.assertEqual(self.program.programCoolantConsumption, machineProgram.getCoolantConsumption()*0.001)
         self.assertEqual(self.program.programLaserModulePowerConsumption, machineProgram.getLaserModulePowerConsumption())
         self.assertEqual(self.program.programTimePerItem, machineProgram.getTimePerItem()) 
 
