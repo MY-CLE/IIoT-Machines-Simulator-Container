@@ -58,37 +58,33 @@ function App() {
   }, [location]);
 
   async function getMachineStatePageData() {
-    let machineStateRes = await getMachine();
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-    let values: StatusBarValues = getStatusbarValues(machineState);
-    setMachine(machineState);
+    let machine = await getMachine();
+    if (!machine) return;
+    setMachine(machine);
+    let values: StatusBarValues = getStatusbarValues(machine);
+    setMachine(machine);
     setStatuesBarValues(values);
   }
 
   async function getCurrentProgramData() {
-    let machineStateRes = await getMachine();
-    let programRes = await getProgram();
+    let machine = await getMachine();
+    let program = await getProgram();
 
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-
-    if (!programRes) return;
-    let program = (await programRes.json()) as Program;
-
+    if (!machine) return;
+    if (!program) return;
+    setMachine(machine);
     if (program.parameters) {
       setProgram(program);
     }
 
-    let values: StatusBarValues = getStatusbarValues(machineState);
+    let values: StatusBarValues = getStatusbarValues(machine);
     setStatuesBarValues(values);
   }
 
   async function getProgramsPageData() {
-    let machineStateRes = await getMachine();
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-    let values: StatusBarValues = getStatusbarValues(machineState);
+    let machine = await getMachine();
+    if (!machine) return;
+    let values: StatusBarValues = getStatusbarValues(machine);
     setStatuesBarValues(values);
   }
 

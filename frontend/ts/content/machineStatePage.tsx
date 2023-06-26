@@ -5,6 +5,7 @@ import IconQuitLock from "../icons/iconQuitLock";
 import { authenticate, clearNotifications, getErrors } from "../api-service";
 import { Errors, Machine, Parameter } from "../interfaces";
 import Modal from "react-modal";
+import { AxiosResponse } from "axios";
 
 const customStyles = {
   content: {
@@ -44,9 +45,9 @@ function MachineStatePage(props: {
     let errorsValues: Errors | null = null;
     (async () => {
       // when the page is loaded the first time, the errors are fetched
-      let newErrors: Response | null = await getErrors();
+      let newErrors: AxiosResponse | null = await getErrors();
       if (newErrors) {
-        errorsValues = (await newErrors.json()) as Errors;
+        errorsValues = (await newErrors.data) as Errors;
         setErrors(errorsValues);
         return;
       }
@@ -71,9 +72,9 @@ function MachineStatePage(props: {
     let response: any = null;
     response = await authenticate(password);
 
-    if (response.status == 200) {
+    if (response) {
       let clearErrors = await clearNotifications();
-      if (clearErrors && clearErrors.status == 200) {
+      if (clearErrors && clearErrors.status === 200) {
         closeModal();
       }
     }
