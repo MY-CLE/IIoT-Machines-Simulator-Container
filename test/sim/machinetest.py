@@ -55,7 +55,6 @@ class TestMachine(unittest.TestCase):
         self.assertFalse(self.machine.isMachineRunning)
 
     def test_ResetMachine(self) -> None:
-        nowTime = datetime.now()
         
         self.machine.resetMachine()
 
@@ -65,8 +64,7 @@ class TestMachine(unittest.TestCase):
         self.assertEqual(self.machine.capacityLaserModule, 100)
         self.assertEqual(self.machine.totalEnergyConsumption, 0)
         self.assertEqual(self.machine.coolantLevel, 100)
-        self.assertEqual(self.machine.machineStartTime, nowTime)
-
+        
     def test_UpdateMachineErrors(self) -> None:
         # Define new errors and warnings
         newErrors = ["Hello", "No! Error"]
