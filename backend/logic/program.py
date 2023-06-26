@@ -202,6 +202,7 @@ class Program:
     def startProgram(self, startTime: datetime) -> None:
         self.isProgramRunning = True
         self.programStartTime = startTime
+        self.programTimeSincelastUpdate = None
 
     def stopProgram(self, stopTime: datetime) -> None:
         self.isProgramRunning = False

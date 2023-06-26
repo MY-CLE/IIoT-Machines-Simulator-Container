@@ -146,7 +146,7 @@ def currentProgram():
             simulator.stopProgram()
             return make_response("Program was successfully stopped", 200)
         elif(json['value'] == "resetMachine"):
-            simulator.simulatedMachine.resetMachine()
+            simulator.startMachine()
             return make_response("Machine was successfully reset", 200)
         elif(json['value'] == "resetProgram"):
             simulator.simulatedProgram.resetProgram()
