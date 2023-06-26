@@ -74,14 +74,16 @@ class Machine():
         self.isMachineRunning = False
 
     def resetMachine(self):
+        nowTime = datetime.now()
         self.isProgramRunning = False
+        self.setMachineStopTime(nowTime)
         self.setMachineIdleTime(0)
         self.setMachineRuntime(0)
         self.setTotalItems(0)
         self.setCapacityLaserModule(100)
         self.setTotalEnegeryConsumption(0)
         self.setCoolantLevel(100)
-        self.setMachineStartTime(datetime.now())
+        self.setMachineStartTime(nowTime)
         self.lastUpdate = None
         
     def updateMachineErrors(self, newErrors: List, newWarnings: List):
@@ -99,7 +101,11 @@ class Machine():
             self.totalItems =  self.totalItems + newItems
             self.totalEnergyConsumption = self.totalEnergyConsumption + powerConsumptionPerS * self.timeSinceLastUpdate
             self.coolantLevel = self.coolantLevel - coolantConsumptionPerS * self.timeSinceLastUpdate
+            if self.coolantLevel <= 0:
+                self.coolantLevel = 0
             self.capacityLaserModule = self.capacityLaserModule - laserModuleWeardown*self.timeSinceLastUpdate
+            if self.capacityLaserModule <= 0:
+                self.capacityLaserModule = 0
         return self.machineRuntime
 
     def loadMachineState(self, machineState: MachineState):

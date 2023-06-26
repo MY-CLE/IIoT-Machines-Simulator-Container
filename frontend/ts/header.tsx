@@ -5,6 +5,7 @@ import IconSave from "./icons/iconSave";
 import Modal from "react-modal";
 import { saveSimulation, setProtocol } from "./api-service";
 import { useNavigate } from "react-router-dom";
+import { enqueueSnackbar } from "notistack";
 
 Modal.setAppElement("#root");
 const customStyles = {
@@ -20,11 +21,19 @@ const customStyles = {
   },
 };
 
-export function Header(props: { isLandingPage: boolean }) {
+export function Header(props: {
+  isLandingPage: boolean;
+  setRefresh: React.Dispatch<React.SetStateAction<number>>;
+  refresh: number;
+}) {
   const navigation = useNavigate();
   const [openSettingsModal, setOpenSettingsModal] = React.useState(false);
   const [selectedProtocol, setSelectedProtocol] =
     React.useState<string>("None");
+  const [selectedRefreshTime, setSelectedRefreshTime] = React.useState<string>(
+    (props.refresh / 1000).toString()
+  );
+
   const [openSaveSimulationModal, setOpenSaveSimulationModal] =
     React.useState(false);
 
@@ -54,9 +63,17 @@ export function Header(props: { isLandingPage: boolean }) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const protocol = data.get("protocol");
+    const refreshTime = data.get("refreshRate");
     console.log(protocol);
     setProtocol(data);
     setSelectedProtocol(protocol as string);
+    setSelectedRefreshTime(refreshTime as string);
+    enqueueSnackbar("refresh time set to " + refreshTime + " seconds", {
+      variant: "success",
+    });
+    let time = parseInt(selectedRefreshTime) * 1000;
+    console.log(time);
+    props.setRefresh(time);
     handleCloseSettingsModal();
   }
   async function handleSaveSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -168,47 +185,96 @@ export function Header(props: { isLandingPage: boolean }) {
               style={customStyles}
             >
               <h1 className="text-2xl font-semibold">Settings</h1>
-              <h4 className="mt-4 mb-2 text-xl font-semibold">Protocol</h4>
               <form onSubmit={handleSubmit}>
-                <div className="flex flex-col items-start justify-start">
-                  <div className="flex flex-row items-center justify-start">
-                    <input
-                      type="radio"
-                      value="None"
-                      name="protocol"
-                      checked={selectedProtocol === "None"}
-                      onChange={(e) => {
-                        setSelectedProtocol(e.target.value);
-                      }}
-                    />
-                    <span className="mx-2">None</span>
+                <div className="flex flex-row justify-between flex-wrap ">
+                  <div className="w-1/2">
+                    <h4 className="mt-4 mb-2 text-xl font-semibold">
+                      Protocol
+                    </h4>
+                    <div className="flex flex-col items-start justify-start">
+                      <div className="flex flex-row items-center justify-start">
+                        <input
+                          type="radio"
+                          value="None"
+                          name="protocol"
+                          checked={selectedProtocol === "None"}
+                          onChange={(e) => {
+                            setSelectedProtocol(e.target.value);
+                          }}
+                        />
+                        <span className="mx-2">None</span>
+                      </div>
+                      <div className="flex flex-row items-center justify-start">
+                        <input
+                          type="radio"
+                          value="Modbus/TCP"
+                          name="protocol"
+                          checked={selectedProtocol === "Modbus/TCP"}
+                          onChange={(e) => {
+                            setSelectedProtocol(e.target.value);
+                          }}
+                        />
+                        <span className="mx-2">Modbus/TCP</span>
+                      </div>
+                      <div className="flex flex-row items-center justify-start">
+                        <input
+                          type="radio"
+                          value="OPCUA"
+                          name="protocol"
+                          checked={selectedProtocol === "OPCUA"}
+                          onChange={(e) => {
+                            setSelectedProtocol(e.target.value);
+                          }}
+                        />
+                        <span className="mx-2">OPCUA</span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-row items-center justify-start">
-                    <input
-                      type="radio"
-                      value="Modbus/TCP"
-                      name="protocol"
-                      checked={selectedProtocol === "Modbus/TCP"}
-                      onChange={(e) => {
-                        setSelectedProtocol(e.target.value);
-                      }}
-                    />
-                    <span className="mx-2">Modbus/TCP</span>
+                  <div className="w-1/2">
+                    <h4 className="mt-4 mb-2 text-xl font-semibold">
+                      Refresh Time
+                    </h4>
+                    <div className="flex flex-row items-center justify-between">
+                      <div className="flex flex-col items-start justify-start">
+                        <div className="flex flex-row items-center justify-start">
+                          <input
+                            type="radio"
+                            value="5"
+                            name="refreshRate"
+                            checked={selectedRefreshTime === "5"}
+                            onChange={(e) => {
+                              setSelectedRefreshTime(e.target.value);
+                            }}
+                          />
+                          <span className="mx-2">5s</span>
+                        </div>
+                        <div className="flex flex-row items-center justify-start">
+                          <input
+                            type="radio"
+                            value="10"
+                            name="refreshRate"
+                            checked={selectedRefreshTime === "10"}
+                            onChange={(e) => {
+                              setSelectedRefreshTime(e.target.value);
+                            }}
+                          />
+                          <span className="mx-2">10s</span>
+                        </div>
+                        <div className="flex flex-row items-center justify-start">
+                          <input
+                            type="radio"
+                            value="20"
+                            name="refreshRate"
+                            checked={selectedRefreshTime === "20"}
+                            onChange={(e) => {
+                              setSelectedRefreshTime(e.target.value);
+                            }}
+                          />
+                          <span className="mx-2">20s</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex flex-row items-center justify-start">
-                    <input
-                      type="radio"
-                      value="OPCUA"
-                      name="protocol"
-                      checked={selectedProtocol === "OPCUA"}
-                      onChange={(e) => {
-                        setSelectedProtocol(e.target.value);
-                      }}
-                    />
-                    <span className="mx-2">OPCUA</span>
-                  </div>
-                </div>
-                <div className="flex flex-row items-center justify-between">
                   <button
                     className="px-4 py-2 mt-4 border-2 border-black rounded-md "
                     onClick={handleCloseSettingsModal}

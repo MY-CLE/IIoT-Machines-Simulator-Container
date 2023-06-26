@@ -47,6 +47,7 @@ def simulation(simulationId):
             simulator.startMachine()
             return make_response("Simulation created successfully", 201)
         else:
+            simulator.notification.resetNotifications()
             simulator.loadSimulation(simulationId)  # load a selected sim
             # give back the selected sim
             return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200)

@@ -29,18 +29,7 @@ const customStyles: Styles = {
     borderRadius: "10px",
   },
 };
-function LandingPage(props: {
-  state: {
-    simulation_id: number;
-    program_id: number;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      simulation_id: number;
-      program_id: number;
-    }>
-  >;
-}) {
+function LandingPage() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [simulations, setSimulations] = useState<Simulation[] | []>([]);
   const navigate = useNavigate();
@@ -107,7 +96,6 @@ function LandingPage(props: {
                 <SimulationListElement
                   key={item.id}
                   simulation={item}
-                  setState={props.setState}
                   reload={loadSimulations}
                 />
               );

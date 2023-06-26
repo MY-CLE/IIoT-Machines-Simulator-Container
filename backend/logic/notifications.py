@@ -97,6 +97,10 @@ class Notifications(object):
             if message[1] is warningMessage:
                 return True
         return False
+
+    def resetNotifications(self):
+        self.errors = []
+        self.warnings = []
     
     def getNotificationsJSON(self):
         data = {
