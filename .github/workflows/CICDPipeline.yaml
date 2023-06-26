@@ -27,7 +27,7 @@ jobs:
       - name: Run unit and integration tests
         run: |
           cd ./test
-          python */*.py
+          python '*/*.py'
 
   build-and-deploy:
     needs: testing
