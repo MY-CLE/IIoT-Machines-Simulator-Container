@@ -4,15 +4,16 @@ import sqlite3
 import unittest
 from datetime import datetime
 
-sys.path.append("..")
-from backend.database.handler.databaseHandler import DatabaseHandler
-from backend.database.orm.machine.machineProgram import MachineProgram
-from backend.database.orm.notification.warning import Warning
-from backend.database.orm.notification.error import Error
-from backend.database.orm.user.admin import Admin
-from backend.database.orm.machine.machineState import MachineState
-from backend.database.orm.program.programState import ProgramState
-from backend.database.orm.machine.protocol import Protocol
+os.chdir("../backend/")
+sys.path.append(os.getcwd())
+from database.handler.databaseHandler import DatabaseHandler
+from database.orm.machine.machineProgram import MachineProgram
+from database.orm.notification.warning import Warning
+from database.orm.notification.error import Error
+from database.orm.user.admin import Admin
+from database.orm.machine.machineState import MachineState
+from database.orm.program.programState import ProgramState
+from database.orm.machine.protocol import Protocol
 
 class HandlerTest(unittest.TestCase):
     

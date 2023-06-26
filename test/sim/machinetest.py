@@ -1,12 +1,14 @@
+import os
+import sys
 import logging
 import unittest
-import sys
-sys.path.append("..")
-from backend.database.handler.databaseHandler import DatabaseHandler
-from backend.database.orm.machine.machineState import MachineState
+os.chdir("../backend/")
+sys.path.append(os.getcwd())
+from database.handler.databaseHandler import DatabaseHandler
+from database.orm.machine.machineState import MachineState
 from datetime import datetime, timedelta
 from unittest.mock import patch
-from backend.logic.machine import Machine
+from logic.machine import Machine
 
 class TestMachine(unittest.TestCase):
     def setUp(self):

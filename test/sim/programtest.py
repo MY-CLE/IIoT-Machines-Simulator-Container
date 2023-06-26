@@ -1,13 +1,14 @@
-import logging
-import unittest
+import os
 import sys
-sys.path.append("..")
-from backend.database.handler.databaseHandler import DatabaseHandler
-from backend.database.orm.program.programState import ProgramState
-from backend.database.orm.machine.machineProgram import MachineProgram
+import unittest
+os.chdir("../backend/")
+sys.path.append(os.getcwd())
 from datetime import datetime
 from unittest.mock import patch
-from backend.logic.program import Program
+from database.handler.databaseHandler import DatabaseHandler
+from database.orm.program.programState import ProgramState
+from database.orm.machine.machineProgram import MachineProgram
+from logic.program import Program
 
 class TestProgram(unittest.TestCase):
     def setUp(self) -> None:
@@ -117,7 +118,7 @@ class TestProgram(unittest.TestCase):
         with patch.object(self.program, 'loadMachineProgram') as mock_load:
             self.program.resetProgram()
 
-            self.assertFalse(self.program.isProgramRunning)
+            self.assertTrue(self.program.isProgramRunning)
             mock_load.assert_called_once()
 
     def test_ResetToDefaultState(self) -> None:

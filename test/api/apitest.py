@@ -3,10 +3,11 @@ import sys
 import json
 import sqlite3
 import unittest
-sys.path.append("..")
-from backend.database.handler.databaseHandler import DatabaseHandler
-from backend.logic.simulator import Simulator
-from backend.app import app
+os.chdir("../backend/")
+sys.path.append(os.getcwd())
+from database.handler.databaseHandler import DatabaseHandler
+from logic.simulator import Simulator
+from app import app
 
 simulator = Simulator()
 class TestApi(unittest.TestCase):

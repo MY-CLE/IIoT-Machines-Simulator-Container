@@ -16,7 +16,7 @@ from database.handler.emptySetException import EmptySetException
 class DatabaseHandler:
 
     #set up the connection to the database file and use a cusror for queries
-    _CONNECTION = sqlite3.connect("../backend/database/machine-sim.db", check_same_thread=False)
+    _CONNECTION = sqlite3.connect("database/machine-sim.db", check_same_thread=False)
     _CURSOR = _CONNECTION.cursor()
     
     
