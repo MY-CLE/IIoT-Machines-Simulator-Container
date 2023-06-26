@@ -1,4 +1,4 @@
-#FIND ALL INFORMATION ABOUT THIS REST API HERE: https://mycle-iiot.postman.co/workspace/57d25410-5868-44d8-b432-6a596c9b6b73/documentation/24866334-307d89c6-7fe0-4a54-9190-dc6372836be1?entity=&branch=&version=
+# FIND ALL INFORMATION ABOUT THIS REST API HERE: https://mycle-iiot.postman.co/workspace/57d25410-5868-44d8-b432-6a596c9b6b73/documentation/24866334-307d89c6-7fe0-4a54-9190-dc6372836be1?entity=&branch=&version=
 
 
 from venv import logger
@@ -21,78 +21,93 @@ simulator = Simulator()
 def simulations():
     if request.method == 'GET':
         json = {
-          "simulations": []
+            "simulations": []
         }
         for sim in DatabaseHandler.selectMachineStates():
             json["simulations"].append({
-              "id": sim.getId(),
-              "description": sim.getName(),
-              "last_edited": sim.getLastEdited(),
+                "id": sim.getId(),
+                "description": sim.getName(),
+                "last_edited": sim.getLastEdited(),
             })
-        return make_response(json, 200) # give back all sims
-    
+        return make_response(json, 200)  # give back all sims
+
     elif request.method == 'POST':
-        simulator.saveSimulation(request.form['name']) #save a new sim
+        simulator.saveSimulation(request.form['name'])  # save a new sim
         return make_response("Simulation saved successfully", 201)
 
 # ------------------------------------------------------------------------------
 # Start/Load or Delete Simulation
+
+
 @app.route('/api/simulations/<int:simulationId>', methods=['PUT', 'DELETE'])
 def simulation(simulationId):
     if request.method == 'PUT':
         if simulationId == 0:
-            #reset machine
+            # reset machine
             simulator.startMachine()
             return make_response("Simulation created successfully", 201)
         else:
-            simulator.loadSimulation(simulationId) #load a selected sim
-            return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200) #give back the selected sim
-    
+            simulator.loadSimulation(simulationId)  # load a selected sim
+            # give back the selected sim
+            return make_response(jsonify(simulator.loadSimulationById(simulationId)), 200)
+
     elif request.method == 'DELETE':
-        if DatabaseHandler.selectMachineState(simulationId) != None: #delete a selected sim
+        # delete a selected sim
+        if DatabaseHandler.selectMachineState(simulationId) != None:
             simulator.deleteSimulationById(simulationId)
             return make_response(f"Simulation '{simulationId}' was deleted successfully", 200)
         else:
             return make_response(f"Simulation '{simulationId}' does not exist", 400)
 # ------------------------------------------------------------------------------
 # Protocol
+
+
 @app.route('/api/simulations/protocol', methods=['PATCH'])
 def simulationsProtocol():
-  if request.method == 'PATCH':
-    if request.form['protocol'] == 'OPCUA' or request.form['protocol'] == 'Modbus/TCP' or request.form['protocol'] == 'None':
-        simulator.setProtocol(request.form['protocol'])
-        return make_response(f"Protocol '{request.form['protocol']}' was set successfully", 200)
-    else:
-        return make_response(f"Protocol '{request.form['protocol']}' is not supported", 400)
+    if request.method == 'PATCH':
+        if request.form['protocol'] == 'OPCUA' or request.form['protocol'] == 'Modbus/TCP' or request.form['protocol'] == 'None':
+            simulator.setProtocol(request.form['protocol'])
+            return make_response(f"Protocol '{request.form['protocol']}' was set successfully", 200)
+        else:
+            return make_response(f"Protocol '{request.form['protocol']}' is not supported", 400)
 
 # ------------------------------------------------------------------------------
 # Machine
+
+
 @app.route('/api/simulations/machine', methods=['GET', 'PATCH'])
 def machines():
     if request.method == 'GET':
         simulator.updateSimulation(datetime.now())
-        return make_response(jsonify(simulator.simulatedMachine.getMachineStateSnapshot()), 200) #give back the current machine state
+        # give back the current machine state
+        return make_response(jsonify(simulator.simulatedMachine.getMachineStateSnapshot()), 200)
     elif request.method == 'PATCH':
         simulator.updateMachineStateParameters(request.get_json())
-        return make_response("Machine state parameters updated successfully", 200)  #change parameter(s) in the machine state
+        # change parameter(s) in the machine state
+        return make_response("Machine state parameters updated successfully", 200)
 
 # ------------------------------------------------------------------------------
 # Machine Authentication
+
+
 @app.route('/api/simulations/machine/auth', methods=['PUT'])
 def auth():
     if request.method == 'PUT':
-      for admin in DatabaseHandler.selectAdminUsers():
-        if(admin.getPassword() == request.form['password']):
-            return make_response("Successefully authenticated", 200)
-        return make_response("Authentication failed", 401)
+        for admin in DatabaseHandler.selectAdminUsers():
+            if(admin.getPassword() == request.form['password']):
+                return make_response("Successefully authenticated", 200)
+            return make_response("Authentication failed", 401)
 
 # ------------------------------------------------------------------------------
 # Machine Notifications
+
+
 @app.route('/api/simulations/machine/notifications', methods=['GET', 'POST', 'PATCH'])
 def error():
     if request.method == 'GET':
-        return make_response(simulator.notification.getNotificationsJSON(), 200) #list of all errors and warnings
-    
+        # list of all errors and warnings
+        return make_response(simulator.notification.getNotificationsJSON(), 200)
+
     elif request.method == 'POST':
         error_id = request.form['error_id']
         warning_id = request.form['warning_id']
@@ -114,6 +129,8 @@ def error():
 
 # ------------------------------------------------------------------------------
 # Programs
+
+
 @app.route('/api/simulations/machine/programs', methods=['GET'])
 def allPrograms():
     if request.method == 'GET':
@@ -121,22 +138,26 @@ def allPrograms():
         data = {"programs": []}
         for program in listOfPrograms:
             data["programs"].append(program.toJSON())
-        return make_response(jsonify(data), 200) #list of all programs
+        return make_response(jsonify(data), 200)  # list of all programs
 
 # ------------------------------------------------------------------------------
 # Current Program
+
+
 @app.route('/api/simulations/machine/programs/current', methods=['GET', 'PUT', 'PATCH'])
 def currentProgram():
     if request.method == 'GET':
-         return make_response(jsonify(simulator.simulatedProgram.getProgramStateSnapshot()), 200) #current program state
-    
+        # current program state
+        return make_response(jsonify(simulator.simulatedProgram.getProgramStateSnapshot()), 200)
+
     elif request.method == 'PUT':
         programId = request.form['program_id']
         machineProgram = DatabaseHandler().selectMachineProgramById(programId)
         simulator.simulatedProgram.setMachineProgram(machineProgram)
         simulator.simulatedMachine.isProgramRunning = False
-        return make_response("Program was successfully changed", 200) #set a new program
-    
+        # set a new program
+        return make_response("Program was successfully changed", 200)
+
     elif request.method == 'PATCH':
         json = request.get_json()
         if(json['value'] == "start"):
@@ -146,12 +167,9 @@ def currentProgram():
             simulator.stopProgram()
             return make_response("Program was successfully stopped", 200)
         elif(json['value'] == "resetMachine"):
-            simulator.simulatedMachine.resetMachine()
+            simulator.startMachine()
             return make_response("Machine was successfully reset", 200)
         elif(json['value'] == "resetProgram"):
             simulator.simulatedProgram.resetProgram()
-        return make_response("Program was successfully reset", 200) #change parameter(s) in the current program state
-
-
-  
-    
+        # change parameter(s) in the current program state
+        return make_response("Program was successfully reset", 200)

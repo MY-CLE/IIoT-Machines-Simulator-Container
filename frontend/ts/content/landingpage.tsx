@@ -4,7 +4,7 @@ import Modal, { Styles } from "react-modal";
 import {
   createSimulation,
   deleteSimulationById,
-  getSimultions,
+  getSimulations,
   loadSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
@@ -53,7 +53,13 @@ function LandingPage(props: {
 
   async function loadSimulations() {
     console.log("open modal");
-    let sims = await getSimultions();
+    await loadSimulationsFromDb();
+    setModalIsOpen(true);
+  }
+
+  async function loadSimulationsFromDb() {
+    console.log("open modal");
+    let sims = await getSimulations();
 
     if (sims) {
       setSimulations(sims.simulations);

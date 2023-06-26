@@ -1,89 +1,99 @@
-import { text } from "stream/consumers";
 import { Errors, Machine, Parameter, Program, Simulation } from "./interfaces";
 import { enqueueSnackbar } from "notistack";
-
+import axios, { Axios, AxiosResponse } from "axios";
 const url = `${process.env.REACT_APP_SERVER_URL}`;
 
-export async function getSimultions(): Promise<{
+export const client = axios.create({
+  baseURL: url,
+});
+
+client.interceptors.request.use(
+  (config) => {
+    console.log(config);
+    return config;
+  },
+  (error) => {
+    console.log(error.response);
+    if (error.response.status === 500) {
+      enqueueSnackbar("Internal Server Error", { variant: "error" });
+      return Promise.reject(error);
+    }
+    enqueueSnackbar(error.message, { variant: "error" });
+    return Promise.reject(error);
+  }
+);
+
+client.interceptors.response.use(
+  (response) => {
+    console.log(response);
+    return response;
+  },
+  (error) => {
+    console.log(error.request);
+    console.log(error.response);
+
+    if (error.response.status === 500) {
+      enqueueSnackbar("Internal Server Error", { variant: "error" });
+      return Promise.reject(error);
+    } else if (error.response.status >= 400) {
+      enqueueSnackbar(error.response.data, { variant: "error" });
+      return Promise.reject(error);
+    }
+    if (error.request) {
+      enqueueSnackbar("Server not reachable", { variant: "error" });
+      return Promise.reject(error);
+    }
+
+    enqueueSnackbar(error.response.data, { variant: "error" });
+    return Promise.reject(error);
+  }
+);
+
+export async function getSimulations(): Promise<{
   simulations: [Simulation];
 } | null> {
-  console.log(`GET Request auf ${url}/simulations`);
-  let response;
   try {
-    response = await fetch(`${url}/simulations`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return await response.json();
+    const response = await client.get(`/simulations`);
+    //return response;
+    return response.data;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
+    console.log("axios: error:", error);
     return null;
   }
 }
 
-export async function createSimulation(): Promise<Response | null> {
+export async function createSimulation(): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/${0}`, {
-      method: "PUT",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+    response = await client.put(`/simulations/${0}`);
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function saveSimulation(name: string): Promise<Response | null> {
+export async function saveSimulation(
+  name: string
+): Promise<AxiosResponse | null> {
   let formdata = new FormData();
   formdata.append("action", "save");
   formdata.append("name", name);
-  console.log(`POST Request auf ${url}/simulations`);
   let response;
   try {
-    response = await fetch(`${url}/simulations`, {
-      method: "POST",
-      redirect: "follow",
-      body: formdata,
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+    response = await client.post(`/simulations`, formdata);
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
 export async function loadSimulation(
   simulation_id: number
-): Promise<Response | null> {
-  console.log(`PUT Request auf ${url}/simulations with ${simulation_id}`);
+): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/${simulation_id}`, {
-      method: "PUT",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+    response = await client.put(`/simulations/${simulation_id}`);
     return response;
   } catch (error: any) {
     enqueueSnackbar(error.message, { variant: "error" });
@@ -93,175 +103,92 @@ export async function loadSimulation(
 
 export async function deleteSimulationById(
   simulation_id: number
-): Promise<Response | null> {
-  console.log(`DELETE Request auf ${url}/simulations/${simulation_id}`);
+): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/${simulation_id}`, {
-      method: "DELETE",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
-      variant: "success",
-    });
+    response = await client.delete(`/simulations/${simulation_id}`);
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function getMachine(): Promise<Response | null> {
-  console.log(`GET Request auf ${url}/simulations/machine`);
-
+export async function getMachine(): Promise<Machine | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return response;
+    response = await client.get(`/simulations/machine`);
+    return await response.data;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function authenticate(password: string): Promise<any> {
+export async function authenticate(password: string): Promise<boolean | null> {
   let formdata = new FormData();
   formdata.append("password", password);
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/auth`, {
-      method: "PUT",
-      body: formdata,
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return response;
+    response = await client.put(`/simulations/machine/auth`, formdata);
+    if (response.status === 200) return true;
+    else return false;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
-export async function setProtocol(formdata: FormData) {
+export async function setProtocol(
+  formdata: FormData
+): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/protocol`, {
-      method: "PATCH",
-      body: formdata,
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+    response = await client.patch(`/simulations/protocol`, formdata);
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function startProgram() {
+export async function startProgram(): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PATCH",
-      redirect: "follow",
-      body: JSON.stringify({
-        id: 900,
-        description: "program_status",
-        value: "start",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: 900,
+      description: "program_status",
+      value: "start",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
-      variant: "success",
-    });
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
-export async function stopProgram() {
+
+export async function stopProgram(): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PATCH",
-      redirect: "follow",
-      body: JSON.stringify({
-        id: 900,
-        description: "program_status",
-        value: "stop",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: 900,
+      description: "program_status",
+      value: "stop",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
-      variant: "success",
-    });
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 export async function resetMachine() {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PATCH",
-      redirect: "follow",
-      body: JSON.stringify({
-        id: 900,
-        description: "program_status",
-        value: "resetMachine",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: 900,
+      description: "program_status",
+      value: "resetMachine",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
-      variant: "success",
-    });
+    enqueueSnackbar(response.data, { variant: "success" });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
@@ -269,24 +196,25 @@ export async function resetMachine() {
 export async function resetProgram() {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PATCH",
-      redirect: "follow",
-      body: JSON.stringify({
-        id: 900,
-        description: "program_status",
-        value: "resetProgram",
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: 900,
+      description: "program_status",
+      value: "resetProgram",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
+    enqueueSnackbar(response.data, { variant: "success" });
+    return response;
+  } catch (error: any) {
+    return null;
+  }
+}
+
+export async function patchMachineParameter(
+  parameter: Parameter
+): Promise<AxiosResponse | null> {
+  let response;
+  try {
+    response = await client.patch(`/simulations/machine`, parameter);
+    enqueueSnackbar(response.data, {
       variant: "success",
     });
     return response;
@@ -296,177 +224,114 @@ export async function resetProgram() {
   }
 }
 
-export async function patchMachineParameter(parameter: Parameter) {
-  let myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
+export async function getErrors(): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine`, {
-      method: "PATCH",
-      body: JSON.stringify(parameter),
-      redirect: "follow",
-      headers: myHeaders,
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
-      variant: "success",
-    });
+    response = await client.get(`/simulations/machine/notifications`);
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function getErrors(): Promise<Response | null> {
-  let response;
-  try {
-    response = await fetch(`${url}/simulations/machine/notifications`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return response;
-  } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
-    return null;
-  }
-}
-
-export async function sendError(error_id: number) {
+export async function sendError(
+  error_id: number
+): Promise<AxiosResponse | null> {
   const formdata = new FormData();
   console.log(error_id);
   formdata.append("error_id", error_id.toString());
   formdata.append("warning_id", "");
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/notifications`, {
-      method: "POST",
-      redirect: "follow",
-      body: formdata,
+    response = await client.post(
+      `/simulations/machine/notifications`,
+      formdata
+    );
+
+    enqueueSnackbar(response.data, {
+      variant: "success",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function sendWarning(warning_id: number) {
+export async function sendWarning(
+  warning_id: number
+): Promise<AxiosResponse | null> {
   const formdata = new FormData();
   console.log(warning_id);
   formdata.append("warning_id", warning_id.toString());
   formdata.append("error_id", "");
+
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/notifications`, {
-      method: "POST",
-      redirect: "follow",
-      body: formdata,
+    response = await client.post(
+      `/simulations/machine/notifications`,
+      formdata
+    );
+    enqueueSnackbar(response.data, {
+      variant: "success",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function clearNotifications() {
+export async function clearNotifications(): Promise<AxiosResponse | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/notifications`, {
-      method: "PATCH",
-      redirect: "follow",
+    response = await client.patch(`/simulations/machine/notifications`);
+    enqueueSnackbar(response.data, {
+      variant: "success",
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function getPrograms(): Promise<Response | null> {
+export async function getPrograms(): Promise<AxiosResponse | null> {
   console.log(`GET Request auf ${url}/simulations/machine/programs`);
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
+    response = await client.get(`/simulations/machine/programs`);
     return response;
   } catch (error: any) {
-    //enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function setCurrentProgram(program_id: number) {
+export async function setCurrentProgram(
+  program_id: number
+): Promise<AxiosResponse | null> {
   console.log(`POST Request auf ${url}/simulations/machine/programs/current`);
   const formdata = new FormData();
   formdata.append("program_id", program_id.toString());
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PUT",
-      redirect: "follow",
-      body: formdata,
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
+    response = await client.put(
+      `/simulations/machine/programs/current`,
+      formdata
+    );
+    enqueueSnackbar(await response.data, {
       variant: "success",
     });
     return response;
   } catch (error: any) {
-    enqueueSnackbar(error.message, { variant: "error" });
     return null;
   }
 }
 
-export async function getProgram(): Promise<Response | null> {
+export async function getProgram(): Promise<Program | null> {
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "GET",
-      redirect: "follow",
-    });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    return response;
+    response = await client.get(`/simulations/machine/programs/current`);
+    return await response.data;
   } catch (error: any) {
     enqueueSnackbar(error.message, { variant: "error" });
     return null;
@@ -477,24 +342,18 @@ export async function sendProgramparameter(
   id: number,
   description: string,
   value: number
-) {
+): Promise<AxiosResponse | null> {
   let myHeaders = new Headers();
   myHeaders.append("Content-Type", "application/json");
 
   let response;
   try {
-    response = await fetch(`${url}/simulations/machine/programs/current`, {
-      method: "PATCH",
-      headers: myHeaders,
-      body: JSON.stringify({ id: id, description: description, value: value }),
-      redirect: "follow",
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: id,
+      description: description,
+      value: value,
     });
-    if (!response.ok) {
-      await response.text().then((text) => {
-        throw new Error(text);
-      });
-    }
-    enqueueSnackbar(await response.text().then((text) => text), {
+    enqueueSnackbar(await response.data, {
       variant: "success",
     });
     return response;

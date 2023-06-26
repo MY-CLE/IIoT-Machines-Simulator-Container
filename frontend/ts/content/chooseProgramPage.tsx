@@ -27,7 +27,7 @@ function ChooseProgramPage(props: {
       let progs: { programs: Array<Program> } | null = null;
       let progsRes = await getPrograms();
       if (progsRes) {
-        progs = (await progsRes.json()) as { programs: Array<Program> };
+        progs = (await progsRes.data) as { programs: Array<Program> };
       }
       console.log(progs);
       if (!progs) return;

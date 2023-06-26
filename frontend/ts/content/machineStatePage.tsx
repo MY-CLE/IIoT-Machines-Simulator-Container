@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import ParameterComponent from "./parameters/parameter";
 import SendError from "./parameters/sendError";
 import IconQuitLock from "../icons/iconQuitLock";
-import {
-  authenticate,
-  clearNotifications,
-  getErrors,
-  resetMachine,
-} from "../api-service";
+import { authenticate, clearNotifications, getErrors, getProgram, resetMachine } from "../api-service";
 import { Errors, Machine, Parameter } from "../interfaces";
 import Modal from "react-modal";
+import { AxiosResponse } from "axios";
 
 const customStyles = {
   content: {
@@ -38,7 +34,8 @@ function MachineStatePage(props: {
       program_id: number;
     }>
   >;
-  machine: Machine;
+  machine: Machine,
+  getProgramState: any;
 }) {
   const [errors, setErrors] = useState<Errors>({
     errors: [{ id: 0, name: "" }],
@@ -51,9 +48,9 @@ function MachineStatePage(props: {
     let errorsValues: Errors | null = null;
     (async () => {
       // when the page is loaded the first time, the errors are fetched
-      let newErrors: Response | null = await getErrors();
+      let newErrors: AxiosResponse | null = await getErrors();
       if (newErrors) {
-        errorsValues = (await newErrors.json()) as Errors;
+        errorsValues = (await newErrors.data) as Errors;
         setErrors(errorsValues);
         return;
       }
@@ -78,9 +75,9 @@ function MachineStatePage(props: {
     let response: any = null;
     response = await authenticate(password);
 
-    if (response.status == 200) {
+    if (response) {
       let clearErrors = await clearNotifications();
-      if (clearErrors && clearErrors.status == 200) {
+      if (clearErrors && clearErrors.status === 200) {
         closeModal();
       }
     }
@@ -94,8 +91,9 @@ function MachineStatePage(props: {
     setListModal(false);
   }
 
-  async function resetMachineValues() {
-    const response = await resetMachine();
+  async function resetMachineValues(){
+      const response = await resetMachine();
+      props.getProgramState();
   }
 
   return (
@@ -174,84 +172,85 @@ function MachineStatePage(props: {
                   },
                 }}
               >
-                <div className="flex flex-col items-center justify-between w-full h-full bg-white border border-gray-500">
-                  <h1 className="mt-5 text-xl">Acknowledge Errors & Warning</h1>
-                  <div className="w-3/4">
-                    {props.machine.errorState.errors.length > 0 && (
-                      <>
-                        <h1 className="text-lg">Errors:</h1>
-                        <br />
-                        <table className="border-collapse w-full">
-                          <thead>
-                            <tr>
-                              <th className="w-1/4 px-4 py-2 border border-gray-500">
-                                Time
-                              </th>
-                              <th className="w-3/4 px-4 py-2 border border-gray-500">
-                                Description
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {props.machine.errorState.errors.map(
-                              (error: { id: number; name: string }) => (
-                                <tr key={error.id}>
-                                  <td className="w-1/4 px-4 py-2 border border-gray-500">
-                                    {error.name[0]}
-                                  </td>
-                                  <td className="w-3/4 px-4 py-2 border border-gray-500">
-                                    {error.name[1]}
-                                  </td>
-                                </tr>
-                              )
-                            )}
-                          </tbody>
-                        </table>
-                      </>
-                    )}
+                
+                  <div className="flex flex-col items-center justify-between w-full h-full bg-white border border-gray-500">
+                    <h1 className="mt-5 text-xl font-medium">Acknowledge Errors & Warnings </h1>
+                    <div className="w-3/4">
+                      {props.machine.errorState.errors.length > 0 && (
+                        <>
+                          <h1 className="text-lg">Errors:</h1>
+                          <br />
+                          <table className="border-collapse w-full">
+                            <thead>
+                              <tr>
+                                <th className="w-1/4 px-4 py-2 border border-gray-500">
+                                  Time
+                                </th>
+                                <th className="w-3/4 px-4 py-2 border border-gray-500">
+                                  Description
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {props.machine.errorState.errors.map(
+                                (error: { id: number; name: string }) => (
+                                  <tr key={error.id}>
+                                    <td className="w-1/4 px-4 py-2 border border-gray-500">
+                                      {error.name[0]}
+                                    </td>
+                                    <td className="w-3/4 px-4 py-2 border border-gray-500">
+                                      {error.name[1]}
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </>
+                      )}
+                    </div>
+                    <div className="w-3/4">
+                      {props.machine.errorState.warnings.length > 0 && (
+                        <>
+                          <br />
+                          <h1 className="text-lg">Warnings:</h1>
+                          <br />
+                          <table className="border-collapse w-full">
+                            <thead>
+                              <tr>
+                                <th className="w-1/4 px-4 py-2 border border-gray-500">
+                                  Time
+                                </th>
+                                <th className="w-3/4 px-4 py-2 border border-gray-500">
+                                  Description
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {props.machine.errorState.warnings.map(
+                                (warning: { id: number; name: string }) => (
+                                  <tr key={warning.id}>
+                                    <td className="w-1/4 px-4 py-2 border border-gray-500">
+                                      {warning.name[0]}
+                                    </td>
+                                    <td className="w-3/4 px-4 py-2 border border-gray-500">
+                                      {warning.name[1]}
+                                    </td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </>
+                      )}
+                    </div>
+                    <button
+                      className="px-4 py-2 mt-4 border border-gray-500 rounded mb-5 text-lg font-medium"
+                      onClick={openModal}
+                    >
+                      Acknowledge
+                    </button>
                   </div>
-                  <div className="w-3/4">
-                    {props.machine.errorState.warnings.length > 0 && (
-                      <>
-                        <br />
-                        <h1 className="text-lg">Warnings:</h1>
-                        <br />
-                        <table className="border-collapse w-full">
-                          <thead>
-                            <tr>
-                              <th className="w-1/4 px-4 py-2 border border-gray-500">
-                                Time
-                              </th>
-                              <th className="w-3/4 px-4 py-2 border border-gray-500">
-                                Description
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {props.machine.errorState.warnings.map(
-                              (warning: { id: number; name: string }) => (
-                                <tr key={warning.id}>
-                                  <td className="w-1/4 px-4 py-2 border border-gray-500">
-                                    {warning.name[0]}
-                                  </td>
-                                  <td className="w-3/4 px-4 py-2 border border-gray-500">
-                                    {warning.name[1]}
-                                  </td>
-                                </tr>
-                              )
-                            )}
-                          </tbody>
-                        </table>
-                      </>
-                    )}
-                  </div>
-                  <button
-                    className="px-4 py-2 mt-4 border border-gray-500 rounded mb-5 text-lg font-medium"
-                    onClick={openModal}
-                  >
-                    Acknowledge
-                  </button>
-                </div>
               </Modal>
 
               <Modal

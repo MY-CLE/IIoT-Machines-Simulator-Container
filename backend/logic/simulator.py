@@ -157,8 +157,6 @@ class Simulator:
         if(self.protocol == "OPCUA"):
             self.updateOPCUA()
         if(self.simulatedMachine.isProgramRunning):
-            self.checkErrors()
-            self.checkWarnings()
             # calculate runtime with curret time
             # self.times.calculateRunTime(time)
             updatedParameter: list = self.simulatedProgram.updateProgram(time)
@@ -258,6 +256,8 @@ class Simulator:
         if self.simulatedMachine.getCapacityLaserModule() <= 5:
             self.notification.laserModuleError()
             self.stopMachine()
+        if len(self.notification.getErrors()) > 0:
+            self.stopMachine()
 
     def checkWarnings(self) -> None:
         # check if metrics are above or below a certain 'amount' to throw warnings
@@ -286,8 +286,9 @@ class Simulator:
         machineState = DatabaseHandler.selectMachineState(simulationId)
         programState = DatabaseHandler.selectProgramState(
             machineState.getProgramState())
-        self.protocol = DatabaseHandler.selectProtocolById(
+        protocol = DatabaseHandler.selectProtocolById(
             machineState.getMachineProtocol()).getProtocolDescription()
+        self.setProtocol(protocol)
         self.simulatedMachine.loadMachineState(machineState)
         self.simulatedProgram.loadProgramState(programState)
         self.loadMachine()

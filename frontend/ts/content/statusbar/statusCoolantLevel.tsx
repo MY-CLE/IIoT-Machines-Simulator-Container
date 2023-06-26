@@ -14,7 +14,7 @@ export function statusCoolantLevel(props: { value: number }) {
 
 
         </div>
-        <div className="text-xs sm:text-base lg:text-xl xl:text2xl">{props.value}</div>
+        <div className="text-xs sm:text-base lg:text-xl xl:text2xl">{props.value} %</div>
       </div>
     </>
   );

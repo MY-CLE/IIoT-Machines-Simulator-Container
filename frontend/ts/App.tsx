@@ -24,6 +24,7 @@ function App() {
     warning: 0,
     safety_door: false,
     coolantLevel: 0,
+    isProgramRunning: false,
   });
   const [program, setProgram] = useState({
     description: "",
@@ -33,6 +34,7 @@ function App() {
   const [machine, setMachine] = useState({
     parameters: [],
     errorState: { errors: [], warnings: [] },
+    isProgramRunning: false,
   } as Machine);
 
   const [intervallId, setIntervallId] = useState<any>(0);
@@ -60,38 +62,34 @@ function App() {
   }, [location]);
 
   async function getMachineStatePageData() {
-    let machineStateRes = await getMachine();
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-    let values: StatusBarValues = getStatusbarValues(machineState);
-    setMachine(machineState);
+    let machine = await getMachine();
+    if (!machine) return;
+    setMachine(machine);
+    let values: StatusBarValues = getStatusbarValues(machine);
+    setMachine(machine);
     setStatuesBarValues(values);
   }
 
   async function getCurrentProgramData() {
-    let machineStateRes = await getMachine();
-    let programRes = await getProgram();
+    let machine = await getMachine();
+    let program = await getProgram();
 
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-
-    if (!programRes) return;
-    let program = (await programRes.json()) as Program;
-
+    if (!machine) return;
+    if (!program) return;
+    setMachine(machine);
     if (program.parameters) {
       console.log(program.description)
       setProgram(program);
     }
 
-    let values: StatusBarValues = getStatusbarValues(machineState);
+    let values: StatusBarValues = getStatusbarValues(machine);
     setStatuesBarValues(values);
   }
 
   async function getProgramsPageData() {
-    let machineStateRes = await getMachine();
-    if (!machineStateRes) return;
-    let machineState = (await machineStateRes.json()) as Machine;
-    let values: StatusBarValues = getStatusbarValues(machineState);
+    let machine = await getMachine();
+    if (!machine) return;
+    let values: StatusBarValues = getStatusbarValues(machine);
     setStatuesBarValues(values);
   }
 
@@ -99,6 +97,7 @@ function App() {
     let runtime = machineState.parameters[0].value;
     let coolantLevel = machineState.parameters[2].value;
     let laserModuleCapacity = machineState.parameters[4].value;
+    let isProgramRunning = machineState.isProgramRunning;
     let errors = 0,
       warnings = 0,
       safetyDoorStatus = false;
@@ -118,6 +117,7 @@ function App() {
       error: errors,
       safety_door: safetyDoorStatus,
       coolantLevel: coolantLevel,
+      isProgramRunning: isProgramRunning,
     };
   }
 
@@ -146,6 +146,7 @@ function App() {
                   warning={statuesBarValues.warning}
                   safety_door={statuesBarValues.safety_door}
                   coolantLevel={statuesBarValues.coolantLevel}
+                  isProgramRunning={statuesBarValues.isProgramRunning}
                 />
               </div>
               {selectionBarValue === "program" && (
@@ -173,6 +174,7 @@ function App() {
                   state={state}
                   setState={setState}
                   machine={machine}
+                  getProgramState={getCurrentProgramData}
                 />
               </>
             }

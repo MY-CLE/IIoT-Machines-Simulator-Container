@@ -40,7 +40,7 @@ function ParameterComponent(props: ParameterProps) {
 
     if (props.isAdminParameter) {
       let res = await authenticate(formdata.get("password")?.toString()!);
-      if (res.status !== 200) {
+      if (!res) {
         return;
       }
     }
