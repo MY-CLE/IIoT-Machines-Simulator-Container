@@ -110,6 +110,7 @@ function MachineStatePage(props: {
                 value={item.value}
                 id={item.id}
                 isAdminParameter={item.isAdminParameter}
+                maxValue={item.maxValue}
               />
             );
           })}
@@ -122,8 +123,9 @@ function MachineStatePage(props: {
               </div>
 
               <div className="flex justify-center items-center">
-                <button className="w-2/3 bg-yellow-400 border border-black rounded-md shadow h-14 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl"
-                onClick={resetMachineValues}
+                <button
+                  className="w-2/3 bg-yellow-400 border border-black rounded-md shadow h-14 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl"
+                  onClick={resetMachineValues}
                 >
                   Reset Machine
                 </button>

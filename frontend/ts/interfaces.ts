@@ -33,6 +33,7 @@ export interface Parameter {
   description: string;
   value: number;
   isAdminParameter: boolean;
+  maxValue: number;
 }
 
 export interface StatusBarValues {
