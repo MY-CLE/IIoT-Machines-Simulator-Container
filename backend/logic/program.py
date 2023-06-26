@@ -121,8 +121,8 @@ class Program:
         self.setProgramRuntime(0)
         self.setProgramId(self.machineProgram.getID())
         self.setProgramProgramDescription(self.machineProgram.getDescription())
-        self.setProgramLaserModuleWeardown(self.machineProgram.getLaserModuleWeardown()*0.01)
-        self.setProgramCoolantConsumption(self.machineProgram.getCoolantConsumption()*0.01)
+        self.setProgramLaserModuleWeardown(round(self.machineProgram.getLaserModuleWeardown()*0.0001,4))
+        self.setProgramCoolantConsumption(self.machineProgram.getCoolantConsumption()*0.001)
         self.setProgramLaserModulePowerConsumption(self.machineProgram.getLaserModulePowerConsumption())
         self.setProgramTimePerItem(self.machineProgram.getTimePerItem())
 

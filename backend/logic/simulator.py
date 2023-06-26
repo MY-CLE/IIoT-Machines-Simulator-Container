@@ -145,14 +145,15 @@ class Simulator:
 
     # function to reset Simulator to default metrics, times and simulatorState
     def resetSimulator(self):
+        self.notification.resetNotifications()
         self.simulatedMachine.resetMachine()
         self.simulatedProgram.resetProgram()
 
     def updateSimulation(self, time: datetime) -> None:
-        self.simulatedMachine.updateMachineErrors(
-            self.notification.getErrors(), self.notification.getWarnings())
         self.checkErrors()
         self.checkWarnings()
+        self.simulatedMachine.updateMachineErrors(
+            self.notification.getErrors(), self.notification.getWarnings())
         if(self.protocol == "Modbus/TCP"):
             self.updateModbus()
         if(self.protocol == "OPCUA"):
@@ -251,10 +252,10 @@ class Simulator:
 
     def checkErrors(self) -> None:
         # check if metrics are above or below a certain 'amount' to throw errors
-        if self.simulatedMachine.getCoolantLevel() <= 5:
+        if self.simulatedMachine.getCoolantLevel() <= 0:
             self.notification.coolantLvlError()
             self.stopMachine()
-        if self.simulatedMachine.getCapacityLaserModule() <= 5:
+        if self.simulatedMachine.getCapacityLaserModule() <= 0:
             self.notification.laserModuleError()
             self.stopMachine()
         if len(self.notification.getErrors()) > 0:
