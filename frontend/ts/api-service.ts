@@ -9,11 +9,9 @@ export const client = axios.create({
 
 client.interceptors.request.use(
   (config) => {
-    console.log(config);
     return config;
   },
   (error) => {
-    console.log(error.response);
     if (error.response.status === 500) {
       enqueueSnackbar("Internal Server Error", { variant: "error" });
       return Promise.reject(error);
@@ -25,13 +23,9 @@ client.interceptors.request.use(
 
 client.interceptors.response.use(
   (response) => {
-    console.log(response);
     return response;
   },
   (error) => {
-    console.log(error.request);
-    console.log(error.response);
-
     if (error.response.status === 500) {
       enqueueSnackbar("Internal Server Error", { variant: "error" });
       return Promise.reject(error);
@@ -57,7 +51,6 @@ export async function getSimulations(): Promise<{
     //return response;
     return response.data;
   } catch (error: any) {
-    console.log("axios: error:", error);
     return null;
   }
 }

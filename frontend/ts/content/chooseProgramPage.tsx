@@ -5,18 +5,7 @@ import { Program } from "../interfaces";
 
 const url = "/simulator";
 
-function ChooseProgramPage(props: {
-  state: {
-    simulation_id: number;
-    program_id: number;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      simulation_id: number;
-      program_id: number;
-    }>
-  >;
-}) {
+function ChooseProgramPage(props: {}) {
   const navigation = useNavigate();
   const [programs, setPrograms] = useState<Array<Program>>([
     { description: "", parameters: null, id: null },
@@ -41,11 +30,6 @@ function ChooseProgramPage(props: {
     if (!response) {
       return;
     } else {
-      props.setState({
-        program_id: id,
-        simulation_id: props.state.simulation_id,
-      });
-
       navigation(`${url}/program/current`);
     }
   }

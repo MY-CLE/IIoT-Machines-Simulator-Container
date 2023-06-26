@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Header from "./header";
 import ProgramStatePage from "./content/programStatePage";
 import { Outlet, Route, Routes, useLocation } from "react-router-dom";
@@ -11,12 +11,13 @@ import StatusBar from "./content/statusbar/statusBar";
 import SelectionBar from "./content/machineOrProgramBar/selectionBar";
 import { getMachine, getProgram } from "./api-service";
 import { Machine, Program, StatusBarValues } from "./interfaces";
+import { enqueueSnackbar } from "notistack";
 
 function App() {
   const location = useLocation();
-
+  const hasUserBeenNotifiedForAmount = useRef<boolean>(false);
+  const [refresh, setRefresh] = useState<number>(5000);
   const [selectionBarValue, setSelectionBarValue] = useState<string>("machine");
-  const [state, setState] = useState({ simulation_id: 0, program_id: -1 });
   const [statuesBarValues, setStatuesBarValues] = useState({
     runtime: 0,
     utilization: 0,
@@ -41,25 +42,29 @@ function App() {
 
   useEffect(() => {
     clearInterval(intervallId);
-    console.log(location.pathname);
+    //console.log(location.pathname);
+    console.log("refresh: " + refresh);
     if (location.pathname === "/simulator/machine") {
       setSelectionBarValue("machine");
       getCurrentProgramData();
       getMachineStatePageData();
-      const id = setInterval(() => getMachineStatePageData(), 1000);
+      console.log("refresh2: " + refresh);
+      const id = setInterval(() => getMachineStatePageData(), refresh);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/program/current") {
       setSelectionBarValue("program");
       getCurrentProgramData();
-      const id = setInterval(() => getCurrentProgramData(), 1000);
+      console.log("refresh2: " + refresh);
+      const id = setInterval(() => getCurrentProgramData(), refresh);
       setIntervallId(id);
     } else if (location.pathname === "/simulator/programs") {
       setSelectionBarValue("program");
       getProgramsPageData();
-      const id = setInterval(() => getProgramsPageData(), 1000);
+      console.log("refresh2: " + refresh);
+      const id = setInterval(() => getProgramsPageData(), refresh);
       setIntervallId(id);
     }
-  }, [location]);
+  }, [location, refresh]);
 
   async function getMachineStatePageData() {
     let machine = await getMachine();
@@ -73,13 +78,35 @@ function App() {
   async function getCurrentProgramData() {
     let machine = await getMachine();
     let program = await getProgram();
+    let currentAmount = undefined;
+    let targetAmount = undefined;
 
     if (!machine) return;
     if (!program) return;
     setMachine(machine);
     if (program.parameters) {
-      console.log(program.description)
+      console.log(program.description);
       setProgram(program);
+
+      for (let parameter of program.parameters) {
+        if (parameter.description === "Current Amount") {
+          currentAmount = parameter.value;
+        }
+        if (parameter.description === "Target Amount") {
+          targetAmount = parameter.value;
+        }
+      }
+    }
+
+    if (currentAmount === undefined || targetAmount === undefined) return;
+    if (
+      currentAmount >= targetAmount &&
+      !hasUserBeenNotifiedForAmount.current
+    ) {
+      enqueueSnackbar("Target amount reached!", { variant: "info" });
+      hasUserBeenNotifiedForAmount.current = true;
+    } else if (currentAmount < targetAmount) {
+      hasUserBeenNotifiedForAmount.current = false;
     }
 
     let values: StatusBarValues = getStatusbarValues(machine);
@@ -128,8 +155,12 @@ function App() {
           path="/"
           element={
             <>
-              <Header isLandingPage={true} />
-              <LandingPage state={state} setState={setState} />
+              <Header
+                isLandingPage={true}
+                setRefresh={setRefresh}
+                refresh={refresh}
+              />
+              <LandingPage />
             </>
           }
         />
@@ -137,7 +168,11 @@ function App() {
           path="/simulator"
           element={
             <>
-              <Header isLandingPage={false} />
+              <Header
+                isLandingPage={false}
+                setRefresh={setRefresh}
+                refresh={refresh}
+              />
               <div className="w-full text-2xl">
                 <StatusBar
                   runtime={statuesBarValues.runtime}
@@ -171,8 +206,6 @@ function App() {
             element={
               <>
                 <MachineStatePage
-                  state={state}
-                  setState={setState}
                   machine={machine}
                   getProgramState={getCurrentProgramData}
                 />
@@ -183,7 +216,7 @@ function App() {
             path="/simulator/programs"
             element={
               <>
-                <ChooseProgramPage state={state} setState={setState} />
+                <ChooseProgramPage />
               </>
             }
           />
@@ -191,11 +224,7 @@ function App() {
             path="/simulator/program/current"
             element={
               <>
-                <ProgramStatePage
-                  state={state}
-                  setState={setState}
-                  program={program}
-                />
+                <ProgramStatePage program={program} />
               </>
             }
           />

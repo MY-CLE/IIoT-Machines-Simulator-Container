@@ -15,7 +15,7 @@ export interface Machine {
 export interface Program {
   id: number | null;
   description?: string;
-  parameters: Array<Parameter> | null;
+  parameters: Parameter[] | null;
 }
 
 export interface Error {

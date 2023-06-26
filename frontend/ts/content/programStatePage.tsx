@@ -7,19 +7,7 @@ import { useNavigate } from "react-router-dom";
 
 const url = "/simulator";
 
-function ProgramStatePage(props: {
-  state: {
-    simulation_id: number;
-    program_id: number;
-  };
-  setState: React.Dispatch<
-    React.SetStateAction<{
-      simulation_id: number;
-      program_id: number;
-    }>
-  >;
-  program: Program;
-}) {
+function ProgramStatePage(props: { program: Program }) {
   const navigation = useNavigate();
   return (
     <div className="flex flex-col flex-grow flex-nowrap">
