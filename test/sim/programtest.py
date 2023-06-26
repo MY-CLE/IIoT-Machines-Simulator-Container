@@ -119,7 +119,7 @@ class TestProgram(unittest.TestCase):
             self.program.resetProgram()
 
             self.assertTrue(self.program.isProgramRunning)
-            mock_load.assert_called_once()
+            mock_load.assert_not_called()
 
     def test_ResetToDefaultState(self) -> None:
         self.program.resetToDefaultState()

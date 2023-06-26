@@ -118,7 +118,7 @@ class TestMachine(unittest.TestCase):
         self.machine.loadMachineState(machineState)
 
         self.assertFalse(self.machine.isProgramRunning)
-        self.assertEqual(self.machine.machineStateId, machineState.getID())
+        self.assertEqual(self.machine.machineStateId, machineState.getId())
         self.assertEqual(self.machine.machineStateName, machineState.getName())
         self.assertEqual(self.machine.lastEdited, machineState.getLastEdited())
         self.assertEqual(self.machine.errorStateId, machineState.getErrorState())
@@ -186,19 +186,20 @@ class TestMachine(unittest.TestCase):
         self.machine.activeWarnings = ["Warning 1", "Warning 2"]
 
         expectedData = {
+            "isProgramRunning": False,
             "machineStateId": 1,
             "machineStateName": "Test Machine",
             "machineProtocolId": 1,
             "lastEdited": "2023-06-25 12:00:00",
             "parameters": [
-                {"id": "1", "description": "Runtime (s)", "value": 3600},
-                {"id": "2", "description": "Idle Time (s)", "value": 1800},
-                {"id": "3", "description": "Coolant Level (%)", "value": 75},
-                {"id": "4", "description": "Power Consumption (Wh)", "value": 100},
-                {"id": "5", "description": "Capacity Laser Module (%)", "value": 80},
-                {"id": "6", "description": "Total Items", "value": 50}
+                {"id": "1", "description": "Runtime (s)", "value": 3600,"isAdminParameter": False, "maxValue": 65535},
+                {"id": "2", "description": "Idle Time (s)", "value": 1800,"isAdminParameter": False, "maxValue": 65535},
+                {"id": "3", "description": "Coolant Level (%)", "value": 75, "isAdminParameter": True, "maxValue": 100},
+                {"id": "4", "description": "Power Consumption (Wh)", "value": 100, "isAdminParameter": False, "maxValue": 65535},
+                {"id": "5", "description": "Capacity Laser Module (%)", "value": 80, "isAdminParameter": True, "maxValue": 100},
+                {"id": "6", "description": "Total Items", "value": 50, "isAdminParameter": True, "maxValue": 65535}
             ],
-            "error_state": {
+            "errorState": {
                 "errors": [
                     {"id": "0", "name": "Error 1"},
                     {"id": "1", "name": "Error 2"}
