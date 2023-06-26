@@ -157,8 +157,6 @@ class Simulator:
         if(self.protocol == "OPCUA"):
             self.updateOPCUA()
         if(self.simulatedMachine.isProgramRunning):
-            self.checkErrors()
-            self.checkWarnings()
             # calculate runtime with curret time
             # self.times.calculateRunTime(time)
             updatedParameter: list = self.simulatedProgram.updateProgram(time)
@@ -257,6 +255,8 @@ class Simulator:
             self.stopMachine()
         if self.simulatedMachine.getCapacityLaserModule() <= 5:
             self.notification.laserModuleError()
+            self.stopMachine()
+        if len(self.notification.getErrors()) > 0:
             self.stopMachine()
 
     def checkWarnings(self) -> None:

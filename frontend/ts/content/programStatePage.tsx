@@ -54,13 +54,13 @@ function ProgramStatePage(props: {
           </div>
           <div className="flex flex-col items-center w-1/2 h-full justify-evenly font-normal">
             <button
-              className="w-1/3 bg-green-400 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
+              className="w-1/3 bg-green-600 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
               onClick={() => startProgram()}
             >
               Start
             </button>
             <button
-              className="w-1/3 bg-red-400 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
+              className="w-1/3 bg-red-600 border border-black rounded-md shadow h-14 text-xl lg:text-base 2xl:text-2xl 3xl:text-3xl"
               onClick={() => stopProgram()}
             >
               Stop

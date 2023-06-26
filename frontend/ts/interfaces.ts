@@ -9,6 +9,7 @@ export interface Simulation {
 export interface Machine {
   parameters: Array<Parameter>;
   errorState: Errors;
+  isProgramRunning: boolean;
 }
 
 export interface Program {
@@ -42,4 +43,5 @@ export interface StatusBarValues {
   warning: number;
   safety_door: boolean;
   coolantLevel: number;
+  isProgramRunning: boolean;
 }

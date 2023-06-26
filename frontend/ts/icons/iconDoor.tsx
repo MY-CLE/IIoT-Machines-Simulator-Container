@@ -33,7 +33,7 @@ function IconDoor(props: {isOpen:boolean}) {
     height: "100%",
     border: "2px solid black",
     boxSizing: "border-box",
-    backgroundColor: !props.isOpen ? "green" : "red",
+    backgroundColor: !props.isOpen ? "#16A34A" : "#DC2626", // green : red
     position: "relative",
     transformStyle: "preserve-3d",
     borderRadius: "5px",

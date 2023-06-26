@@ -43,6 +43,8 @@ class Machine():
         if(self.lastUpdate == None):
             self.lastUpdate = self.machineStartTime
         if(self.additionalTime != 0):
+            if(self.additionalTime < 0):
+                self.additionalTime = 0
             self.timeSinceLastUpdate = self.additionalTime
             self.additionalTime = 0
         else:
@@ -64,6 +66,7 @@ class Machine():
         self.machineStartTime = startTime
         self.machineStopTime = startTime
         self.isMachineRunning = True
+        self.lastUpdate = None
     
     def stopMachine(self, stopTime: datetime) -> None:
         self.machineStopTime = stopTime
@@ -78,6 +81,7 @@ class Machine():
         self.setTotalEnegeryConsumption(0)
         self.setCoolantLevel(100)
         self.setMachineStartTime(datetime.now())
+        self.lastUpdate = None
         
     def updateMachineErrors(self, newErrors: list, newWarnings: list):
         self.activeErrors = newErrors
