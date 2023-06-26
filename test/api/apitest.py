@@ -23,12 +23,6 @@ class TestApi(unittest.TestCase):
                 file.truncate()
         cls.create_and_populate_table()
 
-    @classmethod
-    def tearDownClass(cls):
-        #with open(cls.DB_PATH, 'w') as file:
-        #    file.truncate()
-        #cls.create_and_populate_table()
-
     @staticmethod
     def create_and_populate_table():
         conn = sqlite3.connect(TestApi.DB_PATH, check_same_thread=False)
