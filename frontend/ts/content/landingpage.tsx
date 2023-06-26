@@ -3,18 +3,20 @@ import { useState } from "react";
 import Modal, { Styles } from "react-modal";
 import {
   createSimulation,
+  deleteSimulationById,
   getSimulations,
   loadSimulation,
 } from "../api-service";
 import { Simulation } from "../interfaces";
 import { useNavigate } from "react-router-dom";
+import IconTrash from "../icons/iconTrash";
 
 const url = "/simulator";
 Modal.setAppElement("#root");
 const customStyles: Styles = {
   content: {
     position: "absolute",
-    width: "35%",
+    width: "20%",
     top: "50%",
     left: "50%",
     right: "auto",
@@ -22,6 +24,9 @@ const customStyles: Styles = {
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
     backgroundColor: "#F2F2F2",
+    stroke: "black",
+    border: "2px solid black",
+    borderRadius: "10px",
   },
 };
 function LandingPage(props: {
@@ -37,20 +42,32 @@ function LandingPage(props: {
   >;
 }) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [simulations, setSimulations] = useState<[Simulation] | []>([]);
+  const [simulations, setSimulations] = useState<Simulation[] | []>([]);
   const navigate = useNavigate();
 
   async function openModal() {
+    console.log("open modal");
+    await loadSimulations();
+    setModalIsOpen(true);
+  }
+
+  async function loadSimulations() {
+    console.log("open modal");
+    await loadSimulationsFromDb();
+    setModalIsOpen(true);
+  }
+
+  async function loadSimulationsFromDb() {
     console.log("open modal");
     let sims = await getSimulations();
 
     if (sims) {
       setSimulations(sims.simulations);
-      setModalIsOpen(true);
     } else {
       setSimulations([]);
     }
   }
+
   function closeModal() {
     setModalIsOpen(false);
   }
@@ -61,7 +78,7 @@ function LandingPage(props: {
     console.log(response);
 
     if (response) {
-      navigate(`${url}/machine/`);
+      navigate(`${url}/machine`);
     }
   }
   return (
@@ -91,6 +108,7 @@ function LandingPage(props: {
                   key={item.id}
                   simulation={item}
                   setState={props.setState}
+                  reload={loadSimulations}
                 />
               );
             })}
@@ -118,13 +136,27 @@ function SimulationListElement(props: any) {
       navigate(`${url}/machine`);
     }
   }
+
+  async function handleDeleteSimulation() {
+    console.log("delete simulation");
+    const response = await deleteSimulationById(sim.id);
+    if (response) {
+      props.reload();
+    }
+  }
+
   return (
-    <button
-      className="w-3/4 p-2 m-2 border-2 border-black rounded-lg h-fit"
-      onClick={handleLoadSimulation}
-    >
-      <span>{sim.description} </span>
-      <span>{sim.last_edited}</span>
-    </button>
+    <div className="flex flex-row my-2 border-2 border-black rounded-lg h-fit hover:cursor-pointer">
+      <span className="p-2" onClick={handleLoadSimulation}>
+        <span>{sim.description} </span>
+        <span>{sim.last_edited}</span>
+      </span>
+      <button
+        className="p-2 border-l-2 border-black"
+        onClick={handleDeleteSimulation}
+      >
+        <IconTrash />
+      </button>
+    </div>
   );
 }

@@ -32,6 +32,7 @@ export interface Parameter {
   description: string;
   value: number;
   isAdminParameter: boolean;
+  maxValue: number;
 }
 
 export interface StatusBarValues {
@@ -40,5 +41,5 @@ export interface StatusBarValues {
   error: number;
   warning: number;
   safety_door: boolean;
-  lock: boolean;
+  coolantLevel: number;
 }

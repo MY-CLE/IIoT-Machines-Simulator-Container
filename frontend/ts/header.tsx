@@ -78,7 +78,7 @@ export function Header(props: { isLandingPage: boolean }) {
   }
 
   return (
-    <header className="flex flex-row items-center justify-between w-screen h-20 text-white bg-header-red">
+    <div className="flex flex-row flex-shrink-0 items-center justify-between w-screen h-20 text-white bg-header-red">
       <h1 className="justify-center pl-8 text-3xl font-semibold text-center">
         Lasercutter HMI
       </h1>
@@ -224,7 +224,7 @@ export function Header(props: { isLandingPage: boolean }) {
           </>
         </div>
       )}
-    </header>
+    </div>
   );
 }
 

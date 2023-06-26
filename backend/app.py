@@ -43,6 +43,7 @@ def simulations():
 def simulation(simulationId):
     if request.method == 'PUT':
         if simulationId == 0:
+            # reset machine
             simulator.startMachine()
             return make_response("Simulation created successfully", 201)
         else:
@@ -165,8 +166,10 @@ def currentProgram():
         elif(json['value'] == "stop"):
             simulator.stopProgram()
             return make_response("Program was successfully stopped", 200)
-        elif(json['value'] == "reset"):
-            simulator.resetSimulator()
-            return make_response("Program was successfully reset", 200)
+        elif(json['value'] == "resetMachine"):
+            simulator.simulatedMachine.resetMachine()
+            return make_response("Machine was successfully reset", 200)
+        elif(json['value'] == "resetProgram"):
+            simulator.simulatedProgram.resetProgram()
         # change parameter(s) in the current program state
-        return make_response("Program was successfully changed", 200)
+        return make_response("Program was successfully reset", 200)

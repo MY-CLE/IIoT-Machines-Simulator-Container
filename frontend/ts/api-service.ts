@@ -178,13 +178,28 @@ export async function stopProgram(): Promise<AxiosResponse | null> {
     return null;
   }
 }
-export async function resetProgram(): Promise<AxiosResponse | null> {
+export async function resetMachine() {
   let response;
   try {
     response = await client.patch(`/simulations/machine/programs/current`, {
       id: 900,
       description: "program_status",
-      value: "reset",
+      value: "resetMachine",
+    });
+    enqueueSnackbar(response.data, { variant: "success" });
+    return response;
+  } catch (error: any) {
+    return null;
+  }
+}
+
+export async function resetProgram() {
+  let response;
+  try {
+    response = await client.patch(`/simulations/machine/programs/current`, {
+      id: 900,
+      description: "program_status",
+      value: "resetProgram",
     });
     enqueueSnackbar(response.data, { variant: "success" });
     return response;
