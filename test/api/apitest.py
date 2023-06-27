@@ -50,13 +50,13 @@ class TestApi(unittest.TestCase):
         # Save Simulation
         response = self.client.post('/api/simulations', data={'name': "Test"})
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.text, "Simulation saved successfully")
+        self.assertEqual(response.text, "Simulation successfully saved")
 
     def test_putSimulation(self):
         # Create Simulation
         response = self.client.put('/api/simulations/0')
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.text, "Simulation created successfully")
+        self.assertEqual(response.text, "Simulation successfully created")
         # Load Simulation
         response = self.client.put('/api/simulations/1')
         self.assertEqual(response.status_code, 200)
@@ -66,7 +66,7 @@ class TestApi(unittest.TestCase):
         # Delete valid simulation id
         response = self.client.delete('/api/simulations/3')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Simulation '3' was deleted successfully")
+        self.assertEqual(response.text, "Simulation '3' was successfully deleted")
 
         # Delete invalid simulation id
         response = self.client.delete('/api/simulations/100')
@@ -77,17 +77,17 @@ class TestApi(unittest.TestCase):
         # 'Modbus/TCP' protocol
         response = self.client.patch('/api/simulations/protocol', data={'protocol': "Modbus/TCP"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Protocol 'Modbus/TCP' was set successfully")
+        self.assertEqual(response.text, "Protocol 'Modbus/TCP' was successfully set")
 
         # 'OPCUA' protocol
         response = self.client.patch('/api/simulations/protocol', data={'protocol': "OPCUA"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Protocol 'OPCUA' was set successfully")
+        self.assertEqual(response.text, "Protocol 'OPCUA' was successfully set")
 
         # 'None' protocol
         response = self.client.patch('/api/simulations/protocol', data={'protocol': "None"})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Protocol 'None' was set successfully")
+        self.assertEqual(response.text, "Protocol 'None' was successfully set")
         
         # Invalid protocol
         response = self.client.patch('/api/simulations/protocol', data={'protocol': "InvalidProtocol"})
@@ -103,12 +103,12 @@ class TestApi(unittest.TestCase):
         # Change machine state parameter as user
         response = self.client.patch('/api/simulations/machine', json={'id': 1,'description': "program_status", 'value': 2, 'isAdminParameter': False})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Machine state parameters updated successfully")
+        self.assertEqual(response.text, "Machine state parameters successfully updated")
 
         # Change machine state parameter as admin
         response = self.client.patch('/api/simulations/machine', json={'id': 4,'description': "program_status", 'value': 2, 'isAdminParameter': True})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.text, "Machine state parameters updated successfully")
+        self.assertEqual(response.text, "Machine state parameters successfully updated")
 
     def test_putMachineAuth(self):
         # Valid password
