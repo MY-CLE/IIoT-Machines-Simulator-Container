@@ -33,7 +33,7 @@ def simulations():
 
     elif request.method == 'POST':
         simulator.saveSimulation(request.form['name'])  # save a new sim
-        return make_response("Simulation saved successfully", 201)
+        return make_response("Simulation successfully saved", 201)
 
 # ------------------------------------------------------------------------------
 # Start/Load or Delete Simulation
@@ -45,7 +45,7 @@ def simulation(simulationId):
         if simulationId == 0:
             # reset machine
             simulator.startMachine()
-            return make_response("Simulation created successfully", 201)
+            return make_response("Simulation successfully created", 201)
         else:
             simulator.notification.resetNotifications()
             simulator.loadSimulation(simulationId)  # load a selected sim
@@ -56,7 +56,7 @@ def simulation(simulationId):
         # delete a selected sim
         if DatabaseHandler.selectMachineState(simulationId) != None:
             simulator.deleteSimulationById(simulationId)
-            return make_response(f"Simulation '{simulationId}' was deleted successfully", 200)
+            return make_response(f"Simulation '{simulationId}' was successfully deleted", 200)
         else:
             return make_response(f"Simulation '{simulationId}' does not exist", 400)
 # ------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ def simulationsProtocol():
     if request.method == 'PATCH':
         if request.form['protocol'] == 'OPCUA' or request.form['protocol'] == 'Modbus/TCP' or request.form['protocol'] == 'None':
             simulator.setProtocol(request.form['protocol'])
-            return make_response(f"Protocol '{request.form['protocol']}' was set successfully", 200)
+            return make_response(f"Protocol '{request.form['protocol']}' was successfully set", 200)
         else:
             return make_response(f"Protocol '{request.form['protocol']}' is not supported", 400)
 
@@ -85,7 +85,7 @@ def machines():
     elif request.method == 'PATCH':
         simulator.updateMachineStateParameters(request.get_json())
         # change parameter(s) in the machine state
-        return make_response("Machine state parameters updated successfully", 200)
+        return make_response("Machine state parameters successfully updated", 200)
 
 # ------------------------------------------------------------------------------
 # Machine Authentication

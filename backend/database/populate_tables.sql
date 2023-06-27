@@ -17,8 +17,8 @@ VALUES ('Circle', 1, 5, 3000, 10),
 
 -- Populating error table
 INSERT INTO error (error_type)
-VALUES ('Coolant empty. Machine is stopping!'),
-       ('Laser module burnt out. Machine is stopping!'),
+VALUES ('Coolant empty. Machine stopped!'),
+       ('Laser module burnt out. Machine stopped!'),
        ('Safety door is open! Close it.');
 
 -- Populating program_state table

@@ -239,6 +239,18 @@ export function Header(props: {
                         <div className="flex flex-row items-center justify-start">
                           <input
                             type="radio"
+                            value="3"
+                            name="refreshRate"
+                            checked={selectedRefreshTime === "3"}
+                            onChange={(e) => {
+                              setSelectedRefreshTime(e.target.value);
+                            }}
+                          />
+                          <span className="mx-2">3s</span>
+                        </div>
+                        <div className="flex flex-row items-center justify-start">
+                          <input
+                            type="radio"
                             value="5"
                             name="refreshRate"
                             checked={selectedRefreshTime === "5"}
@@ -259,18 +271,6 @@ export function Header(props: {
                             }}
                           />
                           <span className="mx-2">10s</span>
-                        </div>
-                        <div className="flex flex-row items-center justify-start">
-                          <input
-                            type="radio"
-                            value="20"
-                            name="refreshRate"
-                            checked={selectedRefreshTime === "20"}
-                            onChange={(e) => {
-                              setSelectedRefreshTime(e.target.value);
-                            }}
-                          />
-                          <span className="mx-2">20s</span>
                         </div>
                       </div>
                     </div>
