@@ -20,7 +20,7 @@ class ModbusTCPClient:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self) -> None:
-        self.client = ModbusClient(host=getIPAddress(), port=504, unit_id=3, auto_open=True, debug=False)
+        self.client = ModbusClient(host=getIPAddress(), port=20502, unit_id=3, auto_open=True, debug=False)
         self.connEstablished = self.client.open()
         if self.connEstablished:
             logging.info(f'Connection established: {self.connEstablished}')

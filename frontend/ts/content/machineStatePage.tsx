@@ -117,28 +117,25 @@ function MachineStatePage(props: { machine: Machine; getProgramState: any }) {
 
               <div className="flex justify-center items-center">
                 <button
-                  className="w-2/3 bg-yellow-400 border border-black rounded-md shadow h-14 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl"
+                  className="w-2/3 bg-yellow-400 border border-black rounded-md shadow p-4 text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl"
                   onClick={resetMachineValues}
                 >
                   Reset Machine
                 </button>
               </div>
 
-              <div className="flex justify-center items-center p-2">
+              <div className="flex justify-center items-center">
                 <button
-                  className={`flex items-center justify-center border border-black rounded-full bg-red-500 text-black font-normal`}
-                  style={{
-                    width: "50%",
-                    height: "100%",
-                    minWidth: "50px",
-                    minHeight: "50px",
-                  }}
+                  className={`flex items-center justify-center border border-black rounded-md w-2/3 p-4 bg-red-500 text-black font-normal text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl`}
+                  //style={{
+                  //  width: "50%",
+                  //  height: "100%",
+                  //  minWidth: "50px",
+                  //  minHeight: "50px",
+                  //}}
                   onClick={openListModal}
                 >
-                  <span className="text-xs sm:text-base lg:text-sm xl:text-lg 2xl:text-xl 3xl:text-2xl">
-                    {" "}
-                    Acknowledge
-                  </span>
+                  Acknowledge
                 </button>
               </div>
               <Modal

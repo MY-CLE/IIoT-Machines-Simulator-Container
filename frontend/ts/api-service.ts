@@ -12,11 +12,12 @@ client.interceptors.request.use(
     return config;
   },
   (error) => {
-    if (error.response.status === 500) {
-      enqueueSnackbar("Internal Server Error", { variant: "error" });
-      return Promise.reject(error);
-    }
-    enqueueSnackbar(error.message, { variant: "error" });
+    //bug fix
+    //if (error.response.status === 500)
+    //  enqueueSnackbar("Internal Server Error", { variant: "error" });
+    //  return Promise.reject(error);
+    //}
+    //enqueueSnackbar(error.message, { variant: "error" });
     return Promise.reject(error);
   }
 );
