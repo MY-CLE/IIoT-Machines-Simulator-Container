@@ -188,7 +188,7 @@ class Simulator:
             self.ouaClient.changeParam("Total_Items", int(
                 self.simulatedMachine.getTotalItems()))
 
-            self.ouaClient.getParam()
+            logging.info("OPCUA Client updated")
 
             if(self.simulatedMachine.isProgramRunning):
                 self.ouaClient.changeParam("Program_Runtime", int(
@@ -206,8 +206,8 @@ class Simulator:
                 self.ouaClient.changeParam("Time_Per_Item", int(
                     self.simulatedProgram.getProgramTimePerItem()))
 
-                self.ouaClient.getParam()
         except:
+            logging.error("OPCUA Client could not be updated. Server not started yet")
             self.ouaClient.client.disconnect()
 
     # implemenation of Modbus into the simulator
