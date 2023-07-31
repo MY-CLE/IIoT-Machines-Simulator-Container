@@ -11,7 +11,7 @@ module.exports = {
         "program-choose-grey": "#354970",
       },
       backgroundImage: {
-        "lasercuter-img": "url('../images/ventis_AJ_amada_Lasercutter.png')",
+        "lasercuter-img": "url('../images/landing-page-img.jpg')",
       },
       
       spacing: {
