@@ -8,13 +8,14 @@ export interface Simulation {
 
 export interface Machine {
   parameters: Array<Parameter>;
-  error_state: Errors;
+  errorState: Errors;
+  isProgramRunning: boolean;
 }
 
 export interface Program {
   id: number | null;
   description?: string;
-  parameters: Array<Parameter> | null;
+  parameters: Parameter[] | null;
 }
 
 export interface Error {
@@ -31,6 +32,8 @@ export interface Parameter {
   id: number;
   description: string;
   value: number;
+  isAdminParameter: boolean;
+  maxValue: number;
 }
 
 export interface StatusBarValues {
@@ -39,5 +42,6 @@ export interface StatusBarValues {
   error: number;
   warning: number;
   safety_door: boolean;
-  lock: boolean;
+  coolantLevel: number;
+  isProgramRunning: boolean;
 }

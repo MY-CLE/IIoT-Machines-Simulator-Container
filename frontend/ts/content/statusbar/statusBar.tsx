@@ -7,7 +7,7 @@ import StatusError from "./statusError";
 import StatusWarning from "./statusWarning";
 import StatusSafetyDoor from "./statusSafetyDoor";
 import StatusDate from "./statusDate";
-import StatusLock from "./statusLock";
+import StatusCoolantLevel from "./statusCoolantLevel";
 
 export function StatusBar(props: {
   runtime: number;
@@ -15,21 +15,22 @@ export function StatusBar(props: {
   error: number;
   warning: number;
   safety_door: boolean;
-  lock: boolean;
+  coolantLevel: number;
+  isProgramRunning: boolean;
 }) {
   let date = new Date();
   return (
     <header>
-      <div className="flex flex-row items-center justify-start w-full flex-nowrap">
+      <div className="flex flex-row items-center justify-start w-full flex-nowrap h-fit">
         <StatusStatus />
-        <StatusPower />
+        <StatusPower isProgramRunning={props.isProgramRunning} errors={props.error}/>
         <StatusTime value={props.runtime} />
         <StatusUtil value={props.utilization} />
+        <StatusCoolantLevel value={props.coolantLevel} />
         <StatusWarning value={props.warning} />
         <StatusError value={props.error} />
         <StatusSafetyDoor value={props.safety_door} />
         <StatusDate value={date} />
-        <StatusLock value={props.lock} />
       </div>
     </header>
   );

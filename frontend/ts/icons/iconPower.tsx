@@ -1,11 +1,11 @@
 // icon:power | Feathericons https://feathericons.com/ | Cole Bemis
 import * as React from "react";
 
-function IconPower(props: React.SVGProps<SVGSVGElement>) {
+function IconPower(props: {symbolColor: string}) {
   return (
     <svg
       fill="none"
-      stroke="currentColor"
+      stroke={props.symbolColor}
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={3}

@@ -7,10 +7,6 @@ from orm.notification.error import Error
 from orm.notification.warning import Warning
 from orm.user.admin import Admin
 
-result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_program;")
-dbObj = DatabaseObject(result[0])
-machine_program = MachineProgram(dbObj)
-print(machine_program)    
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM machine_state;")
 dbObj = DatabaseObject(result[0])
@@ -19,7 +15,7 @@ print(machine_state)
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM program_state;")
 dbObj = DatabaseObject(result[0])
-program_state = ProgramState(dbObj)
+program_state = ProgramState(*dbObj.getResultRow())
 print(program_state)    
 
 result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM warning;")
@@ -36,3 +32,7 @@ result: list[DatabaseObject] = DatabaseHandler.select("SELECT * FROM admin;")
 dbObj = DatabaseObject(result[0])
 admin = Admin(dbObj)
 print(admin)    
+
+result: list[DatabaseObject] = DatabaseHandler.selectProtocolByName("OPCUA")
+
+print(result[0])

@@ -7,9 +7,12 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 
 # Get the IP Address of the machine
 def getIPAddress():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 # Modbus TCP Client
 # Master (Client) sends data to Slave (Server) and receives data from Slave
@@ -17,7 +20,7 @@ class ModbusTCPClient:
     connError = 'Connection couldn\'t be established - Check host ip-address & port number'
 
     def __init__(self) -> None:
-        self.client = ModbusClient(host=getIPAddress(), port=504, unit_id=3, auto_open=True, debug=False)
+        self.client = ModbusClient(host=getIPAddress(), port=20502, unit_id=3, auto_open=True, debug=False)
         self.connEstablished = self.client.open()
         if self.connEstablished:
             logging.info(f'Connection established: {self.connEstablished}')

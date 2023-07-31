@@ -11,11 +11,11 @@ function IconSave(props: { title?: string }) {
       xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
-      <g fill="#212121" stroke="#212121" strokeWidth="1">
+      <g fill="#fff" stroke="#fff" strokeWidth="1">
         <path
           d="M2,.5H8.567L11.5,3.433V10A1.5,1.5,0,0,1,10,11.5H2A1.5,1.5,0,0,1,.5,10V2A1.5,1.5,0,0,1,2,.5Z"
           fill="none"
-          stroke="#212121"
+          stroke="#fff"
           strokeLinecap="round"
           strokeLinejoin="round"
         />

@@ -8,16 +8,19 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 
 # Get the IP Address of the machine
 def getIPAddress():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 # Modbus TCP Server
 # Slave (Server) receives data from Master (Client) and can either send data back or change its own data
 class ModbusTCPServer:
 
     def __init__(self) -> None:
-        self.mbS = ModbusServer(host=getIPAddress(), port=504, no_block=True) # Initialize Modbus Server with IP and Port
+        self.mbS = ModbusServer(host=getIPAddress(), port=20502, no_block=True) # Initialize Modbus Server with IP and Port
         self.mbS.data_bank.set_holding_registers(address=0, word_list=[], srv_info=None) # Set Holding Register can be changed by the client
         #self.mbS.data_bank.set_coils(address=0, bit_list=[], srv_info=None) # Set Coils can be changed by the client | NOT USED IN THIS PROJECT because IRF doesn't support it yet
 

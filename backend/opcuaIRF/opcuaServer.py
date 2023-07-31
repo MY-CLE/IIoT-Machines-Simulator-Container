@@ -7,9 +7,12 @@ logging.basicConfig(format='%(asctime)s | %(levelname)s | %(message)s', level=lo
 
 # Get the IP Address of the machine
 def getIPAddress():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    return s.getsockname()[0]
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    finally:
+        s.close()
 
 # OPC-UA Server
 # Server sets the object and variable for the client to read and write
@@ -38,7 +41,15 @@ class OPCUAServer:
     # Set the variables for the client to read and write the parameters
     def setParameter(self) -> None:
         self.param.add_variable(self.regName, "Runtime", 0).set_writable()
+        self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
         self.param.add_variable(self.regName, "Coolant_Level", 0).set_writable()
         self.param.add_variable(self.regName, "Power_Consumption", 0).set_writable()
-        self.param.add_variable(self.regName, "Power_Laser", 0).set_writable()
-        self.param.add_variable(self.regName, "Idle_Time", 0).set_writable()
+        self.param.add_variable(self.regName, "Capacity_Laser_Module", 0).set_writable()
+        self.param.add_variable(self.regName, "Total_Items", 0).set_writable()
+        self.param.add_variable(self.regName, "Program_Runtime", 0).set_writable()
+        self.param.add_variable(self.regName, "Target_Amount", 0).set_writable()
+        self.param.add_variable(self.regName, "Current_Amount", 0).set_writable()
+        self.param.add_variable(self.regName, "Coolant_Consumption", 0).set_writable()
+        self.param.add_variable(self.regName, "Laser_Module_Weardown", 0).set_writable()
+        self.param.add_variable(self.regName, "Laser_Power_Consumption", 0).set_writable()
+        self.param.add_variable(self.regName, "Time_Per_Item", 0).set_writable()

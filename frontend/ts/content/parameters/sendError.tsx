@@ -1,47 +1,59 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import IconSendError from "../../icons/iconSendError";
 import { Error } from "../../interfaces";
 import { sendError, sendWarning } from "../../api-service";
 
 interface sendErrorProps {
-  simulationID: number;
   name: string;
   messages: Array<Error>;
   color: string;
 }
 
 function SendError(props: sendErrorProps) {
-  const [selectedID, setSelectedID] = useState<number | null> (null);
+  const [selectedID, setSelectedID] = useState<number | null>(null);
 
-  const handleSendError = () => {
-    if(selectedID === null){
+  const handleSendError = async () => {
+    if (selectedID === null) {
       console.log(`No ${props.name} selected`);
       return;
     }
-    console.log(props.name)
-    if(props.name === "Error"){
-
-      sendError(props.simulationID, selectedID).then((response) => {
-        console.log(`${props.name} ${selectedID} sent successfully`)
-      }).catch((error) => {
-        console.log(`Error sending ${props.name} ${selectedID}`, error);
-      });
+    console.log(props.name);
+    if (props.name === "Error") {
+      let res = sendError(selectedID);
+      if (res != null) {
+        console.log(`${props.name} ${selectedID} sent successfully`);
+      } else {
+        console.log(`Error sending ${props.name} ${selectedID}`);
+      }
+    } else {
+      let res = sendWarning(selectedID);
+      if (res != null) {
+        console.log(`${props.name} ${selectedID} sent successfully`);
+      } else {
+        console.log(`Error sending ${props.name} ${selectedID}`);
+      }
     }
-    else{
-      sendWarning(props.simulationID, selectedID)
-    }
-  }
+  };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const errorID = parseInt(event.target.value, 10);
     setSelectedID(errorID);
     console.log(`${errorID} selected`);
-  }
+  };
   return (
-    <div className="flex flex-col bg-white h-full w-full border justify-start items-center border-black rounded-lg drop-shadow-sm space-y-7 pb-5">
-      <div className="mt-5 font-medium">{props.name}</div>
+    <div
+      //style={{
+      //  opacity: 0.8,
+      //  background:
+      //    "repeating-linear-gradient( -45deg, #e8eaeb, #e8eaeb 5px, #fff 5px, #fff 25px )",
+      //}}
+      className="flex flex-col bg-white h-full w-full justify-start items-center border-dashed border-2 border-header-red rounded-lg drop-shadow-sm space-y-7 py-5"
+    >
+      <div className="mt-5 font-medium text-xs sm:text-base lg:text-xl xl:text2xl">
+        Send {props.name}
+      </div>
       <select
-        className="w-3/4 h-1/5 border border-black rounded-lg bg-gray-400 text-center text-xl"
+        className="w-3/4 h-1/5 border border-black rounded-lg bg-gray-400 text-center text-xs sm:text-base lg:text-xl xl:text2xl"
         name={props.name}
         id={props.name}
         onChange={handleSelectChange}

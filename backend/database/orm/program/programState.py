@@ -25,13 +25,24 @@ class ProgramState(object):
         return self.runtime
     
     def __str__(self):
-        return f"MyClass(stateID: {self.stateID}, ID: {self.ID}, targetAmount: {self.targetAmount}, currentAmount: {self.currentAmount}, runtime: {self.runtime})"
+        return f"MyClass(stateID: {self.stateID}, id: {self.ID}, targetAmount: {self.targetAmount}, currentAmount: {self.currentAmount}, runtime: {self.runtime})"
     
     def getJson(self):
         return {
-            "stateID": self.stateID,
-            "ID": self.ID,
+            "stateId": self.stateID,
+            "id": self.ID,
             "targetAmount": self.targetAmount,
             "currentAmount": self.currentAmount,
             "runtime": self.runtime
         }
+    
+    def __eq__(self, other):
+        if other != None:
+            return (
+                self.stateID == other.stateID
+                and self.ID == other.ID
+                and self.targetAmount == other.targetAmount
+                and self.currentAmount == other.currentAmount
+                and self.runtime == other.runtime
+            )
+        return False

@@ -1,9 +1,10 @@
-from datetime import datetime
 import json
+from datetime import datetime
+from typing import List
 
 from database.handler.databaseHandler import DatabaseHandler
 
-class Warnings:
+class Notifications(object):
     def __init__(self) -> None:    
         self.errors = []
         self.warnings = []
@@ -12,27 +13,27 @@ class Warnings:
         self.initPossibleErrors()
         self.initPossibleWarnings()
 
-    def getErrors(self) -> list:
+    def getErrors(self) -> List:
         return self.errors
     
-    def getWarnings(self) -> list:
+    def getWarnings(self) -> List:
         return self.warnings
     
-    def getPossibleErrors(self) -> list:
+    def getPossibleErrors(self) -> List:
         return self.possibleErrors
     
-    def getPossibleWarnings(self) -> list:
+    def getPossibleWarnings(self) -> List:
         return self.possibleWarnings
     
     #in correct id order
     def initPossibleErrors(self):
         for errorMessage in DatabaseHandler.selectErrorMessages():
-            self.possibleErrors.append(errorMessage)
+            self.possibleErrors.append(errorMessage.getType())
         
     #in correct id order
     def initPossibleWarnings(self):
         for warningMessage in DatabaseHandler.selectWarningMessages():
-            self.possibleWarnings.append(warningMessage)  
+            self.possibleWarnings.append(warningMessage.getType())  
     
     def coolantLvlWarning(self):
         warningMessage = self.possibleWarnings[0]
@@ -64,7 +65,7 @@ class Warnings:
             errorTime = datetime.now()
             self.errors.append((errorTime, errorMessage))
 
-    def powerConsumptionError(self):
+    def SafetyDoorError(self):
         errorMessage = self.possibleErrors[2]
         if not self.checkExistingErrors(errorMessage):
             errorTime = datetime.now()
@@ -96,6 +97,10 @@ class Warnings:
             if message[1] is warningMessage:
                 return True
         return False
+
+    def resetNotifications(self):
+        self.errors = []
+        self.warnings = []
     
     def getNotificationsJSON(self):
         data = {
@@ -117,8 +122,7 @@ class Warnings:
                 "name": warning
             }
             data["warnings"].append(warning_data)
-        
-        print(data)   
+          
         return json.dumps(data)
             
             
